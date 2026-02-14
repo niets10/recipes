@@ -67,3 +67,8 @@ export function getMockRecipes({ query } = {}) {
             (r.description && r.description.toLowerCase().includes(q))
     );
 }
+
+
+export function getMockRecipeById(id) {
+    return MOCK_RECIPES.find((r) => r.id === id);
+}
