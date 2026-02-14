@@ -27,15 +27,6 @@ export async function getRecipesPageAction({ page, query } = {}) {
     return { recipes: data, hasMore: data.length === 10 };
 }
 
-export async function getRecipesByQueryAction({ query } = {}) {
-    const supabase = await createClient();
-    const { data, error } = await supabase.from('recipes').select('*').textSearch('title', query);
-    if (error) {
-        throw new Error(error.message);
-    }
-    return data;
-}
-
 export async function getRecipeCountAction() {
     const supabase = await createClient();
     const { data, error } = await supabase.from('recipes').select('*').count();
