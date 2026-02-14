@@ -6,6 +6,7 @@ import debounce from 'lodash/debounce';
 import { Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
+import { routes } from '@/lib/routes';
 
 const DEBOUNCE_MS = 400;
 
@@ -32,9 +33,8 @@ export function RecipeSearch({ className, placeholder = 'Search recipes…', ...
             lastPushedQueryRef.current = trimmed;
             const params = new URLSearchParams();
             if (trimmed) params.set('q', trimmed);
-            const path = `/home/recipes${params.toString() ? `?${params.toString()}` : ''}`;
-            router.push(path);
-            router.refresh();
+            const path = `${routes.recipes}${params.size ? `?${params.toString()}` : ''}`;
+            router.replace(path);
         }
         const debouncedApply = debounce(applyQuery, DEBOUNCE_MS);
         debouncedApplyRef.current = debouncedApply;

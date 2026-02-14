@@ -1,24 +1,18 @@
-'use server';
-
 import { Suspense } from 'react';
 import { ChefHat } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { RecipeSearch } from '@/components/recipes/recipe-search';
 import { RecipesList } from '@/components/recipes/recipes-list';
 import { CreateRecipe } from '@/components/recipes/create-recipe';
-// import { getRecipesPageAction } from '@/actions/database/recipe-actions';
-import { getMockRecipes } from '@/data/mock-recipes';
+import { getRecipesPageAction } from '@/actions/database/recipe-actions';
 
 export async function RecipesComponent({ searchParams }) {
     const params = await searchParams;
     const query = typeof params?.q === 'string' ? params.q.trim() || undefined : undefined;
 
-    // const result = await getRecipesPageAction({ page: 0, query });
-    // const initialRecipes = Array.isArray(result?.recipes) ? result.recipes : [];
-    // const initialHasMore = Boolean(result?.hasMore);
-
-    const initialRecipes = getMockRecipes({ query });
-    const initialHasMore = false;
+    const result = await getRecipesPageAction({ page: 0, query });
+    const initialRecipes = Array.isArray(result?.recipes) ? result.recipes : [];
+    const initialHasMore = Boolean(result?.hasMore);
 
     return (
         <div className="space-y-6">
