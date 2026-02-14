@@ -1,6 +1,5 @@
 import Link from 'next/link';
 import { getRecipeByIdAction } from '@/actions/database/recipe-actions';
-import { getMockRecipeById } from '@/data/mock-recipes';
 import { routes } from '@/lib/routes';
 import { titleToSlug } from '@/lib/utils';
 import { SetBreadcrumbLabel } from '@/components/application/set-breadcrumb-label';
@@ -10,8 +9,9 @@ import { DeleteRecipe } from '@/components/recipes/delete-recipe';
 
 export async function RecipeComponent({ params }) {
     const { recipeId } = await params;
-    const recipeIdNumber = parseInt(recipeId);
-    const recipe = getMockRecipeById(recipeIdNumber);
+    const recipe = await getRecipeByIdAction({ id: recipeId });
+
+    console.log('recipeComponent...', recipe);
 
     if (!recipe) {
         return (

@@ -38,7 +38,7 @@ export async function getRecipeCountAction() {
 
 export async function getRecipeByIdAction({ id } = {}) {
     const supabase = await createClient();
-    const { data, error } = await supabase.from('recipes').select('*').eq('id', id);
+    const { data, error } = await supabase.from('recipes').select('*').eq('id', id).single();
     if (error) {
         throw new Error(error.message);
     }
