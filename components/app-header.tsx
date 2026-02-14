@@ -1,17 +1,27 @@
 import { Suspense } from 'react';
 import { AuthButton } from '@/components/auth-button';
-import { Separator } from '@/components/ui/separator';
+import { ThemeSwitcher } from '@/components/theme-switcher';
+import { SidebarTrigger } from '@/components/ui/sidebar';
+import { cn } from '@/lib/utils';
 
-export function AppHeader({ children }: { children?: React.ReactNode }) {
+export function AppHeader({
+    className,
+    ...props
+}: React.ComponentProps<'header'>) {
     return (
-        <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
-            {children}
-            <Separator orientation="vertical" className="mr-2 h-4" />
-            <div className="flex flex-1 items-center justify-end">
-                <Suspense>
-                    <AuthButton />
-                </Suspense>
-            </div>
+        <header
+            className={cn(
+                'flex h-14 shrink-0 items-center gap-4 border-b bg-background/95 px-4 backdrop-blur supports-[backdrop-filter]:bg-background/60 md:px-6',
+                className
+            )}
+            {...props}
+        >
+            <SidebarTrigger />
+            <div className="flex-1" />
+            <ThemeSwitcher />
+            <Suspense>
+                <AuthButton />
+            </Suspense>
         </header>
     );
 }
