@@ -33,11 +33,11 @@ export async function getRecipesPageAction({ page, query } = {}) {
 
 export async function getRecipeCountAction() {
     const supabase = await createClient();
-    const { data, error } = await supabase.from('recipes').select('*').count();
+    const { count, error } = await supabase.from('recipes').select('*', { count: 'exact', head: true })
     if (error) {
         throw new Error(error.message);
     }
-    return data;
+    return count;
 }
 
 export async function getRecipeByIdAction({ id } = {}) {
