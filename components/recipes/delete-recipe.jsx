@@ -16,7 +16,6 @@ export function DeleteRecipe({ recipe }) {
                 message: 'Recipe deleted!',
             });
         } catch (error) {
-            console.log('error...', error);
             toastRichError({
                 message: error.message,
             });
