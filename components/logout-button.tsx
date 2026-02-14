@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 import { useTransition } from 'react';
 import { Spinner } from '@/components/ui/spinner';
+import { routes } from '@/lib/routes';
 
 export function LogoutButton() {
     const router = useRouter();
@@ -13,7 +14,7 @@ export function LogoutButton() {
     const logout = async () => {
         const supabase = createClient();
         await supabase.auth.signOut();
-        router.push('/auth/login');
+        router.push(routes.login);
     };
 
     const [isPending, startTransition] = useTransition();
