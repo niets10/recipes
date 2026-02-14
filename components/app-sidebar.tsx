@@ -2,15 +2,11 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, UtensilsCrossed, LogOut } from 'lucide-react';
-import { createClient } from '@/lib/supabase/client';
-import { useRouter } from 'next/navigation';
+import { Home, UtensilsCrossed } from 'lucide-react';
 import { routes } from '@/lib/routes';
-import { ThemeSwitcher } from '@/components/theme-switcher';
 import {
     Sidebar,
     SidebarContent,
-    SidebarFooter,
     SidebarGroup,
     SidebarGroupContent,
     SidebarGroupLabel,
@@ -18,7 +14,6 @@ import {
     SidebarMenu,
     SidebarMenuButton,
     SidebarMenuItem,
-    SidebarSeparator,
 } from '@/components/ui/sidebar';
 
 const navItems = [
@@ -28,13 +23,6 @@ const navItems = [
 
 export function AppSidebar() {
     const pathname = usePathname();
-    const router = useRouter();
-
-    const handleLogout = async () => {
-        const supabase = createClient();
-        await supabase.auth.signOut();
-        router.push('/auth/login');
-    };
 
     return (
         <Sidebar>
@@ -81,26 +69,6 @@ export function AppSidebar() {
                     </SidebarGroupContent>
                 </SidebarGroup>
             </SidebarContent>
-
-            <SidebarFooter>
-                <SidebarSeparator />
-                <SidebarMenu>
-                    <SidebarMenuItem>
-                        <div className="flex items-center justify-between px-2 py-1">
-                            <span className="text-xs text-muted-foreground">
-                                Theme
-                            </span>
-                            <ThemeSwitcher />
-                        </div>
-                    </SidebarMenuItem>
-                    <SidebarMenuItem>
-                        <SidebarMenuButton onClick={handleLogout}>
-                            <LogOut />
-                            <span>Logout</span>
-                        </SidebarMenuButton>
-                    </SidebarMenuItem>
-                </SidebarMenu>
-            </SidebarFooter>
         </Sidebar>
     );
 }
