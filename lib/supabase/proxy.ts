@@ -49,8 +49,8 @@ export async function updateSession(request: NextRequest) {
     console.log('user', user);
 
     if (
-        request.nextUrl.pathname !== '/' &&
         !user &&
+        request.nextUrl.pathname !== routes.public &&
         !request.nextUrl.pathname.startsWith(routes.login) &&
         !request.nextUrl.pathname.startsWith(routes.auth)
     ) {
