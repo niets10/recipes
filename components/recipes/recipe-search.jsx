@@ -24,7 +24,8 @@ export function RecipeSearch({ className, placeholder = 'Search recipes…', ...
         const userHasDiverged = queryValue !== lastPushedQueryRef.current;
         if (userHasDiverged) return;
         lastPushedQueryRef.current = urlQuery;
-        queueMicrotask(() => setQueryValue(urlQuery));
+        debouncedApplyRef.current?.cancel();
+        setQueryValue(urlQuery);
     }, [urlQuery, queryValue]);
 
     useEffect(() => {
