@@ -66,7 +66,7 @@ export async function updateRecipeAction({ id, title, description } = {}) {
     return data;
 }
 
-export async function deleteRecipeAction({ id } = {}) {
+export async function deleteRecipeAction(id) {
     const supabase = await createClient();
     const { data, error } = await supabase.from('recipes').delete().eq('id', id);
     if (error) {

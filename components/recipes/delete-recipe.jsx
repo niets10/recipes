@@ -7,8 +7,10 @@ import { useRouter } from 'next/navigation';
 import { routes } from '@/lib/routes';
 
 export function DeleteRecipe({ recipe }) {
+    console.log('DeleteRecipe...', recipe);
     const router = useRouter();
     const handleDeleteRecipe = async (id) => {
+        console.log('handleDeleteRecipe...', id);
         try {
             await deleteRecipeAction(id);
             router.push(routes.recipes);
@@ -16,6 +18,7 @@ export function DeleteRecipe({ recipe }) {
                 message: 'Recipe deleted!',
             });
         } catch (error) {
+            console.log('error...', error);
             toastRichError({
                 message: error.message,
             });
