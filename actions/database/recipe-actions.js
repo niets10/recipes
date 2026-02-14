@@ -1,6 +1,10 @@
 'use server';
 
+import { revalidatePath } from 'next/cache';
 import { createClient } from '@/lib/supabase/server';
+import { CreateRecipeSchema, UpdateRecipeSchema } from '@/schemas';
+import { routes } from '@/lib/routes';
+import { z } from 'zod';
 
 export async function getRecipesAction() {
     const supabase = await createClient();
@@ -45,32 +49,49 @@ export async function getRecipeByIdAction({ id } = {}) {
     return data;
 }
 
-export async function createRecipeAction({ title, description } = {}) {
-    const supabase = await createClient();
-    const { data, error } = await supabase.from('recipes').insert({ title, description });
-    if (error) {
-        throw new Error(error.message);
+export async function createRecipeAction(formData) {
+    const raw = Object.fromEntries(formData.entries());
+    const validatedData = CreateRecipeSchema.safeParse(raw);
+    if (!validatedData.success) {
+        return { error: z.flattenError(validatedData.error).fieldErrors };
     }
-    return data;
+    const { title, description } = validatedData.data;
+
+    const supabase = await createClient();
+    const { error } = await supabase.from('recipes').insert({ title, description });
+    if (error) {
+        return { error: { _form: [error.message] } };
+    }
+    revalidatePath(routes.recipes);
+    return { success: true };
 }
 
-export async function updateRecipeAction({ id, title, description } = {}) {
+export async function updateRecipeAction(formData) {
+    const raw = Object.fromEntries(formData.entries());
+    const validatedData = UpdateRecipeSchema.safeParse(raw);
+    if (!validatedData.success) {
+        return { error: z.flattenError(validatedData.error).fieldErrors };
+    }
+    const { id, title, description } = validatedData.data;
+
     const supabase = await createClient();
-    const { data, error } = await supabase
+    const { error } = await supabase
         .from('recipes')
         .update({ title, description })
         .eq('id', id);
     if (error) {
-        throw new Error(error.message);
+        return { error: { _form: [error.message] } };
     }
-    return data;
+    revalidatePath(routes.recipes);
+    return { success: true };
 }
 
 export async function deleteRecipeAction(id) {
     const supabase = await createClient();
-    const { data, error } = await supabase.from('recipes').delete().eq('id', id);
+    const { error } = await supabase.from('recipes').delete().eq('id', id);
     if (error) {
         throw new Error(error.message);
     }
-    return data;
+    revalidatePath(routes.recipes);
+    return { success: true };
 }

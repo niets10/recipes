@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { createRecipeAction } from '@/actions/database/recipe-actions';
 import { CreateRecipeSchema } from '@/schemas';
 import { cn } from '@/lib/utils';
+import { toastRichError } from '@/lib/toast-library';
 const defaultValues = {
     title: '',
     description: '',
@@ -33,26 +34,31 @@ export function CreateRecipeForm({ onSuccess, className }) {
     }, [errors.title, setFocus]);
 
     async function onSubmit(data) {
-        const formData = new FormData();
-        formData.set('title', data.title);
-        formData.set('description', data.description ?? '');
-        const result = await createRecipeAction(formData);
+        try {
+            const formData = new FormData();
+            formData.set('title', data.title);
+            formData.set('description', data.description ?? '');
+            const result = await createRecipeAction(formData);
 
-        if (result?.success && onSuccess) {
-            onSuccess();
-            return;
-        }
-        
-        if (result?.error) {
-            if (result.error._form?.[0]) {
-                setError('root', { message: result.error._form[0] });
+            if (result?.success) {
+                onSuccess?.();
+                return;
             }
-            if (result.error.title?.[0]) {
-                setError('title', { message: result.error.title[0] });
+
+            if (result?.error) {
+                if (result.error._form?.[0]) {
+                    setError('root', { message: result.error._form[0] });
+                    toastRichError({ message: result.error._form[0] });
+                }
+                if (result.error.title?.[0]) {
+                    setError('title', { message: result.error.title[0] });
+                }
+                if (result.error.description?.[0]) {
+                    setError('description', { message: result.error.description[0] });
+                }
             }
-            if (result.error.description?.[0]) {
-                setError('description', { message: result.error.description[0] });
-            }
+        } catch (error) {
+            toastRichError({ message: 'Failed to create recipe. Please try again.' });
         }
     }
 

@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { updateRecipeAction } from '@/actions/database/recipe-actions';
 import { UpdateRecipeSchema } from '@/schemas';
 import { cn } from '@/lib/utils';
+import { toastRichError } from '@/lib/toast-library';
 
 export function EditRecipeForm ({ recipe, onSuccess, className }) {
     const {
@@ -32,27 +33,32 @@ export function EditRecipeForm ({ recipe, onSuccess, className }) {
     }, [errors.title, setFocus]);
 
     async function onSubmit (data) {
-        const formData = new FormData();
-        formData.set('id', data.id);
-        formData.set('title', data.title);
-        formData.set('description', data.description ?? '');
-        const result = await updateRecipeAction(formData);
+        try {
+            const formData = new FormData();
+            formData.set('id', data.id);
+            formData.set('title', data.title);
+            formData.set('description', data.description ?? '');
+            const result = await updateRecipeAction(formData);
 
-        if (result?.success && onSuccess) {
-            onSuccess();
-            return;
-        }
+            if (result?.success) {
+                onSuccess?.();
+                return;
+            }
 
-        if (result?.error) {
-            if (result.error._form?.[0]) {
-                setError('root', { message: result.error._form[0] });
+            if (result?.error) {
+                if (result.error._form?.[0]) {
+                    setError('root', { message: result.error._form[0] });
+                    toastRichError({ message: result.error._form[0] });
+                }
+                if (result.error.title?.[0]) {
+                    setError('title', { message: result.error.title[0] });
+                }
+                if (result.error.description?.[0]) {
+                    setError('description', { message: result.error.description[0] });
+                }
             }
-            if (result.error.title?.[0]) {
-                setError('title', { message: result.error.title[0] });
-            }
-            if (result.error.description?.[0]) {
-                setError('description', { message: result.error.description[0] });
-            }
+        } catch (error) {
+            toastRichError({ message: 'Failed to update recipe. Please try again.' });
         }
     }
 
