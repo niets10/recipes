@@ -10,9 +10,7 @@ import { DeleteRecipe } from '@/components/recipes/delete-recipe';
 export async function RecipeComponent({ params }) {
     const { recipeId } = await params;
     const recipe = await getRecipeByIdAction({ id: recipeId });
-
-    console.log('recipeComponent...', recipe);
-
+    
     if (!recipe) {
         return (
             <div className="space-y-4">
