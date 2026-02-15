@@ -1,19 +1,17 @@
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 import { AppSidebar } from '@/components/app-sidebar';
 import { AppHeader } from '@/components/app-header';
-import { Suspense } from 'react';
+import { BreadcrumbProvider } from '@/components/application/breadcrumb-context';
 
 export default function ProtectedLayout({ children }: { children: React.ReactNode }) {
     return (
         <SidebarProvider>
-            <Suspense fallback={null}>
-                <AppSidebar />
-            </Suspense>
+            <AppSidebar />
             <SidebarInset>
-                <Suspense fallback={null}>
+                <BreadcrumbProvider>
                     <AppHeader />
-                </Suspense>
-                <div className="flex-1 overflow-auto p-4 md:p-6">{children}</div>
+                    <div className="flex-1 overflow-auto p-4 md:p-6">{children}</div>
+                </BreadcrumbProvider>
             </SidebarInset>
         </SidebarProvider>
     );

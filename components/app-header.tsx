@@ -2,6 +2,8 @@ import { Suspense } from 'react';
 import { AuthButton } from '@/components/auth-button';
 import { ThemeSwitcher } from '@/components/theme-switcher';
 import { SidebarTrigger } from '@/components/ui/sidebar';
+import { Breadcrumbs } from '@/components/application/breadcrumbs';
+import { BackButton } from '@/components/application/back-button';
 import { cn } from '@/lib/utils';
 
 export function AppHeader({
@@ -17,6 +19,8 @@ export function AppHeader({
             {...props}
         >
             <SidebarTrigger />
+            <BackButton />
+            <Breadcrumbs className="min-w-0 hidden md:flex" />
             <div className="flex-1" />
             <ThemeSwitcher />
             <Suspense>
