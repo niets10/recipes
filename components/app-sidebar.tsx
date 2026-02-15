@@ -14,6 +14,7 @@ import {
     SidebarMenu,
     SidebarMenuButton,
     SidebarMenuItem,
+    useSidebar,
 } from '@/components/ui/sidebar';
 
 const navItems = [
@@ -23,6 +24,9 @@ const navItems = [
 
 export function AppSidebar() {
     const pathname = usePathname();
+    const { setOpenMobile } = useSidebar();
+
+    const closeMobileSidebar = () => setOpenMobile(false);
 
     return (
         <Sidebar>
@@ -30,7 +34,7 @@ export function AppSidebar() {
                 <SidebarMenu>
                     <SidebarMenuItem>
                         <SidebarMenuButton size="lg" asChild>
-                            <Link href={routes.home}>
+                            <Link href={routes.home} onClick={closeMobileSidebar}>
                                 <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
                                     <UtensilsCrossed className="size-4" />
                                 </div>
@@ -58,7 +62,7 @@ export function AppSidebar() {
                                         isActive={pathname === item.href}
                                         tooltip={item.title}
                                     >
-                                        <Link href={item.href}>
+                                        <Link href={item.href} onClick={closeMobileSidebar}>
                                             <item.icon />
                                             <span>{item.title}</span>
                                         </Link>
