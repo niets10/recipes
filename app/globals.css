@@ -180,6 +180,10 @@
 }
 
 @layer base {
+  /* Slightly larger base so text and UI feel readable at 100% zoom (especially on high-DPI screens). */
+  html {
+    font-size: 18px;
+  }
   * {
     border-color: var(--color-border);
     outline-color: color-mix(in oklch, var(--color-ring) 50%, transparent);
