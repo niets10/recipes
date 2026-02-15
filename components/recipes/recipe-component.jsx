@@ -44,7 +44,13 @@ export async function RecipeComponent({ params }) {
         <div className="space-y-6">
             <SetBreadcrumbLabel label={breadcrumbLabel} />
 
-            <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 lg:items-start">
+            <div
+                className={
+                    recipeVideoUrl
+                        ? 'grid grid-cols-1 gap-6 lg:grid-cols-2 lg:items-start'
+                        : 'space-y-6'
+                }
+            >
                 {/* Left column: Title + Description */}
                 <div className="space-y-6">
                     <Card
