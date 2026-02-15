@@ -2,6 +2,6 @@
 Todo:
   ✔ Fix hardcoded routes in the app @done(26-02-15 00:05)
   ☐ Fix loading, right now it says Loading... when the page is loading
-  ☐ Change psd
-  ☐ Enable progressive web app
-  ☐ Remove home page
+  ✔ Change psd @done(26-02-15 15:23)
+  ✔ Enable progressive web app @done(26-02-15 15:23)
+  ✔ Remove home page @done(26-02-15 15:23)
