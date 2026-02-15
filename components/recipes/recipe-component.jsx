@@ -90,9 +90,6 @@ export async function RecipeComponent({ params }) {
                 {/* Right column: Video */}
                 {recipeVideoUrl && (
                     <section className="min-w-0 rounded-xl border bg-card p-4 lg:sticky lg:top-4">
-                        <h2 className="text-sm font-medium text-muted-foreground mb-3">
-                            Recipe video
-                        </h2>
                         <VideoEmbed url={recipeVideoUrl} className="w-full" />
                     </section>
                 )}
