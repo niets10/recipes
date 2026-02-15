@@ -6,17 +6,28 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useState, useEffect } from 'react';
 
+interface NavigationWithCanGoBack {
+    canGoBack: boolean;
+    addEventListener(type: 'navigate', listener: () => void): void;
+    removeEventListener(type: 'navigate', listener: () => void): void;
+}
+
+function getNavigation(): NavigationWithCanGoBack | undefined {
+    if (typeof window === 'undefined') return undefined;
+    const w = window as Window & { navigation?: NavigationWithCanGoBack };
+    return w.navigation;
+}
+
 function useCanGoBack() {
     const pathname = usePathname();
     const [canGoBack, setCanGoBack] = useState(false);
 
     useEffect(() => {
-        const getCanGoBack = () => {
-            if (typeof window === 'undefined') return false;
-            if ('navigation' in window && window.navigation) {
-                return window.navigation.canGoBack;
-            }
-            return window.history.length > 1;
+        const getCanGoBack = (): boolean => {
+            const nav = getNavigation();
+            if (nav) return nav.canGoBack;
+            if (typeof window !== 'undefined') return window.history.length > 1;
+            return false;
         };
 
         const scheduleUpdate = () => {
@@ -25,16 +36,19 @@ function useCanGoBack() {
         };
 
         scheduleUpdate();
-        if (typeof window !== 'undefined' && 'navigation' in window && window.navigation) {
-            window.navigation.addEventListener('navigate', scheduleUpdate);
-            return () => window.navigation.removeEventListener('navigate', scheduleUpdate);
+        const nav = getNavigation();
+        if (nav) {
+            nav.addEventListener('navigate', scheduleUpdate);
+            return () => nav.removeEventListener('navigate', scheduleUpdate);
         }
     }, [pathname]);
 
     return canGoBack;
 }
 
-export function BackButton({ className, ...props }) {
+type BackButtonProps = React.ComponentProps<typeof Button>;
+
+export function BackButton({ className, ...props }: BackButtonProps) {
     const router = useRouter();
     const canGoBack = useCanGoBack();
 
