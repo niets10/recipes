@@ -13,27 +13,28 @@ export default function manifest(): MetadataRoute.Manifest {
         background_color: '#ffffff',
         theme_color: '#0a0a0a',
         orientation: 'portrait-primary',
+        // Use 192×192 and 512×512 PNGs for sharp display. Export your logo at these exact sizes.
         icons: [
             {
-                src: new URL('/icons/utensils-crossed.png', baseUrl).toString(),
+                src: new URL('/icons/utensils-crossed-192.png', baseUrl).toString(),
                 sizes: '192x192',
                 type: 'image/png',
                 purpose: 'maskable',
             },
             {
-                src: new URL('/icons/utensils-crossed.png', baseUrl).toString(),
+                src: new URL('/icons/utensils-crossed-512.png', baseUrl).toString(),
                 sizes: '512x512',
                 type: 'image/png',
                 purpose: 'maskable',
             },
             {
-                src: new URL('/icons/utensils-crossed.png', baseUrl).toString(),
+                src: new URL('/icons/utensils-crossed-192.png', baseUrl).toString(),
                 sizes: '192x192',
                 type: 'image/png',
                 purpose: 'any',
             },
             {
-                src: new URL('/icons/utensils-crossed.png', baseUrl).toString(),
+                src: new URL('/icons/utensils-crossed-512.png', baseUrl).toString(),
                 sizes: '512x512',
                 type: 'image/png',
                 purpose: 'any',

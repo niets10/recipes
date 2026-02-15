@@ -20,8 +20,8 @@ export const metadata: Metadata = {
     title: 'Recipes',
     description: 'A recipe app built with Next.js and Supabase',
     icons: {
-        icon: '/icons/utensils-crossed.png',
-        apple: '/icons/utensils-crossed.png',
+        icon: '/icons/utensils-crossed.svg',
+        apple: '/icons/utensils-crossed-192.png',
     },
     appleWebApp: {
         capable: true,
