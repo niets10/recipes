@@ -21,6 +21,7 @@ function getVideoProvider(url) {
 
 /**
  * Embeds a video from Instagram or YouTube. The correct embed is chosen from the URL.
+ * Uses full width on small screens so it fits on phone; max width on larger screens.
  */
 export function VideoEmbed({ url, maxWidth = 658, className }) {
     const provider = getVideoProvider(url);
@@ -31,12 +32,12 @@ export function VideoEmbed({ url, maxWidth = 658, className }) {
     }
 
     const wrapperClassName = className;
-    const wrapperStyle = { maxWidth: width };
+    const wrapperStyle = { width: '100%', maxWidth: width };
 
     if (provider === 'instagram') {
         return (
             <div className={wrapperClassName} style={wrapperStyle}>
-                <InstagramEmbed url={url} width={width} captioned />
+                <InstagramEmbed url={url} width="100%" captioned />
             </div>
         );
     }
@@ -44,7 +45,7 @@ export function VideoEmbed({ url, maxWidth = 658, className }) {
     if (provider === 'youtube') {
         return (
             <div className={wrapperClassName} style={wrapperStyle}>
-                <YouTubeEmbed url={url} width={width} />
+                <YouTubeEmbed url={url} width="100%" />
             </div>
         );
     }

@@ -44,16 +44,6 @@ export async function RecipeComponent({ params }) {
         <div className="space-y-6">
             <SetBreadcrumbLabel label={breadcrumbLabel} />
 
-            <div className="flex items-center gap-2">
-                <BackButton />
-                <Link
-                    href={routes.recipes}
-                    className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-                >
-                    Back to recipes
-                </Link>
-            </div>
-
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 lg:items-start">
                 {/* Left column: Title + Description */}
                 <div className="space-y-6">
@@ -93,11 +83,11 @@ export async function RecipeComponent({ params }) {
 
                 {/* Right column: Video */}
                 {recipeVideoUrl && (
-                    <section className="rounded-xl border bg-card p-4 lg:sticky lg:top-4">
+                    <section className="min-w-0 rounded-xl border bg-card p-4 lg:sticky lg:top-4">
                         <h2 className="text-sm font-medium text-muted-foreground mb-3">
                             Recipe video
                         </h2>
-                        <VideoEmbed url={recipeVideoUrl} className="mx-auto w-full" />
+                        <VideoEmbed url={recipeVideoUrl} className="w-full" />
                     </section>
                 )}
             </div>
