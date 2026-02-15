@@ -6,14 +6,12 @@ import { SetBreadcrumbLabel } from '@/components/application/set-breadcrumb-labe
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { EditRecipe } from '@/components/recipes/edit-recipe';
 import { DeleteRecipe } from '@/components/recipes/delete-recipe';
-import { BackButton } from '@/components/application/back-button';
 import { VideoEmbed } from '@/components/video-embed';
+import { EditSocialUrl } from '@/components/recipes/edit-social-url';
 
 export async function RecipeComponent({ params }) {
     const { recipeId } = await params;
-    const recipe = await getRecipeByIdAction({ id: recipeId });
-
-    // TODO: Get link from database
+    const recipe = await getRecipeByIdAction(recipeId);
     if (!recipe) {
         return (
             <div className="space-y-4">
@@ -38,21 +36,17 @@ export async function RecipeComponent({ params }) {
 
     const breadcrumbLabel = titleToSlug(recipe.title);
 
-    const recipeVideoUrl = process.env.NEXT_PUBLIC_INSTAGRAM_RECIPE_VIDEO_URL;
+    const recipeVideoUrl = recipe["social_media_url"];
 
     return (
         <div className="space-y-6">
             <SetBreadcrumbLabel label={breadcrumbLabel} />
 
             <div
-                className={
-                    recipeVideoUrl
-                        ? 'grid grid-cols-1 gap-6 lg:grid-cols-2 lg:items-start'
-                        : 'space-y-6'
-                }
+                className={`grid grid-cols-1 gap-6 lg:grid-cols-2 lg:items-start ${!recipeVideoUrl ? 'gap-y-0' : ''}`}
             >
                 {/* Left column: Title + Description */}
-                <div className="space-y-6">
+                <div className="space-y-6 lg:row-start-1 lg:col-start-1">
                     <Card
                         className="border-t-2 border-t-primary/40"
                         style={{ boxShadow: 'var(--shadow-soft)' }}
@@ -87,12 +81,18 @@ export async function RecipeComponent({ params }) {
                     )}
                 </div>
 
-                {/* Right column: Video */}
-                {recipeVideoUrl && (
-                    <section className="min-w-0 rounded-xl border bg-card p-4 lg:sticky lg:top-4">
-                        <VideoEmbed url={recipeVideoUrl} className="w-full" />
-                    </section>
-                )}
+                {/* Right column: Social URL + Video */}
+                <Card
+                    className="min-w-0 mt-0 border-t-2 border-t-primary/40 self-start lg:row-start-1 lg:col-start-2"
+                    style={{ boxShadow: 'var(--shadow-soft)' }}
+                >
+                    <CardContent className="pt-6 space-y-4">
+                        <EditSocialUrl recipeId={recipe.id} initialUrl={recipe.social_media_url ?? ''} />
+                        {recipeVideoUrl && (
+                            <VideoEmbed url={recipeVideoUrl} className="w-full" />
+                        )}
+                    </CardContent>
+                </Card>
             </div>
         </div>
     );

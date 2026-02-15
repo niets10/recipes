@@ -33,14 +33,16 @@ export async function getRecipesPageAction({ page, query } = {}) {
 
 export async function getRecipeCountAction() {
     const supabase = await createClient();
-    const { count, error } = await supabase.from('recipes').select('*', { count: 'exact', head: true })
+    const { count, error } = await supabase
+        .from('recipes')
+        .select('*', { count: 'exact', head: true });
     if (error) {
         throw new Error(error.message);
     }
     return count;
 }
 
-export async function getRecipeByIdAction({ id } = {}) {
+export async function getRecipeByIdAction(id) {
     const supabase = await createClient();
     const { data, error } = await supabase.from('recipes').select('*').eq('id', id).single();
     if (error) {
@@ -72,17 +74,39 @@ export async function updateRecipeAction(formData) {
     if (!validatedData.success) {
         return { error: z.flattenError(validatedData.error).fieldErrors };
     }
-    const { id, title, description } = validatedData.data;
+    const { id, title, description, social_media_url } = validatedData.data;
+
+    const supabase = await createClient();
+    const updatePayload = { title, description };
+    if (social_media_url !== undefined) {
+        updatePayload.social_media_url = social_media_url === '' ? null : social_media_url;
+    }
+    const { error } = await supabase.from('recipes').update(updatePayload).eq('id', id);
+    if (error) {
+        return { error: { _form: [error.message] } };
+    }
+    revalidatePath(`${routes.recipes}/${id}`);
+    return { success: true };
+}
+
+export async function updateRecipeSocialUrlAction(recipeId, social_media_url) {
+    const url = social_media_url?.trim() || null;
+    if (url !== null) {
+        const parsed = z.string().url().safeParse(url);
+        if (!parsed.success) {
+            return { error: { social_media_url: ['Please enter a valid URL'] } };
+        }
+    }
 
     const supabase = await createClient();
     const { error } = await supabase
         .from('recipes')
-        .update({ title, description })
-        .eq('id', id);
+        .update({ social_media_url: url })
+        .eq('id', recipeId);
     if (error) {
         return { error: { _form: [error.message] } };
     }
-    revalidatePath(routes.recipes);
+    revalidatePath(`${routes.recipes}/${recipeId}`);
     return { success: true };
 }
 
