@@ -6,11 +6,14 @@ import { SetBreadcrumbLabel } from '@/components/application/set-breadcrumb-labe
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { EditRecipe } from '@/components/recipes/edit-recipe';
 import { DeleteRecipe } from '@/components/recipes/delete-recipe';
+import { BackButton } from '@/components/application/back-button';
+import { InstagramEmbed } from '@/components/instagram-embed';
 
 export async function RecipeComponent({ params }) {
     const { recipeId } = await params;
     const recipe = await getRecipeByIdAction({ id: recipeId });
-    
+
+    // TODO: Get link from database
     if (!recipe) {
         return (
             <div className="space-y-4">
@@ -39,8 +42,21 @@ export async function RecipeComponent({ params }) {
         <div className="space-y-6">
             <SetBreadcrumbLabel label={breadcrumbLabel} />
 
+            <div className="flex items-center gap-2">
+                <BackButton />
+                <Link
+                    href={routes.recipes}
+                    className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+                >
+                    Back to recipes
+                </Link>
+            </div>
+
             {/* Header card */}
-            <Card className="border-t-2 border-t-primary/40" style={{ boxShadow: 'var(--shadow-soft)' }}>
+            <Card
+                className="border-t-2 border-t-primary/40"
+                style={{ boxShadow: 'var(--shadow-soft)' }}
+            >
                 <CardHeader className="flex flex-row items-start justify-between gap-4">
                     <div className="space-y-1">
                         <CardTitle className="text-2xl font-semibold tracking-tight">
@@ -67,6 +83,16 @@ export async function RecipeComponent({ params }) {
                         </p>
                     </CardContent>
                 </Card>
+            )}
+
+            {process.env.NEXT_PUBLIC_INSTAGRAM_RECIPE_VIDEO_URL && (
+                <section className="rounded-xl border bg-card p-4">
+                    <h2 className="text-sm font-medium text-muted-foreground mb-3">Recipe video</h2>
+                    <InstagramEmbed
+                        url={process.env.NEXT_PUBLIC_INSTAGRAM_RECIPE_VIDEO_URL}
+                        className="mx-auto"
+                    />
+                </section>
             )}
         </div>
     );
