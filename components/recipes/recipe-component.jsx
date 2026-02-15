@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { EditRecipe } from '@/components/recipes/edit-recipe';
 import { DeleteRecipe } from '@/components/recipes/delete-recipe';
 import { BackButton } from '@/components/application/back-button';
-import { InstagramEmbed } from '@/components/instagram-embed';
+import { VideoEmbed } from '@/components/video-embed';
 
 export async function RecipeComponent({ params }) {
     const { recipeId } = await params;
@@ -38,6 +38,8 @@ export async function RecipeComponent({ params }) {
 
     const breadcrumbLabel = titleToSlug(recipe.title);
 
+    const recipeVideoUrl = process.env.NEXT_PUBLIC_INSTAGRAM_RECIPE_VIDEO_URL;
+
     return (
         <div className="space-y-6">
             <SetBreadcrumbLabel label={breadcrumbLabel} />
@@ -52,48 +54,53 @@ export async function RecipeComponent({ params }) {
                 </Link>
             </div>
 
-            {/* Header card */}
-            <Card
-                className="border-t-2 border-t-primary/40"
-                style={{ boxShadow: 'var(--shadow-soft)' }}
-            >
-                <CardHeader className="flex flex-row items-start justify-between gap-4">
-                    <div className="space-y-1">
-                        <CardTitle className="text-2xl font-semibold tracking-tight">
-                            {recipe.title}
-                        </CardTitle>
-                        {dateLabel && <p className="text-sm text-muted-foreground">{dateLabel}</p>}
-                    </div>
-                    <div className="flex items-center gap-2">
-                        <EditRecipe recipe={recipe} />
-                        <DeleteRecipe recipe={recipe} />
-                    </div>
-                </CardHeader>
-            </Card>
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 lg:items-start">
+                {/* Left column: Title + Description */}
+                <div className="space-y-6">
+                    <Card
+                        className="border-t-2 border-t-primary/40"
+                        style={{ boxShadow: 'var(--shadow-soft)' }}
+                    >
+                        <CardHeader className="flex flex-row items-start justify-between gap-4">
+                            <div className="space-y-1">
+                                <CardTitle className="text-2xl font-semibold tracking-tight">
+                                    {recipe.title}
+                                </CardTitle>
+                                {dateLabel && (
+                                    <p className="text-sm text-muted-foreground">{dateLabel}</p>
+                                )}
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <EditRecipe recipe={recipe} />
+                                <DeleteRecipe recipe={recipe} />
+                            </div>
+                        </CardHeader>
+                    </Card>
 
-            {/* Description card */}
-            {recipe.description && (
-                <Card>
-                    <CardHeader>
-                        <CardTitle className="text-base">Description</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <p className="text-muted-foreground leading-relaxed">
-                            {recipe.description}
-                        </p>
-                    </CardContent>
-                </Card>
-            )}
+                    {recipe.description && (
+                        <Card>
+                            <CardHeader>
+                                <CardTitle className="text-base">Description</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <p className="text-muted-foreground leading-relaxed">
+                                    {recipe.description}
+                                </p>
+                            </CardContent>
+                        </Card>
+                    )}
+                </div>
 
-            {process.env.NEXT_PUBLIC_INSTAGRAM_RECIPE_VIDEO_URL && (
-                <section className="rounded-xl border bg-card p-4">
-                    <h2 className="text-sm font-medium text-muted-foreground mb-3">Recipe video</h2>
-                    <InstagramEmbed
-                        url={process.env.NEXT_PUBLIC_INSTAGRAM_RECIPE_VIDEO_URL}
-                        className="mx-auto"
-                    />
-                </section>
-            )}
+                {/* Right column: Video */}
+                {recipeVideoUrl && (
+                    <section className="rounded-xl border bg-card p-4 lg:sticky lg:top-4">
+                        <h2 className="text-sm font-medium text-muted-foreground mb-3">
+                            Recipe video
+                        </h2>
+                        <VideoEmbed url={recipeVideoUrl} className="mx-auto w-full" />
+                    </section>
+                )}
+            </div>
         </div>
     );
 }
