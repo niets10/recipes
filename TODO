@@ -1,3 +1,7 @@
 
 Todo:
-  ☐ Fix hardcoded routes in the app
+  ✔ Fix hardcoded routes in the app @done(26-02-15 00:05)
+  ☐ Fix loading, right now it says Loading... when the page is loading
+  ☐ Change psd
+  ☐ Enable progressive web app
+  ☐ Remove home page
