@@ -1,5 +1,8 @@
 import type { MetadataRoute } from 'next';
 
+const baseUrl =
+    process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000';
+
 export default function manifest(): MetadataRoute.Manifest {
     return {
         name: 'Recipes',
@@ -12,25 +15,25 @@ export default function manifest(): MetadataRoute.Manifest {
         orientation: 'portrait-primary',
         icons: [
             {
-                src: '/icons/icon-192x192.png',
+                src: new URL('/icons/icon-192x192.png', baseUrl).toString(),
                 sizes: '192x192',
                 type: 'image/png',
                 purpose: 'maskable',
             },
             {
-                src: '/icons/icon-512x512.png',
+                src: new URL('/icons/icon-512x512.png', baseUrl).toString(),
                 sizes: '512x512',
                 type: 'image/png',
                 purpose: 'maskable',
             },
             {
-                src: '/icons/icon-192x192.png',
+                src: new URL('/icons/icon-192x192.png', baseUrl).toString(),
                 sizes: '192x192',
                 type: 'image/png',
                 purpose: 'any',
             },
             {
-                src: '/icons/icon-512x512.png',
+                src: new URL('/icons/icon-512x512.png', baseUrl).toString(),
                 sizes: '512x512',
                 type: 'image/png',
                 purpose: 'any',
