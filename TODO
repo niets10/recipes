@@ -1,7 +1,9 @@
 
 Todo:
   ✔ Fix hardcoded routes in the app @done(26-02-15 00:05)
-  ☐ Fix loading, right now it says Loading... when the page is loading
+  ✔ Fix loading, right now it says Loading... when the page is loading @done(26-02-15 22:58)
   ✔ Change psd @done(26-02-15 15:23)
   ✔ Enable progressive web app @done(26-02-15 15:23)
   ✔ Remove home page @done(26-02-15 15:23)
+  ☐ Datatable to track what I have eaten every day
+  ☐ Fields to display the macros
