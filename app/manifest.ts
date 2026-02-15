@@ -15,25 +15,25 @@ export default function manifest(): MetadataRoute.Manifest {
         orientation: 'portrait-primary',
         icons: [
             {
-                src: new URL('/icons/icon-192x192.png', baseUrl).toString(),
+                src: new URL('/icons/utensils-crossed.png', baseUrl).toString(),
                 sizes: '192x192',
                 type: 'image/png',
                 purpose: 'maskable',
             },
             {
-                src: new URL('/icons/icon-512x512.png', baseUrl).toString(),
+                src: new URL('/icons/utensils-crossed.png', baseUrl).toString(),
                 sizes: '512x512',
                 type: 'image/png',
                 purpose: 'maskable',
             },
             {
-                src: new URL('/icons/icon-192x192.png', baseUrl).toString(),
+                src: new URL('/icons/utensils-crossed.png', baseUrl).toString(),
                 sizes: '192x192',
                 type: 'image/png',
                 purpose: 'any',
             },
             {
-                src: new URL('/icons/icon-512x512.png', baseUrl).toString(),
+                src: new URL('/icons/utensils-crossed.png', baseUrl).toString(),
                 sizes: '512x512',
                 type: 'image/png',
                 purpose: 'any',
