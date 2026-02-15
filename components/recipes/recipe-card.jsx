@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { MarkdownContent } from '@/components/ui/markdown-content';
 import { cn } from '@/lib/utils';
 import { routes } from '@/lib/routes';
 
@@ -34,9 +35,9 @@ export function RecipeCard({ recipe, className, ...props }) {
                 </CardHeader>
                 {description && (
                     <CardContent className="pt-0">
-                        <p className="text-sm text-muted-foreground line-clamp-2 whitespace-pre-line">
+                        <MarkdownContent className="text-sm line-clamp-2">
                             {description}
-                        </p>
+                        </MarkdownContent>
                     </CardContent>
                 )}
             </Card>

@@ -102,6 +102,9 @@ export function EditRecipeForm ({ recipe, onSuccess, className }) {
                 >
                     Description <span className="text-muted-foreground font-normal">(optional)</span>
                 </label>
+                <p className="text-xs text-muted-foreground">
+                    Supports Markdown: **bold**, *italic*, lists, [links](url).
+                </p>
                 <textarea
                     id="edit-recipe-description"
                     rows={4}

@@ -8,6 +8,7 @@ import { EditRecipe } from '@/components/recipes/edit-recipe';
 import { DeleteRecipe } from '@/components/recipes/delete-recipe';
 import { VideoEmbed } from '@/components/video-embed';
 import { EditSocialUrl } from '@/components/recipes/edit-social-url';
+import { MarkdownContent } from '@/components/ui/markdown-content';
 
 export async function RecipeComponent({ params }) {
     const { recipeId } = await params;
@@ -73,9 +74,7 @@ export async function RecipeComponent({ params }) {
                                 <CardTitle className="text-base">Description</CardTitle>
                             </CardHeader>
                             <CardContent>
-                                <p className="text-muted-foreground leading-relaxed whitespace-pre-line">
-                                    {recipe.description}
-                                </p>
+                                <MarkdownContent>{recipe.description}</MarkdownContent>
                             </CardContent>
                         </Card>
                     )}

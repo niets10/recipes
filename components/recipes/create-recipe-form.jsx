@@ -101,6 +101,9 @@ export function CreateRecipeForm({ onSuccess, className }) {
                 >
                     Description <span className="text-muted-foreground font-normal">(optional)</span>
                 </label>
+                <p className="text-xs text-muted-foreground">
+                    Supports Markdown: **bold**, *italic*, lists, [links](url).
+                </p>
                 <textarea
                     id="recipe-description"
                     rows={4}
