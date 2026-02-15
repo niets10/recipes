@@ -73,7 +73,7 @@ export async function RecipeComponent({ params }) {
                                 <CardTitle className="text-base">Description</CardTitle>
                             </CardHeader>
                             <CardContent>
-                                <p className="text-muted-foreground leading-relaxed">
+                                <p className="text-muted-foreground leading-relaxed whitespace-pre-line">
                                     {recipe.description}
                                 </p>
                             </CardContent>
