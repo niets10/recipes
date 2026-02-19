@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, UtensilsCrossed } from 'lucide-react';
+import { Home, UtensilsCrossed, Dumbbell, Calendar, ListOrdered, Activity, Flame } from 'lucide-react';
 import { routes } from '@/lib/routes';
 import {
     Sidebar,
@@ -14,12 +14,21 @@ import {
     SidebarMenu,
     SidebarMenuButton,
     SidebarMenuItem,
+    SidebarMenuSub,
+    SidebarMenuSubButton,
+    SidebarMenuSubItem,
     useSidebar,
 } from '@/components/ui/sidebar';
 
 const navItems = [
     { title: 'Home', href: routes.home, icon: Home },
     { title: 'Recipes', href: routes.recipes, icon: UtensilsCrossed },
+];
+
+const fitnessSubItems = [
+    { title: 'Routines', href: routes.fitnessRoutines, icon: ListOrdered },
+    { title: 'Gym Exercises', href: routes.fitnessGymExercises, icon: Dumbbell },
+    { title: 'Activities', href: routes.fitnessActivities, icon: Activity },
 ];
 
 export function AppSidebar() {
@@ -69,6 +78,45 @@ export function AppSidebar() {
                                     </SidebarMenuButton>
                                 </SidebarMenuItem>
                             ))}
+                            <SidebarMenuItem>
+                                <SidebarMenuButton
+                                    asChild
+                                    isActive={pathname.startsWith(routes.fitness)}
+                                    tooltip="Fitness"
+                                >
+                                    <Link href={routes.fitness} onClick={closeMobileSidebar}>
+                                        <Dumbbell />
+                                        <span>Fitness</span>
+                                    </Link>
+                                </SidebarMenuButton>
+                                <SidebarMenuSub>
+                                    {fitnessSubItems.map((sub) => (
+                                        <SidebarMenuSubItem key={sub.title}>
+                                            <SidebarMenuSubButton
+                                                asChild
+                                                isActive={pathname === sub.href}
+                                            >
+                                                <Link href={sub.href} onClick={closeMobileSidebar}>
+                                                    <sub.icon />
+                                                    <span>{sub.title}</span>
+                                                </Link>
+                                            </SidebarMenuSubButton>
+                                        </SidebarMenuSubItem>
+                                    ))}
+                                </SidebarMenuSub>
+                            </SidebarMenuItem>
+                            <SidebarMenuItem>
+                                <SidebarMenuButton
+                                    asChild
+                                    isActive={pathname.startsWith(routes.statistics)}
+                                    tooltip="Statistics"
+                                >
+                                    <Link href={routes.statistics} onClick={closeMobileSidebar}>
+                                        <Calendar />
+                                        <span>Statistics</span>
+                                    </Link>
+                                </SidebarMenuButton>
+                            </SidebarMenuItem>
                         </SidebarMenu>
                     </SidebarGroupContent>
                 </SidebarGroup>
