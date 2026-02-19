@@ -128,9 +128,11 @@ export function DailyStatisticComponent({ date, initialData }) {
             <div className="border-b">
                 <nav className="flex gap-1 overflow-x-auto" aria-label="Daily log sections">
                     {TABS.map(({ id, label, icon: Icon }) => (
-                        <button
+                        <Button
                             key={id}
                             type="button"
+                            variant="ghost"
+                            size="lg"
                             onClick={() => setActiveTab(id)}
                             className={`flex items-center gap-2 rounded-t-md px-3 py-2 text-sm font-medium transition-colors -mb-px border-b-2 shrink-0 ${
                                 activeTab === id
@@ -140,7 +142,7 @@ export function DailyStatisticComponent({ date, initialData }) {
                         >
                             <Icon className="size-4 shrink-0" />
                             {label}
-                        </button>
+                        </Button>
                     ))}
                 </nav>
             </div>
@@ -240,6 +242,7 @@ export function DailyStatisticComponent({ date, initialData }) {
                         <>
                             <p className="text-sm text-muted-foreground">Add a routine to log exercises for this day. This will create the day&apos;s log so you can then add or remove exercises as needed.</p>
                             <div className="flex flex-wrap gap-2">
+                                // TODO: Change this to shadcn ui
                                 <select
                                     className="flex h-9 rounded-md border border-input bg-transparent px-3 py-1 text-sm"
                                     value={routineSelect}
@@ -260,6 +263,7 @@ export function DailyStatisticComponent({ date, initialData }) {
                         <>
                             <p className="text-sm text-muted-foreground">Add a routine to insert all its exercises, or add exercises one by one. Edit or remove any entry.</p>
                             <div className="flex flex-wrap gap-2">
+                                {/* TODO: Change this to shadcn ui */}
                                 <select
                                     className="flex h-9 rounded-md border border-input bg-transparent px-3 py-1 text-sm"
                                     value={routineSelect}
@@ -312,17 +316,17 @@ function GymExerciseRow({ entry, onUpdate, onRemove }) {
 
     return (
         <tr className="border-b">
-            <td className="py-1 pr-2">{entry.gym_exercises?.title ?? '-'}</td>
-            <td className="min-w-[4.5rem] sm:min-w-[6rem] w-20 sm:w-24 py-1 px-2">
+            <td className="py-1 pr-1">{entry.gym_exercises?.title ?? '-'}</td>
+            <td className="min-w-14 sm:min-w-24 w-16 sm:w-24 py-1 px-1">
                 <Input type="number" min={0} className="h-8 w-full min-w-0 text-sm" value={sets} onChange={(e) => setSets(e.target.value)} onBlur={handleBlur} />
             </td>
-            <td className="min-w-[4.5rem] sm:min-w-[6rem] w-20 sm:w-24 py-1 px-2">
+            <td className="min-w-14 sm:min-w-24 w-16 sm:w-24 py-1 px-1">
                 <Input type="number" min={0} className="h-8 w-full min-w-0 text-sm" value={reps} onChange={(e) => setReps(e.target.value)} onBlur={handleBlur} />
             </td>
-            <td className="min-w-[5rem] sm:min-w-[7rem] w-24 sm:w-28 py-1 px-2">
+            <td className="min-w-16 sm:min-w-28 w-20 sm:w-28 py-1 px-1">
                 <Input type="number" min={0} step={0.5} className="h-8 w-full min-w-0 text-sm" value={weight} onChange={(e) => setWeight(e.target.value)} onBlur={handleBlur} />
             </td>
-            <td className="py-1 px-2">
+            <td className="py-1 px-1">
                 <Input className="h-8 text-sm" value={comments} onChange={(e) => setComments(e.target.value)} onBlur={handleBlur} />
             </td>
             <td className="py-1">
@@ -361,11 +365,11 @@ function GymExercisesList({ entries, dailyStatisticId, onUpdate, onRemove, onAdd
                     <table className="w-full text-sm">
                         <thead>
                             <tr className="border-b text-left text-muted-foreground">
-                                <th className="py-1 pr-2">Exercise</th>
-                                <th className="min-w-[4.5rem] sm:min-w-[6rem] w-20 sm:w-24 py-1 px-2">Sets</th>
-                                <th className="min-w-[4.5rem] sm:min-w-[6rem] w-20 sm:w-24 py-1 px-2">Reps</th>
-                                <th className="min-w-[5rem] sm:min-w-[7rem] w-24 sm:w-28 py-1 px-2">Weight</th>
-                                <th className="py-1 px-2">Comments</th>
+                                <th className="py-1 pr-1">Exercise</th>
+                                <th className="min-w-14 sm:min-w-24 w-16 sm:w-24 py-1 px-1">Sets</th>
+                                <th className="min-w-14 sm:min-w-24 w-16 sm:w-24 py-1 px-1">Reps</th>
+                                <th className="min-w-16 sm:min-w-28 w-20 sm:w-28 py-1 px-1">Weight</th>
+                                <th className="py-1 px-1">Comments</th>
                                 <th className="py-1 w-8"></th>
                             </tr>
                         </thead>
