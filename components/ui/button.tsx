@@ -11,7 +11,7 @@ const buttonVariants = cva(
             variant: {
                 default:
                     'bg-primary text-primary-foreground shadow-md hover:bg-primary/90 hover:shadow-lg active:scale-[0.98]',
-                soft: '[background:var(--sidebar-primary-gradient)] text-sidebar-primary-foreground shadow-md hover:brightness-[0.97] active:scale-[0.98] focus-visible:ring-sidebar-ring',
+                soft: '[background:var(--sidebar-primary-gradient-intense)] text-sidebar-primary-foreground shadow-md hover:brightness-[0.97] active:scale-[0.98] focus-visible:ring-sidebar-ring',
                 destructive:
                     'bg-destructive text-white hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60 rounded-full',
                 outline:
