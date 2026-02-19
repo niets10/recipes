@@ -9,7 +9,7 @@ const defaultUrl = process.env.VERCEL_URL
     : 'http://localhost:3000';
 
 export const viewport: Viewport = {
-    themeColor: '#0a0a0a',
+    themeColor: '#1a1a1c',
     width: 'device-width',
     initialScale: 1,
     maximumScale: 1,
@@ -49,7 +49,7 @@ export default function RootLayout({
             <body className={`${geistSans.className} antialiased overflow-x-hidden`}>
                 <ThemeProvider
                     attribute="class"
-                    defaultTheme="system"
+                    defaultTheme="dark"
                     enableSystem
                     disableTransitionOnChange
                 >

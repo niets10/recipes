@@ -10,8 +10,8 @@ export default function manifest(): MetadataRoute.Manifest {
         description: 'A recipe app built with Next.js and Supabase',
         start_url: '/',
         display: 'standalone',
-        background_color: '#ffffff',
-        theme_color: '#0a0a0a',
+        background_color: '#1a1a1c',
+        theme_color: '#1a1a1c',
         orientation: 'portrait-primary',
         // Use 192×192 and 512×512 PNGs for sharp display. Export your logo at these exact sizes.
         icons: [

@@ -31,26 +31,26 @@ const links = [
 
 export default function FitnessPage() {
     return (
-        <div className="space-y-6">
-            <div>
-                <h1 className="text-2xl font-semibold tracking-tight">Fitness</h1>
-                <p className="text-muted-foreground">Manage routines, exercises, and activities.</p>
+        <div className="space-y-8">
+            <div className="space-y-1">
+                <h1 className="text-3xl font-bold tracking-tight">Fitness</h1>
+                <p className="text-muted-foreground text-base">Manage routines, exercises, and activities.</p>
             </div>
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
                 {links.map((item) => (
                     <Link href={item.href} key={item.title} aria-label={`Go to ${item.title}`}>
                         <Card
                             key={item.title}
-                            className="overflow-hidden transition-colors hover:border-primary/50"
+                            className="modern-card modern-card-hover overflow-hidden active:scale-[0.99]"
                         >
                             <CardHeader className="pb-2">
-                                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                                    <item.icon className="h-5 w-5" />
+                                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/15 text-primary">
+                                    <item.icon className="h-7 w-7" />
                                 </div>
-                                <CardTitle className="text-lg">{item.title}</CardTitle>
+                                <CardTitle className="text-xl">{item.title}</CardTitle>
                             </CardHeader>
                             <CardContent>
-                                <CardDescription>{item.description}</CardDescription>
+                                <CardDescription className="text-base">{item.description}</CardDescription>
                             </CardContent>
                         </Card>
                     </Link>

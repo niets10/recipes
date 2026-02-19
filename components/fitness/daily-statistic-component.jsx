@@ -23,6 +23,7 @@ import { getGymExercisesForSelectAction } from '@/actions/database/gym-exercise-
 import { routes } from '@/lib/routes';
 import { ChevronLeft, Calendar, UtensilsCrossed, Activity, Dumbbell, Trash2 } from 'lucide-react';
 import { toastRichSuccess, toastRichError } from '@/lib/toast-library';
+import { Separator } from '@/components/ui/separator';
 
 function toNum(v) {
     if (v === '' || v === undefined || v === null) return null;
@@ -74,7 +75,8 @@ export function DailyStatisticComponent({ date, initialData }) {
             if (result?.success) {
                 toastRichSuccess({ message: 'Saved' });
                 refresh();
-            } else if (result?.error?._form?.[0]) toastRichError({ message: result.error._form[0] });
+            } else if (result?.error?._form?.[0])
+                toastRichError({ message: result.error._form[0] });
         } finally {
             setNutritionSaving(false);
         }
@@ -114,11 +116,50 @@ export function DailyStatisticComponent({ date, initialData }) {
         } else if (res?.error) toastRichError({ message: res.error });
     }
 
+    async function handleGymExerciseUpdate(payload) {
+        const res = await updateDailyGymExerciseEntryAction(payload);
+        if (res?.success) {
+            toastRichSuccess({ message: 'Gym exercise updated' });
+            refresh();
+        } else if (res?.error) {
+            toastRichError({ message: res.error });
+        }
+    }
+
+    async function handleGymExerciseRemove(id) {
+        const res = await removeGymExerciseFromDayAction(id);
+        if (res?.success) {
+            toastRichSuccess({ message: 'Gym exercise removed' });
+            refresh();
+        } else if (res?.error) {
+            toastRichError({ message: res.error });
+        }
+    }
+
+    async function handleGymExerciseAdd(gymExerciseId, sets, reps, weight, comments) {
+        const res = await addGymExerciseToDayAction(
+            dailyStatisticId,
+            gymExerciseId,
+            sets,
+            reps,
+            weight,
+            comments
+        );
+        if (res?.success) {
+            toastRichSuccess({ message: 'Gym exercise added' });
+            refresh();
+        } else if (res?.error) {
+            toastRichError({ message: res.error });
+        }
+    }
+
     return (
         <div className="space-y-4">
             <div className="flex items-center gap-2">
                 <Button variant="ghost" size="icon" asChild>
-                    <Link href={routes.statistics}><ChevronLeft className="size-4" /></Link>
+                    <Link href={routes.statistics}>
+                        <ChevronLeft className="size-4" />
+                    </Link>
                 </Button>
                 <h1 className="text-2xl font-semibold tracking-tight flex items-center gap-2">
                     <Calendar className="size-6 text-primary" />
@@ -126,178 +167,254 @@ export function DailyStatisticComponent({ date, initialData }) {
                 </h1>
             </div>
 
-            <div className="border-b">
-                <nav className="flex gap-1 overflow-x-auto" aria-label="Daily log sections">
-                    {TABS.map(({ id, label, icon: Icon }) => (
-                        <Button
-                            key={id}
-                            type="button"
-                            variant="ghost"
-                            size="lg"
-                            onClick={() => setActiveTab(id)}
-                            className={`flex items-center gap-2 rounded-t-md px-3 py-2 text-sm font-medium transition-colors -mb-px border-b-2 shrink-0 ${
-                                activeTab === id
-                                    ? 'border-primary text-primary bg-muted/50'
-                                    : 'border-transparent text-muted-foreground hover:text-foreground hover:bg-muted/30'
-                            }`}
-                        >
-                            <Icon className="size-4 shrink-0" />
-                            {label}
-                        </Button>
-                    ))}
-                </nav>
-            </div>
+            <nav className="flex gap-2 overflow-x-auto pb-1" aria-label="Daily log sections">
+                {TABS.map(({ id, label, icon: Icon }) => (
+                    <Button
+                        key={id}
+                        type="button"
+                        variant={activeTab === id ? 'soft' : 'outline'}
+                        size="sm"
+                        onClick={() => setActiveTab(id)}
+                        className="shrink-0 flex items-center gap-2"
+                    >
+                        <Icon className="size-4 shrink-0" />
+                        {label}
+                    </Button>
+                ))}
+            </nav>
 
             {/* Nutrition */}
             {activeTab === 'nutrition' && (
-            <Card className="border-t-4 border-t-primary/40">
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-2 text-lg">
-                        <UtensilsCrossed className="size-5 text-primary" />
-                        Nutrition
-                    </CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <form onSubmit={handleNutritionSubmit} className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-                        <div className="space-y-2">
-                            <label htmlFor="calories_ingested" className="text-sm font-medium">Calories</label>
-                            <Input id="calories_ingested" name="calories_ingested" type="number" min={0} defaultValue={data?.calories_ingested ?? ''} />
-                        </div>
-                        <div className="space-y-2">
-                            <label htmlFor="proteins" className="text-sm font-medium">Proteins (g)</label>
-                            <Input id="proteins" name="proteins" type="number" min={0} defaultValue={data?.proteins ?? ''} />
-                        </div>
-                        <div className="space-y-2">
-                            <label htmlFor="carbs" className="text-sm font-medium">Carbs (g)</label>
-                            <Input id="carbs" name="carbs" type="number" min={0} defaultValue={data?.carbs ?? ''} />
-                        </div>
-                        <div className="space-y-2">
-                            <label htmlFor="fat" className="text-sm font-medium">Fat (g)</label>
-                            <Input id="fat" name="fat" type="number" min={0} defaultValue={data?.fat ?? ''} />
-                        </div>
-                        <div className="space-y-2">
-                            <label htmlFor="steps" className="text-sm font-medium">Steps</label>
-                            <Input id="steps" name="steps" type="number" min={0} defaultValue={data?.steps ?? ''} />
-                        </div>
-                        <div className="sm:col-span-2 lg:col-span-5">
-                            <Button type="submit" disabled={nutritionSaving}>{nutritionSaving ? 'Saving…' : 'Save nutrition'}</Button>
-                        </div>
-                    </form>
-                </CardContent>
-            </Card>
+                <Card className="border-t-4 border-t-primary/40">
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2 text-lg">
+                            <UtensilsCrossed className="size-5 text-primary" />
+                            Nutrition
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <form
+                            onSubmit={handleNutritionSubmit}
+                            className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5"
+                        >
+                            <div className="space-y-2">
+                                <label htmlFor="calories_ingested" className="text-sm font-medium">
+                                    Calories
+                                </label>
+                                <Input
+                                    id="calories_ingested"
+                                    name="calories_ingested"
+                                    type="number"
+                                    min={0}
+                                    defaultValue={data?.calories_ingested ?? ''}
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <label htmlFor="proteins" className="text-sm font-medium">
+                                    Proteins (g)
+                                </label>
+                                <Input
+                                    id="proteins"
+                                    name="proteins"
+                                    type="number"
+                                    min={0}
+                                    defaultValue={data?.proteins ?? ''}
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <label htmlFor="carbs" className="text-sm font-medium">
+                                    Carbs (g)
+                                </label>
+                                <Input
+                                    id="carbs"
+                                    name="carbs"
+                                    type="number"
+                                    min={0}
+                                    defaultValue={data?.carbs ?? ''}
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <label htmlFor="fat" className="text-sm font-medium">
+                                    Fat (g)
+                                </label>
+                                <Input
+                                    id="fat"
+                                    name="fat"
+                                    type="number"
+                                    min={0}
+                                    defaultValue={data?.fat ?? ''}
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <label htmlFor="steps" className="text-sm font-medium">
+                                    Steps
+                                </label>
+                                <Input
+                                    id="steps"
+                                    name="steps"
+                                    type="number"
+                                    min={0}
+                                    defaultValue={data?.steps ?? ''}
+                                />
+                            </div>
+                            <div className="sm:col-span-2 lg:col-span-5">
+                                <Button type="submit" disabled={nutritionSaving}>
+                                    {nutritionSaving ? 'Saving…' : 'Save nutrition'}
+                                </Button>
+                            </div>
+                        </form>
+                    </CardContent>
+                </Card>
             )}
 
             {/* Activities */}
             {activeTab === 'activities' && (
-            <Card>
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-2 text-lg">
-                        <Activity className="size-5 text-primary" />
-                        Activities
-                    </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                    <div className="flex items-center gap-2 flex-nowrap">
-                        <Combobox
-                            items={activities}
-                            value={activitySelect}
-                            onValueChange={setActivitySelect}
-                            getItemValue={(a) => a.id}
-                            getItemLabel={(a) => a.title}
-                            placeholder="Select activity…"
-                            emptyMessage="No activities found."
-                            onFocus={() => activities.length === 0 && getActivitiesForSelectAction().then(setActivities)}
-                            className="min-w-0 flex-1 max-w-sm"
-                        />
-                        <Button type="button" size="sm" onClick={handleAddActivity} disabled={!activitySelect}>
-                            Log activity
-                        </Button>
-                    </div>
-                    {data?.daily_activity_entries?.length > 0 && (
-                        <ul className="space-y-1 text-sm">
-                            {data.daily_activity_entries.map((ae) => (
-                                <li key={ae.id} className="flex items-center justify-between rounded border px-3 py-2">
-                                    <span>{ae.activities?.title ?? 'Activity'}</span>
-                                    <Button type="button" variant="ghost" size="icon" className="h-8 w-8 text-destructive" onClick={async () => { await removeActivityFromDayAction(ae.id); refresh(); }}>
-                                        <Trash2 className="size-4" />
-                                    </Button>
-                                </li>
-                            ))}
-                        </ul>
-                    )}
-                </CardContent>
-            </Card>
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2 text-lg">
+                            <Activity className="size-5 text-primary" />
+                            Activities
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        <div className="flex items-center gap-2 flex-nowrap">
+                            <Combobox
+                                items={activities}
+                                value={activitySelect}
+                                onValueChange={setActivitySelect}
+                                getItemValue={(a) => a.id}
+                                getItemLabel={(a) => a.title}
+                                placeholder="Select activity…"
+                                emptyMessage="No activities found."
+                                onFocus={() =>
+                                    activities.length === 0 &&
+                                    getActivitiesForSelectAction().then(setActivities)
+                                }
+                                className="min-w-0 flex-1 max-w-sm"
+                            />
+                            <Button
+                                type="button"
+                                size="sm"
+                                onClick={handleAddActivity}
+                                disabled={!activitySelect}
+                            >
+                                Log activity
+                            </Button>
+                        </div>
+                        {data?.daily_activity_entries?.length > 0 && (
+                            <ul className="space-y-1 text-sm">
+                                {data.daily_activity_entries.map((ae) => (
+                                    <li
+                                        key={ae.id}
+                                        className="flex items-center justify-between rounded-xl border border-border/60 bg-card/50 px-4 py-3"
+                                    >
+                                        <span>{ae.activities?.title ?? 'Activity'}</span>
+                                        <Button
+                                            type="button"
+                                            variant="ghost"
+                                            size="icon"
+                                            className="h-8 w-8 text-destructive"
+                                            onClick={async () => {
+                                                await removeActivityFromDayAction(ae.id);
+                                                refresh();
+                                            }}
+                                        >
+                                            <Trash2 className="size-4" />
+                                        </Button>
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
+                    </CardContent>
+                </Card>
             )}
 
             {/* Gym exercises */}
             {activeTab === 'gym' && (
-            <Card>
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-2 text-lg">
-                        <Dumbbell className="size-5 text-primary" />
-                        Gym exercises
-                    </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                    {!hasData ? (
-                        <>
-                            <p className="text-sm text-muted-foreground">Add a routine to log exercises for this day. This will create the day&apos;s log so you can then add or remove exercises as needed.</p>
-                            <div className="flex items-center gap-2 flex-nowrap">
-                                <Combobox
-                                    items={routines}
-                                    value={routineSelect}
-                                    onValueChange={setRoutineSelect}
-                                    getItemValue={(r) => r.id}
-                                    getItemLabel={(r) => r.name}
-                                    placeholder="Select routine…"
-                                    emptyMessage="No routines found."
-                                    onFocus={() => routines.length === 0 && getRoutinesForSelectAction().then(setRoutines)}
-                                    className="min-w-0 flex-1 max-w-sm"
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2 text-lg">
+                            <Dumbbell className="size-5 text-primary" />
+                            Gym exercises
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        {!hasData ? (
+                            <>
+                                <p className="text-sm text-muted-foreground">
+                                    Add a routine to log exercises for this day. This will create
+                                    the day&apos;s log so you can then add or remove exercises as
+                                    needed.
+                                </p>
+                                <div className="flex items-center gap-2 flex-nowrap">
+                                    <Combobox
+                                        items={routines}
+                                        value={routineSelect}
+                                        onValueChange={setRoutineSelect}
+                                        getItemValue={(r) => r.id}
+                                        getItemLabel={(r) => r.name}
+                                        placeholder="Select routine…"
+                                        emptyMessage="No routines found."
+                                        onFocus={() =>
+                                            routines.length === 0 &&
+                                            getRoutinesForSelectAction().then(setRoutines)
+                                        }
+                                        className="min-w-0 flex-1 max-w-sm"
+                                    />
+                                    <Button
+                                        type="button"
+                                        size="sm"
+                                        onClick={handleAddRoutine}
+                                        disabled={!routineSelect}
+                                        className="shrink-0"
+                                    >
+                                        Add routine
+                                    </Button>
+                                </div>
+                            </>
+                        ) : (
+                            <>
+                                <p className="text-sm text-muted-foreground">
+                                    Add a routine to insert all its exercises, or add exercises one
+                                    by one. Edit or remove any entry.
+                                </p>
+                                <div className="flex items-center gap-2 flex-nowrap">
+                                    <Combobox
+                                        items={routines}
+                                        value={routineSelect}
+                                        onValueChange={setRoutineSelect}
+                                        getItemValue={(r) => r.id}
+                                        getItemLabel={(r) => r.name}
+                                        placeholder="Select routine…"
+                                        emptyMessage="No routines found."
+                                        onFocus={() =>
+                                            routines.length === 0 &&
+                                            getRoutinesForSelectAction().then(setRoutines)
+                                        }
+                                        className="min-w-0 flex-1 max-w-sm"
+                                    />
+                                    <Button
+                                        type="button"
+                                        size="sm"
+                                        onClick={handleAddRoutine}
+                                        disabled={!routineSelect}
+                                        className="shrink-0"
+                                    >
+                                        Add routine
+                                    </Button>
+                                </div>
+                                <Separator className="my-8" />
+                                <GymExercisesList
+                                    entries={data?.daily_gym_exercise_entries ?? []}
+                                    dailyStatisticId={dailyStatisticId}
+                                    onUpdate={handleGymExerciseUpdate}
+                                    onRemove={handleGymExerciseRemove}
+                                    onAdd={handleGymExerciseAdd}
                                 />
-                                <Button type="button" size="sm" onClick={handleAddRoutine} disabled={!routineSelect} className="shrink-0">
-                                    Add routine
-                                </Button>
-                            </div>
-                        </>
-                    ) : (
-                        <>
-                            <p className="text-sm text-muted-foreground">Add a routine to insert all its exercises, or add exercises one by one. Edit or remove any entry.</p>
-                            <div className="flex items-center gap-2 flex-nowrap">
-                                <Combobox
-                                    items={routines}
-                                    value={routineSelect}
-                                    onValueChange={setRoutineSelect}
-                                    getItemValue={(r) => r.id}
-                                    getItemLabel={(r) => r.name}
-                                    placeholder="Select routine…"
-                                    emptyMessage="No routines found."
-                                    onFocus={() => routines.length === 0 && getRoutinesForSelectAction().then(setRoutines)}
-                                    className="min-w-0 flex-1 max-w-sm"
-                                />
-                                <Button type="button" size="sm" onClick={handleAddRoutine} disabled={!routineSelect} className="shrink-0">
-                                    Add routine
-                                </Button>
-                            </div>
-                            <GymExercisesList
-                                entries={data?.daily_gym_exercise_entries ?? []}
-                                dailyStatisticId={dailyStatisticId}
-                                onUpdate={async (payload) => {
-                                    await updateDailyGymExerciseEntryAction(payload);
-                                    refresh();
-                                }}
-                                onRemove={async (id) => {
-                                    await removeGymExerciseFromDayAction(id);
-                                    refresh();
-                                }}
-                                onAdd={async (gymExerciseId, sets, reps, weight, comments) => {
-                                    await addGymExerciseToDayAction(dailyStatisticId, gymExerciseId, sets, reps, weight, comments);
-                                    refresh();
-                                }}
-                            />
-                        </>
-                    )}
-                </CardContent>
-            </Card>
+                            </>
+                        )}
+                    </CardContent>
+                </Card>
             )}
         </div>
     );
@@ -317,19 +434,52 @@ function GymExerciseRow({ entry, onUpdate, onRemove }) {
         <tr className="border-b">
             <td className="py-1 pr-1">{entry.gym_exercises?.title ?? '-'}</td>
             <td className="min-w-14 sm:min-w-24 w-16 sm:w-24 py-1 px-1">
-                <Input type="number" min={0} className="h-8 w-full min-w-0 text-sm" value={sets} onChange={(e) => setSets(e.target.value)} onBlur={handleBlur} />
+                <Input
+                    type="number"
+                    min={0}
+                    className="h-8 w-full min-w-0 text-sm"
+                    value={sets}
+                    onChange={(e) => setSets(e.target.value)}
+                    onBlur={handleBlur}
+                />
             </td>
             <td className="min-w-14 sm:min-w-24 w-16 sm:w-24 py-1 px-1">
-                <Input type="number" min={0} className="h-8 w-full min-w-0 text-sm" value={reps} onChange={(e) => setReps(e.target.value)} onBlur={handleBlur} />
+                <Input
+                    type="number"
+                    min={0}
+                    className="h-8 w-full min-w-0 text-sm"
+                    value={reps}
+                    onChange={(e) => setReps(e.target.value)}
+                    onBlur={handleBlur}
+                />
             </td>
             <td className="min-w-16 sm:min-w-28 w-20 sm:w-28 py-1 px-1">
-                <Input type="number" min={0} step={0.5} className="h-8 w-full min-w-0 text-sm" value={weight} onChange={(e) => setWeight(e.target.value)} onBlur={handleBlur} />
+                <Input
+                    type="number"
+                    min={0}
+                    step={0.5}
+                    className="h-8 w-full min-w-0 text-sm"
+                    value={weight}
+                    onChange={(e) => setWeight(e.target.value)}
+                    onBlur={handleBlur}
+                />
             </td>
             <td className="py-1 px-1">
-                <Input className="h-8 text-sm" value={comments} onChange={(e) => setComments(e.target.value)} onBlur={handleBlur} />
+                <Input
+                    className="h-8 text-sm"
+                    value={comments}
+                    onChange={(e) => setComments(e.target.value)}
+                    onBlur={handleBlur}
+                />
             </td>
             <td className="py-1">
-                <Button type="button" variant="ghost" size="icon" className="h-8 w-8 text-destructive" onClick={() => onRemove(entry.id)}>
+                <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 text-destructive"
+                    onClick={() => onRemove(entry.id)}
+                >
                     <Trash2 className="size-4" />
                 </Button>
             </td>
@@ -365,9 +515,15 @@ function GymExercisesList({ entries, dailyStatisticId, onUpdate, onRemove, onAdd
                         <thead>
                             <tr className="border-b text-left text-muted-foreground">
                                 <th className="py-1 pr-1">Exercise</th>
-                                <th className="min-w-14 sm:min-w-24 w-16 sm:w-24 py-1 px-1">Sets</th>
-                                <th className="min-w-14 sm:min-w-24 w-16 sm:w-24 py-1 px-1">Reps</th>
-                                <th className="min-w-16 sm:min-w-28 w-20 sm:w-28 py-1 px-1">Weight</th>
+                                <th className="min-w-14 sm:min-w-24 w-16 sm:w-24 py-1 px-1">
+                                    Sets
+                                </th>
+                                <th className="min-w-14 sm:min-w-24 w-16 sm:w-24 py-1 px-1">
+                                    Reps
+                                </th>
+                                <th className="min-w-16 sm:min-w-28 w-20 sm:w-28 py-1 px-1">
+                                    Weight
+                                </th>
                                 <th className="py-1 px-1">Comments</th>
                                 <th className="py-1 w-8"></th>
                             </tr>
@@ -395,20 +551,66 @@ function GymExercisesList({ entries, dailyStatisticId, onUpdate, onRemove, onAdd
                         getItemLabel={(ex) => ex.title}
                         placeholder="Exercise…"
                         emptyMessage="No exercises found."
-                        onFocus={() => exercises.length === 0 && getGymExercisesForSelectAction().then(setExercises)}
+                        onFocus={() =>
+                            exercises.length === 0 &&
+                            getGymExercisesForSelectAction().then(setExercises)
+                        }
                         className="w-full min-w-0 lg:col-span-1"
                     />
-                    <Input type="number" min={0} placeholder="Sets" value={sets} onChange={(e) => setSets(e.target.value)} className="h-9 w-full md:max-w-20" />
-                    <Input type="number" min={0} placeholder="Reps" value={reps} onChange={(e) => setReps(e.target.value)} className="h-9 w-full md:max-w-20" />
-                    <Input type="number" min={0} step={0.5} placeholder="Weight" value={weight} onChange={(e) => setWeight(e.target.value)} className="h-9 w-full md:max-w-20" />
-                    <Input placeholder="Comments" value={comments} onChange={(e) => setComments(e.target.value)} className="h-9 w-full min-w-0 sm:col-span-2 lg:col-span-1" />
+                    <Input
+                        type="number"
+                        min={0}
+                        placeholder="Sets"
+                        value={sets}
+                        onChange={(e) => setSets(e.target.value)}
+                        className="h-9 w-full md:max-w-20"
+                    />
+                    <Input
+                        type="number"
+                        min={0}
+                        placeholder="Reps"
+                        value={reps}
+                        onChange={(e) => setReps(e.target.value)}
+                        className="h-9 w-full md:max-w-20"
+                    />
+                    <Input
+                        type="number"
+                        min={0}
+                        step={0.5}
+                        placeholder="Weight"
+                        value={weight}
+                        onChange={(e) => setWeight(e.target.value)}
+                        className="h-9 w-full md:max-w-20"
+                    />
+                    <Input
+                        placeholder="Comments"
+                        value={comments}
+                        onChange={(e) => setComments(e.target.value)}
+                        className="h-9 w-full min-w-0 sm:col-span-2 lg:col-span-1"
+                    />
                     <div className="flex gap-2 sm:col-span-2 lg:col-span-1">
-                        <Button size="sm" onClick={handleAdd} disabled={!gymExerciseId} className="shrink-0">Add</Button>
-                        <Button size="sm" variant="outline" onClick={() => setShowForm(false)} className="shrink-0">Cancel</Button>
+                        <Button
+                            size="sm"
+                            onClick={handleAdd}
+                            disabled={!gymExerciseId}
+                            className="shrink-0"
+                        >
+                            Add
+                        </Button>
+                        <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => setShowForm(false)}
+                            className="shrink-0"
+                        >
+                            Cancel
+                        </Button>
                     </div>
                 </div>
             ) : (
-                <Button type="button" variant="outline" size="sm" onClick={() => setShowForm(true)}>Add gym exercise</Button>
+                <Button type="button" variant="outline" size="sm" onClick={() => setShowForm(true)}>
+                    Add gym exercise
+                </Button>
             )}
         </div>
     );

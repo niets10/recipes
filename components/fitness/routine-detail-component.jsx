@@ -40,7 +40,7 @@ function AvailableExerciseRow({ exercise, routineId, onAdd }) {
     const exerciseHref = exercise.id ? `${routes.fitnessGymExercises}/${exercise.id}` : null;
 
     return (
-        <li className="flex items-center justify-between gap-2 rounded-md border border-border px-3 py-2 text-sm">
+        <li className="flex items-center justify-between gap-2 rounded-xl border border-border/60 bg-card/50 px-4 py-3 text-sm">
             <span>
                 {exerciseHref ? (
                     <Link href={exerciseHref} className="font-medium text-primary hover:underline" target="_blank">
@@ -102,7 +102,7 @@ function RoutineExerciseRow({ re, routineId, index, total, onMoveUp, onMoveDown,
     const exerciseHref = re.gym_exercise_id ? `${routes.fitnessGymExercises}/${re.gym_exercise_id}` : null;
 
     return (
-        <tr className="border-b border-border">
+        <tr className="border-b border-border/50">
             <td className="py-1 pr-1 w-16">
                 <div className="flex flex-col gap-0">
                     <Button type="button" variant="ghost" size="icon" className="h-7 w-7" onClick={() => onMoveUp(index)} disabled={index === 0}>

@@ -44,7 +44,7 @@ export function AppSidebar() {
                     <SidebarMenuItem>
                         <SidebarMenuButton size="lg" asChild>
                             <Link href={routes.home} onClick={closeMobileSidebar}>
-                                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+                                <div className="flex aspect-square size-10 items-center justify-center rounded-xl bg-primary text-primary-foreground">
                                     <UtensilsCrossed className="size-4" />
                                 </div>
                                 <div className="flex flex-col gap-0.5 leading-none">
