@@ -56,10 +56,18 @@ export function GymExerciseDetailComponent({ exercise }) {
                         <CardTitle className="text-lg">Edit</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <EditGymExerciseForm exercise={exercise} onSuccess={handleSuccess} />
-                        <div className="mt-4 pt-4 border-t">
-                            <DeleteGymExercise exerciseId={exercise.id} exerciseTitle={exercise.title} />
-                        </div>
+                        <EditGymExerciseForm
+                            exercise={exercise}
+                            onSuccess={handleSuccess}
+                            renderActions={({ isSubmitting }) => (
+                                <div className="flex justify-end gap-2">
+                                    <DeleteGymExercise exerciseId={exercise.id} exerciseTitle={exercise.title} />
+                                    <Button type="submit" size="default" disabled={isSubmitting}>
+                                        {isSubmitting ? 'Saving…' : 'Save'}
+                                    </Button>
+                                </div>
+                            )}
+                        />
                     </CardContent>
                 </Card>
             </div>

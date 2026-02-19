@@ -10,7 +10,7 @@ import { UpdateGymExerciseSchema } from '@/schemas';
 import { cn } from '@/lib/utils';
 import { toastRichError } from '@/lib/toast-library';
 
-export function EditGymExerciseForm({ exercise, onSuccess, className }) {
+export function EditGymExerciseForm({ exercise, onSuccess, className, renderActions }) {
     const {
         register,
         handleSubmit,
@@ -86,8 +86,16 @@ export function EditGymExerciseForm({ exercise, onSuccess, className }) {
                 <label htmlFor="ge-edit-comments" className="text-sm font-medium">Comments</label>
                 <Input id="ge-edit-comments" {...register('comments')} />
             </div>
-            <div className="flex justify-end gap-2 pt-2">
-                <Button type="submit" disabled={isSubmitting}>{isSubmitting ? 'Saving…' : 'Save'}</Button>
+            <div className="pt-2">
+                {renderActions ? (
+                    renderActions({ isSubmitting })
+                ) : (
+                    <div className="flex justify-end gap-2">
+                        <Button type="submit" disabled={isSubmitting}>
+                            {isSubmitting ? 'Saving…' : 'Save'}
+                        </Button>
+                    </div>
+                )}
             </div>
         </form>
     );
