@@ -56,16 +56,6 @@ export const DailyStatisticSchema = z.object({
     steps: z.coerce.number().int().min(0).optional(),
 });
 
-export const DailyRoutineEntryExerciseSchema = z.object({
-    daily_routine_entry_id: z.string().uuid(),
-    gym_exercise_id: z.string().uuid(),
-    sets: z.coerce.number().int().min(0).optional(),
-    reps: z.coerce.number().int().min(0).optional(),
-    weight: z.coerce.number().min(0).optional(),
-    comments: optionalString,
-    order_index: z.coerce.number().int().min(0).optional(),
-});
-
 export const DailyActivityEntrySchema = z.object({
     daily_statistic_id: z.string().uuid(),
     activity_id: z.string().uuid(),
@@ -80,4 +70,5 @@ export const DailyGymExerciseEntrySchema = z.object({
     reps: z.coerce.number().int().min(0).optional(),
     weight: z.coerce.number().min(0).optional(),
     comments: optionalString,
+    order_index: z.coerce.number().int().min(0).optional(),
 });

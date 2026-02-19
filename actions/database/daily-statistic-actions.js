@@ -22,15 +22,6 @@ export async function getDailyStatisticByDateAction(dateStr) {
     if (statError && statError.code !== 'PGRST116') throw new Error(statError.message);
     if (!stat) return null;
 
-    const { data: routineEntries } = await supabase
-        .from('daily_routine_entries')
-        .select('*, routines(name), daily_routine_entry_exercises(*, gym_exercises(id, title, body_part))')
-        .eq('daily_statistic_id', stat.id);
-    const entriesWithExercises = (routineEntries || []).map((e) => ({
-        ...e,
-        daily_routine_entry_exercises: (e.daily_routine_entry_exercises || []).sort((a, b) => a.order_index - b.order_index),
-    }));
-
     const { data: activityEntries } = await supabase
         .from('daily_activity_entries')
         .select('*, activities(id, title, time_minutes, calories)')
@@ -39,11 +30,11 @@ export async function getDailyStatisticByDateAction(dateStr) {
     const { data: gymEntries } = await supabase
         .from('daily_gym_exercise_entries')
         .select('*, gym_exercises(id, title, body_part)')
-        .eq('daily_statistic_id', stat.id);
+        .eq('daily_statistic_id', stat.id)
+        .order('order_index');
 
     return {
         ...stat,
-        daily_routine_entries: entriesWithExercises,
         daily_activity_entries: activityEntries || [],
         daily_gym_exercise_entries: gymEntries || [],
     };
@@ -114,47 +105,46 @@ export async function addRoutineToDayAction(dailyStatisticId, routineId, dateStr
         .eq('routine_id', routineId)
         .order('order_index');
 
-    const { data: entry, error: entryError } = await supabase
-        .from('daily_routine_entries')
-        .insert({ daily_statistic_id: dailyStatisticId, routine_id: routineId })
-        .select('id')
-        .single();
-    if (entryError) return { error: entryError.message };
-
-    if (routineExercises?.length) {
-        const rows = routineExercises.map((re, i) => ({
-            daily_routine_entry_id: entry.id,
-            gym_exercise_id: re.gym_exercise_id,
-            sets: re.sets_override ?? null,
-            reps: re.reps_override ?? null,
-            weight: re.weight_override ?? null,
-            comments: re.comments_override ?? null,
-            order_index: re.order_index ?? i,
-        }));
-        await supabase.from('daily_routine_entry_exercises').insert(rows);
+    if (!routineExercises?.length) {
+        revalidatePath(routes.statistics);
+        revalidatePath(routes.statisticsDay);
+        if (dateStr) revalidatePath(routes.statisticsDayForDate(dateStr));
+        return { success: true };
     }
-    revalidatePath(routes.statistics);
-    revalidatePath(routes.statisticsDay);
-    if (dateStr) revalidatePath(routes.statisticsDayForDate(dateStr));
-    return { success: true, entryId: entry.id };
-}
 
-export async function removeRoutineFromDayAction(dailyRoutineEntryId, dateStr) {
-    const supabase = await createClient();
-    const { error } = await supabase.from('daily_routine_entries').delete().eq('id', dailyRoutineEntryId);
-    if (error) throw new Error(error.message);
+    const { data: maxRow } = await supabase
+        .from('daily_gym_exercise_entries')
+        .select('order_index')
+        .eq('daily_statistic_id', dailyStatisticId)
+        .order('order_index', { ascending: false })
+        .limit(1)
+        .single();
+    const baseOrder = (maxRow?.order_index ?? -1) + 1;
+
+    const rows = routineExercises.map((re, i) => ({
+        daily_statistic_id: dailyStatisticId,
+        gym_exercise_id: re.gym_exercise_id,
+        sets: re.sets_override ?? null,
+        reps: re.reps_override ?? null,
+        weight: re.weight_override ?? null,
+        comments: re.comments_override ?? null,
+        order_index: baseOrder + i,
+    }));
+    const { error } = await supabase.from('daily_gym_exercise_entries').insert(rows);
+    if (error) return { error: error.message };
+
     revalidatePath(routes.statistics);
     revalidatePath(routes.statisticsDay);
     if (dateStr) revalidatePath(routes.statisticsDayForDate(dateStr));
     return { success: true };
 }
 
-export async function updateDailyRoutineEntryExerciseAction(payload) {
+export async function updateDailyGymExerciseEntryAction(payload) {
     const { id, sets, reps, weight, comments } = payload;
     if (!id) return { error: 'id required' };
     const supabase = await createClient();
     const { error } = await supabase
-        .from('daily_routine_entry_exercises')
+        .from('daily_gym_exercise_entries')
         .update({
             sets: toNum(sets),
             reps: toNum(reps),
@@ -163,40 +153,6 @@ export async function updateDailyRoutineEntryExerciseAction(payload) {
         })
         .eq('id', id);
     if (error) return { error: error.message };
-    revalidatePath(routes.statistics);
-    revalidatePath(routes.statisticsDay);
-    return { success: true };
-}
-
-export async function addExerciseToDailyRoutineEntryAction(dailyRoutineEntryId, gymExerciseId, defaults = {}) {
-    const supabase = await createClient();
-    const { data: existing } = await supabase
-        .from('daily_routine_entry_exercises')
-        .select('order_index')
-        .eq('daily_routine_entry_id', dailyRoutineEntryId)
-        .order('order_index', { ascending: false })
-        .limit(1)
-        .single();
-    const order_index = (existing?.order_index ?? -1) + 1;
-    const { error } = await supabase.from('daily_routine_entry_exercises').insert({
-        daily_routine_entry_id: dailyRoutineEntryId,
-        gym_exercise_id: gymExerciseId,
-        sets: toNum(defaults.sets),
-        reps: toNum(defaults.reps),
-        weight: toNum(defaults.weight),
-        comments: defaults.comments || null,
-        order_index,
-    });
-    if (error) return { error: error.message };
-    revalidatePath(routes.statistics);
-    revalidatePath(routes.statisticsDay);
-    return { success: true };
-}
-
-export async function removeExerciseFromDailyRoutineEntryAction(dailyRoutineEntryExerciseId) {
-    const supabase = await createClient();
-    const { error } = await supabase.from('daily_routine_entry_exercises').delete().eq('id', dailyRoutineEntryExerciseId);
-    if (error) throw new Error(error.message);
     revalidatePath(routes.statistics);
     revalidatePath(routes.statisticsDay);
     return { success: true };
@@ -227,6 +183,14 @@ export async function removeActivityFromDayAction(dailyActivityEntryId) {
 
 export async function addGymExerciseToDayAction(dailyStatisticId, gymExerciseId, sets, reps, weight, comments) {
     const supabase = await createClient();
+    const { data: maxRow } = await supabase
+        .from('daily_gym_exercise_entries')
+        .select('order_index')
+        .eq('daily_statistic_id', dailyStatisticId)
+        .order('order_index', { ascending: false })
+        .limit(1)
+        .single();
+    const order_index = (maxRow?.order_index ?? -1) + 1;
     const { error } = await supabase.from('daily_gym_exercise_entries').insert({
         daily_statistic_id: dailyStatisticId,
         gym_exercise_id: gymExerciseId,
@@ -234,6 +198,7 @@ export async function addGymExerciseToDayAction(dailyStatisticId, gymExerciseId,
         reps: toNum(reps),
         weight: toNum(weight),
         comments: comments || null,
+        order_index,
     });
     if (error) return { error: error.message };
     revalidatePath(routes.statistics);

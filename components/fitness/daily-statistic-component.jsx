@@ -10,20 +10,17 @@ import {
     getOrCreateDailyStatisticIdAction,
     upsertDailyStatisticAction,
     addRoutineToDayAction,
-    removeRoutineFromDayAction,
-    updateDailyRoutineEntryExerciseAction,
-    addExerciseToDailyRoutineEntryAction,
-    removeExerciseFromDailyRoutineEntryAction,
     addActivityToDayAction,
     removeActivityFromDayAction,
     addGymExerciseToDayAction,
     removeGymExerciseFromDayAction,
+    updateDailyGymExerciseEntryAction,
 } from '@/actions/database/daily-statistic-actions';
 import { getRoutinesForSelectAction } from '@/actions/database/routine-actions';
 import { getActivitiesForSelectAction } from '@/actions/database/activity-actions';
 import { getGymExercisesForSelectAction } from '@/actions/database/gym-exercise-actions';
 import { routes } from '@/lib/routes';
-import { ChevronLeft, Calendar, UtensilsCrossed, ListOrdered, Activity, Dumbbell, Trash2 } from 'lucide-react';
+import { ChevronLeft, Calendar, UtensilsCrossed, Activity, Dumbbell, Trash2 } from 'lucide-react';
 import { toastRichSuccess, toastRichError } from '@/lib/toast-library';
 
 function toNum(v) {
@@ -91,8 +88,17 @@ export function DailyStatisticComponent({ date, initialData }) {
     }
 
     async function handleAddActivity() {
-        if (!activitySelect || !dailyStatisticId) return;
-        const res = await addActivityToDayAction(dailyStatisticId, activitySelect);
+        if (!activitySelect) return;
+        let statisticId = dailyStatisticId;
+        if (!statisticId) {
+            const createRes = await getOrCreateDailyStatisticIdAction(date);
+            if (createRes?.error) {
+                toastRichError({ message: createRes.error });
+                return;
+            }
+            statisticId = createRes.id;
+        }
+        const res = await addActivityToDayAction(statisticId, activitySelect);
         if (res?.success) {
             toastRichSuccess({ message: 'Activity logged' });
             setActivitySelect('');
@@ -149,65 +155,6 @@ export function DailyStatisticComponent({ date, initialData }) {
                 </CardContent>
             </Card>
 
-            {/* Routines */}
-            <Card>
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-2 text-lg">
-                        <ListOrdered className="size-5 text-primary" />
-                        Routines
-                    </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                    {!hasData && (
-                        <p className="text-sm text-muted-foreground">Add a routine or save nutrition to create this day&apos;s log.</p>
-                    )}
-                    <div className="flex flex-wrap gap-2">
-                        <select
-                            className="flex h-9 rounded-md border border-input bg-transparent px-3 py-1 text-sm"
-                            value={routineSelect}
-                            onChange={(e) => setRoutineSelect(e.target.value)}
-                            onFocus={() => routines.length === 0 && getRoutinesForSelectAction().then(setRoutines)}
-                        >
-                            <option value="">Select routine…</option>
-                            {routines.map((r) => (
-                                <option key={r.id} value={r.id}>{r.name}</option>
-                            ))}
-                        </select>
-                        <Button type="button" size="sm" onClick={handleAddRoutine} disabled={!routineSelect}>
-                            Add routine
-                        </Button>
-                    </div>
-                    {data?.daily_routine_entries?.length > 0 && (
-                        <div className="space-y-3">
-                            {data.daily_routine_entries.map((entry) => (
-                                <RoutineEntryBlock
-                                    key={entry.id}
-                                    entry={entry}
-                                    onRemove={async () => {
-                                        await removeRoutineFromDayAction(entry.id, date);
-                                        toastRichSuccess({ message: 'Routine removed' });
-                                        refresh();
-                                    }}
-                                    onUpdateExercise={async (payload) => {
-                                        await updateDailyRoutineEntryExerciseAction(payload);
-                                        refresh();
-                                    }}
-                                    onRemoveExercise={async (id) => {
-                                        await removeExerciseFromDailyRoutineEntryAction(id);
-                                        refresh();
-                                    }}
-                                    onAddExercise={async (entryId, gymExerciseId, defaults) => {
-                                        await addExerciseToDailyRoutineEntryAction(entryId, gymExerciseId, defaults);
-                                        refresh();
-                                    }}
-                                    refresh={refresh}
-                                />
-                            ))}
-                        </div>
-                    )}
-                </CardContent>
-            </Card>
-
             {/* Activities */}
             <Card>
                 <CardHeader>
@@ -217,98 +164,136 @@ export function DailyStatisticComponent({ date, initialData }) {
                     </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                    {!hasData && <p className="text-sm text-muted-foreground">Add nutrition or a routine first.</p>}
-                    {hasData && (
-                        <>
-                            <div className="flex flex-wrap gap-2">
-                                <select
-                                    className="flex h-9 rounded-md border border-input bg-transparent px-3 py-1 text-sm"
-                                    value={activitySelect}
-                                    onChange={(e) => setActivitySelect(e.target.value)}
-                                    onFocus={() => activities.length === 0 && getActivitiesForSelectAction().then(setActivities)}
-                                >
-                                    <option value="">Select activity…</option>
-                                    {activities.map((a) => (
-                                        <option key={a.id} value={a.id}>{a.title}</option>
-                                    ))}
-                                </select>
-                                <Button type="button" size="sm" onClick={handleAddActivity} disabled={!activitySelect}>
-                                    Log activity
-                                </Button>
-                            </div>
-                            {data?.daily_activity_entries?.length > 0 && (
-                                <ul className="space-y-1 text-sm">
-                                    {data.daily_activity_entries.map((ae) => (
-                                        <li key={ae.id} className="flex items-center justify-between rounded border px-3 py-2">
-                                            <span>{ae.activities?.title ?? 'Activity'}</span>
-                                            <Button type="button" variant="ghost" size="icon" className="h-8 w-8 text-destructive" onClick={async () => { await removeActivityFromDayAction(ae.id); refresh(); }}>
-                                                <Trash2 className="size-4" />
-                                            </Button>
-                                        </li>
-                                    ))}
-                                </ul>
-                            )}
-                        </>
+                    <div className="flex flex-wrap gap-2">
+                        <select
+                            className="flex h-9 rounded-md border border-input bg-transparent px-3 py-1 text-sm"
+                            value={activitySelect}
+                            onChange={(e) => setActivitySelect(e.target.value)}
+                            onFocus={() => activities.length === 0 && getActivitiesForSelectAction().then(setActivities)}
+                        >
+                            <option value="">Select activity…</option>
+                            {activities.map((a) => (
+                                <option key={a.id} value={a.id}>{a.title}</option>
+                            ))}
+                        </select>
+                        <Button type="button" size="sm" onClick={handleAddActivity} disabled={!activitySelect}>
+                            Log activity
+                        </Button>
+                    </div>
+                    {data?.daily_activity_entries?.length > 0 && (
+                        <ul className="space-y-1 text-sm">
+                            {data.daily_activity_entries.map((ae) => (
+                                <li key={ae.id} className="flex items-center justify-between rounded border px-3 py-2">
+                                    <span>{ae.activities?.title ?? 'Activity'}</span>
+                                    <Button type="button" variant="ghost" size="icon" className="h-8 w-8 text-destructive" onClick={async () => { await removeActivityFromDayAction(ae.id); refresh(); }}>
+                                        <Trash2 className="size-4" />
+                                    </Button>
+                                </li>
+                            ))}
+                        </ul>
                     )}
                 </CardContent>
             </Card>
 
-            {/* Standalone gym exercises */}
-            {hasData && (
-                <Card>
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2 text-lg">
-                            <Dumbbell className="size-5 text-primary" />
-                            Gym exercises (standalone)
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <StandaloneGymExercises
-                            entries={data?.daily_gym_exercise_entries ?? []}
-                            dailyStatisticId={dailyStatisticId}
-                            onAdd={async (gymExerciseId, sets, reps, weight, comments) => {
-                                await addGymExerciseToDayAction(dailyStatisticId, gymExerciseId, sets, reps, weight, comments);
-                                refresh();
-                            }}
-                            onRemove={async (id) => {
-                                await removeGymExerciseFromDayAction(id);
-                                refresh();
-                            }}
-                        />
-                    </CardContent>
-                </Card>
-            )}
+            {/* Gym exercises (add routine or add single; edit/remove any) — always visible so you can add a routine to create the day */}
+            <Card>
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-lg">
+                        <Dumbbell className="size-5 text-primary" />
+                        Gym exercises
+                    </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                    {!hasData ? (
+                        <>
+                            <p className="text-sm text-muted-foreground">Add a routine to log exercises for this day. This will create the day&apos;s log so you can then add or remove exercises as needed.</p>
+                            <div className="flex flex-wrap gap-2">
+                                <select
+                                    className="flex h-9 rounded-md border border-input bg-transparent px-3 py-1 text-sm"
+                                    value={routineSelect}
+                                    onChange={(e) => setRoutineSelect(e.target.value)}
+                                    onFocus={() => routines.length === 0 && getRoutinesForSelectAction().then(setRoutines)}
+                                >
+                                    <option value="">Select routine…</option>
+                                    {routines.map((r) => (
+                                        <option key={r.id} value={r.id}>{r.name}</option>
+                                    ))}
+                                </select>
+                                <Button type="button" size="sm" onClick={handleAddRoutine} disabled={!routineSelect}>
+                                    Add routine
+                                </Button>
+                            </div>
+                        </>
+                    ) : (
+                        <>
+                            <p className="text-sm text-muted-foreground">Add a routine to insert all its exercises, or add exercises one by one. Edit or remove any entry.</p>
+                            <div className="flex flex-wrap gap-2">
+                                <select
+                                    className="flex h-9 rounded-md border border-input bg-transparent px-3 py-1 text-sm"
+                                    value={routineSelect}
+                                    onChange={(e) => setRoutineSelect(e.target.value)}
+                                    onFocus={() => routines.length === 0 && getRoutinesForSelectAction().then(setRoutines)}
+                                >
+                                    <option value="">Select routine…</option>
+                                    {routines.map((r) => (
+                                        <option key={r.id} value={r.id}>{r.name}</option>
+                                    ))}
+                                </select>
+                                <Button type="button" size="sm" onClick={handleAddRoutine} disabled={!routineSelect}>
+                                    Add routine
+                                </Button>
+                            </div>
+                            <GymExercisesList
+                                entries={data?.daily_gym_exercise_entries ?? []}
+                                dailyStatisticId={dailyStatisticId}
+                                onUpdate={async (payload) => {
+                                    await updateDailyGymExerciseEntryAction(payload);
+                                    refresh();
+                                }}
+                                onRemove={async (id) => {
+                                    await removeGymExerciseFromDayAction(id);
+                                    refresh();
+                                }}
+                                onAdd={async (gymExerciseId, sets, reps, weight, comments) => {
+                                    await addGymExerciseToDayAction(dailyStatisticId, gymExerciseId, sets, reps, weight, comments);
+                                    refresh();
+                                }}
+                            />
+                        </>
+                    )}
+                </CardContent>
+            </Card>
         </div>
     );
 }
 
-function DailyRoutineExerciseRow({ ex, onUpdate, onRemove }) {
-    const [sets, setSets] = useState(ex.sets ?? '');
-    const [reps, setReps] = useState(ex.reps ?? '');
-    const [weight, setWeight] = useState(ex.weight ?? '');
-    const [comments, setComments] = useState(ex.comments ?? '');
+function GymExerciseRow({ entry, onUpdate, onRemove }) {
+    const [sets, setSets] = useState(entry.sets ?? '');
+    const [reps, setReps] = useState(entry.reps ?? '');
+    const [weight, setWeight] = useState(entry.weight ?? '');
+    const [comments, setComments] = useState(entry.comments ?? '');
 
     const handleBlur = useCallback(() => {
-        onUpdate({ id: ex.id, sets, reps, weight, comments });
-    }, [ex.id, sets, reps, weight, comments, onUpdate]);
+        onUpdate({ id: entry.id, sets, reps, weight, comments });
+    }, [entry.id, sets, reps, weight, comments, onUpdate]);
 
     return (
         <tr className="border-b">
-            <td className="py-1 pr-2">{ex.gym_exercises?.title ?? '-'}</td>
-            <td className="py-1 px-2">
-                <Input type="number" min={0} className="h-8 text-sm" value={sets} onChange={(e) => setSets(e.target.value)} onBlur={handleBlur} />
+            <td className="py-1 pr-2">{entry.gym_exercises?.title ?? '-'}</td>
+            <td className="min-w-[4.5rem] sm:min-w-[6rem] w-20 sm:w-24 py-1 px-2">
+                <Input type="number" min={0} className="h-8 w-full min-w-0 text-sm" value={sets} onChange={(e) => setSets(e.target.value)} onBlur={handleBlur} />
             </td>
-            <td className="py-1 px-2">
-                <Input type="number" min={0} className="h-8 text-sm" value={reps} onChange={(e) => setReps(e.target.value)} onBlur={handleBlur} />
+            <td className="min-w-[4.5rem] sm:min-w-[6rem] w-20 sm:w-24 py-1 px-2">
+                <Input type="number" min={0} className="h-8 w-full min-w-0 text-sm" value={reps} onChange={(e) => setReps(e.target.value)} onBlur={handleBlur} />
             </td>
-            <td className="py-1 px-2">
-                <Input type="number" min={0} step={0.5} className="h-8 text-sm" value={weight} onChange={(e) => setWeight(e.target.value)} onBlur={handleBlur} />
+            <td className="min-w-[5rem] sm:min-w-[7rem] w-24 sm:w-28 py-1 px-2">
+                <Input type="number" min={0} step={0.5} className="h-8 w-full min-w-0 text-sm" value={weight} onChange={(e) => setWeight(e.target.value)} onBlur={handleBlur} />
             </td>
             <td className="py-1 px-2">
                 <Input className="h-8 text-sm" value={comments} onChange={(e) => setComments(e.target.value)} onBlur={handleBlur} />
             </td>
             <td className="py-1">
-                <Button type="button" variant="ghost" size="icon" className="h-8 w-8 text-destructive" onClick={() => onRemove(ex.id)}>
+                <Button type="button" variant="ghost" size="icon" className="h-8 w-8 text-destructive" onClick={() => onRemove(entry.id)}>
                     <Trash2 className="size-4" />
                 </Button>
             </td>
@@ -316,76 +301,7 @@ function DailyRoutineExerciseRow({ ex, onUpdate, onRemove }) {
     );
 }
 
-function RoutineEntryBlock({ entry, onRemove, onUpdateExercise, onRemoveExercise, onAddExercise, refresh }) {
-    const [addingExercise, setAddingExercise] = useState(false);
-    const [exerciseSelect, setExerciseSelect] = useState('');
-    const [exercises, setExercises] = useState([]);
-    const routineName = entry.routines?.name ?? 'Routine';
-    const exercisesList = entry.daily_routine_entry_exercises ?? [];
-
-    async function handleAddExercise() {
-        if (!exerciseSelect) return;
-        await onAddExercise(entry.id, exerciseSelect, {});
-        setAddingExercise(false);
-        setExerciseSelect('');
-    }
-
-    return (
-        <div className="rounded-lg border p-4 space-y-3">
-            <div className="flex items-center justify-between">
-                <h4 className="font-medium">{routineName}</h4>
-                <Button type="button" variant="ghost" size="sm" className="text-destructive" onClick={onRemove}>
-                    Remove routine
-                </Button>
-            </div>
-            <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                    <thead>
-                        <tr className="border-b text-left text-muted-foreground">
-                            <th className="py-1 pr-2">Exercise</th>
-                            <th className="py-1 px-2 w-16">Sets</th>
-                            <th className="py-1 px-2 w-16">Reps</th>
-                            <th className="py-1 px-2 w-20">Weight</th>
-                            <th className="py-1 px-2">Comments</th>
-                            <th className="py-1 w-8"></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {exercisesList.map((ex) => (
-                            <DailyRoutineExerciseRow
-                                key={ex.id}
-                                ex={ex}
-                                onUpdate={onUpdateExercise}
-                                onRemove={onRemoveExercise}
-                            />
-                        ))}
-                    </tbody>
-                </table>
-            </div>
-            {addingExercise ? (
-                <div className="flex gap-2 flex-wrap items-center">
-                    <select
-                        className="flex h-9 rounded-md border border-input bg-transparent px-3 py-1 text-sm"
-                        value={exerciseSelect}
-                        onChange={(e) => setExerciseSelect(e.target.value)}
-                        onFocus={() => exercises.length === 0 && getGymExercisesForSelectAction().then(setExercises)}
-                    >
-                        <option value="">Select exercise…</option>
-                        {exercises.map((ex) => (
-                            <option key={ex.id} value={ex.id}>{ex.title}</option>
-                        ))}
-                    </select>
-                    <Button size="sm" onClick={handleAddExercise} disabled={!exerciseSelect}>Add</Button>
-                    <Button size="sm" variant="outline" onClick={() => setAddingExercise(false)}>Cancel</Button>
-                </div>
-            ) : (
-                <Button type="button" variant="outline" size="sm" onClick={() => setAddingExercise(true)}>Add exercise to this routine</Button>
-            )}
-        </div>
-    );
-}
-
-function StandaloneGymExercises({ entries, dailyStatisticId, onAdd, onRemove }) {
+function GymExercisesList({ entries, dailyStatisticId, onUpdate, onRemove, onAdd }) {
     const [showForm, setShowForm] = useState(false);
     const [exercises, setExercises] = useState([]);
     const [gymExerciseId, setGymExerciseId] = useState('');
@@ -408,16 +324,30 @@ function StandaloneGymExercises({ entries, dailyStatisticId, onAdd, onRemove }) 
     return (
         <div className="space-y-4">
             {entries.length > 0 && (
-                <ul className="space-y-1 text-sm">
-                    {entries.map((ge) => (
-                        <li key={ge.id} className="flex items-center justify-between rounded border px-3 py-2">
-                            <span>{ge.gym_exercises?.title ?? 'Exercise'} — {[ge.sets != null && `${ge.sets}s`, ge.reps != null && `${ge.reps}r`, ge.weight != null && `${ge.weight}kg`].filter(Boolean).join(' ')}</span>
-                            <Button type="button" variant="ghost" size="icon" className="h-8 w-8 text-destructive" onClick={() => onRemove(ge.id)}>
-                                <Trash2 className="size-4" />
-                            </Button>
-                        </li>
-                    ))}
-                </ul>
+                <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                        <thead>
+                            <tr className="border-b text-left text-muted-foreground">
+                                <th className="py-1 pr-2">Exercise</th>
+                                <th className="min-w-[4.5rem] sm:min-w-[6rem] w-20 sm:w-24 py-1 px-2">Sets</th>
+                                <th className="min-w-[4.5rem] sm:min-w-[6rem] w-20 sm:w-24 py-1 px-2">Reps</th>
+                                <th className="min-w-[5rem] sm:min-w-[7rem] w-24 sm:w-28 py-1 px-2">Weight</th>
+                                <th className="py-1 px-2">Comments</th>
+                                <th className="py-1 w-8"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {entries.map((entry) => (
+                                <GymExerciseRow
+                                    key={entry.id}
+                                    entry={entry}
+                                    onUpdate={onUpdate}
+                                    onRemove={onRemove}
+                                />
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
             )}
             {showForm ? (
                 <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-5 rounded border p-3">

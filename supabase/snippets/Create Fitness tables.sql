@@ -98,78 +98,7 @@ CREATE POLICY "Users can create own daily_statistics" ON daily_statistics FOR IN
 CREATE POLICY "Users can update own daily_statistics" ON daily_statistics FOR UPDATE TO authenticated USING ( (select auth.uid()) = user_id) WITH CHECK ( (select auth.uid()) = user_id);
 CREATE POLICY "Users can delete own daily_statistics" ON daily_statistics FOR DELETE TO authenticated USING ( (select auth.uid()) = user_id);
 
--- 6. daily_routine_entries ("this routine was done on this day")
-CREATE TABLE daily_routine_entries (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  daily_statistic_id UUID NOT NULL REFERENCES daily_statistics(id) ON DELETE CASCADE,
-  routine_id UUID NOT NULL REFERENCES routines(id) ON DELETE CASCADE,
-  created_at TIMESTAMPTZ DEFAULT NOW()
-);
-CREATE INDEX idx_daily_routine_entries_daily_statistic_id ON daily_routine_entries USING btree (daily_statistic_id);
-ALTER TABLE daily_routine_entries ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Users can view daily_routine_entries for own daily_statistics"
-  ON daily_routine_entries FOR SELECT TO authenticated
-  USING (EXISTS (SELECT 1 FROM daily_statistics ds WHERE ds.id = daily_statistic_id AND ds.user_id = (select auth.uid())));
-CREATE POLICY "Users can insert daily_routine_entries for own daily_statistics"
-  ON daily_routine_entries FOR INSERT TO authenticated
-  WITH CHECK (EXISTS (SELECT 1 FROM daily_statistics ds WHERE ds.id = daily_statistic_id AND ds.user_id = (select auth.uid())));
-CREATE POLICY "Users can update daily_routine_entries for own daily_statistics"
-  ON daily_routine_entries FOR UPDATE TO authenticated
-  USING (EXISTS (SELECT 1 FROM daily_statistics ds WHERE ds.id = daily_statistic_id AND ds.user_id = (select auth.uid())))
-  WITH CHECK (EXISTS (SELECT 1 FROM daily_statistics ds WHERE ds.id = daily_statistic_id AND ds.user_id = (select auth.uid())));
-CREATE POLICY "Users can delete daily_routine_entries for own daily_statistics"
-  ON daily_routine_entries FOR DELETE TO authenticated
-  USING (EXISTS (SELECT 1 FROM daily_statistics ds WHERE ds.id = daily_statistic_id AND ds.user_id = (select auth.uid())));
-
--- 7. daily_routine_entry_exercises (exercises performed for that routine on that day)
-CREATE TABLE daily_routine_entry_exercises (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  daily_routine_entry_id UUID NOT NULL REFERENCES daily_routine_entries(id) ON DELETE CASCADE,
-  gym_exercise_id UUID NOT NULL REFERENCES gym_exercises(id) ON DELETE CASCADE,
-  sets INTEGER,
-  reps INTEGER,
-  weight NUMERIC,
-  comments TEXT,
-  order_index INTEGER NOT NULL DEFAULT 0,
-  created_at TIMESTAMPTZ DEFAULT NOW()
-);
-CREATE INDEX idx_daily_routine_entry_exercises_entry_id ON daily_routine_entry_exercises USING btree (daily_routine_entry_id);
-ALTER TABLE daily_routine_entry_exercises ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Users can view daily_routine_entry_exercises for own entries"
-  ON daily_routine_entry_exercises FOR SELECT TO authenticated
-  USING (EXISTS (
-    SELECT 1 FROM daily_routine_entries dre
-    JOIN daily_statistics ds ON ds.id = dre.daily_statistic_id
-    WHERE dre.id = daily_routine_entry_id AND ds.user_id = (select auth.uid())
-  ));
-CREATE POLICY "Users can insert daily_routine_entry_exercises for own entries"
-  ON daily_routine_entry_exercises FOR INSERT TO authenticated
-  WITH CHECK (EXISTS (
-    SELECT 1 FROM daily_routine_entries dre
-    JOIN daily_statistics ds ON ds.id = dre.daily_statistic_id
-    WHERE dre.id = daily_routine_entry_id AND ds.user_id = (select auth.uid())
-  ));
-CREATE POLICY "Users can update daily_routine_entry_exercises for own entries"
-  ON daily_routine_entry_exercises FOR UPDATE TO authenticated
-  USING (EXISTS (
-    SELECT 1 FROM daily_routine_entries dre
-    JOIN daily_statistics ds ON ds.id = dre.daily_statistic_id
-    WHERE dre.id = daily_routine_entry_id AND ds.user_id = (select auth.uid())
-  ))
-  WITH CHECK (EXISTS (
-    SELECT 1 FROM daily_routine_entries dre
-    JOIN daily_statistics ds ON ds.id = dre.daily_statistic_id
-    WHERE dre.id = daily_routine_entry_id AND ds.user_id = (select auth.uid())
-  ));
-CREATE POLICY "Users can delete daily_routine_entry_exercises for own entries"
-  ON daily_routine_entry_exercises FOR DELETE TO authenticated
-  USING (EXISTS (
-    SELECT 1 FROM daily_routine_entries dre
-    JOIN daily_statistics ds ON ds.id = dre.daily_statistic_id
-    WHERE dre.id = daily_routine_entry_id AND ds.user_id = (select auth.uid())
-  ));
-
--- 8. daily_activity_entries
+-- 6. daily_activity_entries
 CREATE TABLE daily_activity_entries (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   daily_statistic_id UUID NOT NULL REFERENCES daily_statistics(id) ON DELETE CASCADE,
@@ -194,7 +123,7 @@ CREATE POLICY "Users can delete daily_activity_entries for own daily_statistics"
   ON daily_activity_entries FOR DELETE TO authenticated
   USING (EXISTS (SELECT 1 FROM daily_statistics ds WHERE ds.id = daily_statistic_id AND ds.user_id = (select auth.uid())));
 
--- 9. daily_gym_exercise_entries (standalone exercises logged that day)
+-- 7. daily_gym_exercise_entries (all gym exercises for the day; add routine inserts its exercises here)
 CREATE TABLE daily_gym_exercise_entries (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   daily_statistic_id UUID NOT NULL REFERENCES daily_statistics(id) ON DELETE CASCADE,
@@ -203,6 +132,7 @@ CREATE TABLE daily_gym_exercise_entries (
   reps INTEGER,
   weight NUMERIC,
   comments TEXT,
+  order_index INTEGER NOT NULL DEFAULT 0,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 CREATE INDEX idx_daily_gym_exercise_entries_daily_statistic_id ON daily_gym_exercise_entries USING btree (daily_statistic_id);
