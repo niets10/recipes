@@ -197,7 +197,7 @@ export function DailyStatisticComponent({ date, initialData }) {
                     </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                    <div className="flex flex-wrap gap-2">
+                    <div className="flex items-center gap-2 flex-nowrap">
                         <Combobox
                             items={activities}
                             value={activitySelect}
@@ -207,7 +207,7 @@ export function DailyStatisticComponent({ date, initialData }) {
                             placeholder="Select activity…"
                             emptyMessage="No activities found."
                             onFocus={() => activities.length === 0 && getActivitiesForSelectAction().then(setActivities)}
-                            className="min-w-[180px]"
+                            className="min-w-0 flex-1 max-w-sm"
                         />
                         <Button type="button" size="sm" onClick={handleAddActivity} disabled={!activitySelect}>
                             Log activity
