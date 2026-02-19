@@ -2,7 +2,6 @@ import Link from 'next/link';
 import { routes } from '@/lib/routes';
 import { ListOrdered, Dumbbell, Activity } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 
 export const metadata = {
     title: 'Fitness',
@@ -10,9 +9,24 @@ export const metadata = {
 };
 
 const links = [
-    { title: 'Routines', href: routes.fitnessRoutines, icon: ListOrdered, description: 'Manage your workout routines' },
-    { title: 'Gym Exercises', href: routes.fitnessGymExercises, icon: Dumbbell, description: 'Exercise library' },
-    { title: 'Activities', href: routes.fitnessActivities, icon: Activity, description: 'Running, HIIT, and more' },
+    {
+        title: 'Routines',
+        href: routes.fitnessRoutines,
+        icon: ListOrdered,
+        description: 'Manage your workout routines',
+    },
+    {
+        title: 'Gym Exercises',
+        href: routes.fitnessGymExercises,
+        icon: Dumbbell,
+        description: 'Exercise library',
+    },
+    {
+        title: 'Activities',
+        href: routes.fitnessActivities,
+        icon: Activity,
+        description: 'Running, HIIT, and more',
+    },
 ];
 
 export default function FitnessPage() {
@@ -24,20 +38,22 @@ export default function FitnessPage() {
             </div>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {links.map((item) => (
-                    <Card key={item.title} className="overflow-hidden transition-colors hover:border-primary/50">
-                        <CardHeader className="pb-2">
-                            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                                <item.icon className="h-5 w-5" />
-                            </div>
-                            <CardTitle className="text-lg">{item.title}</CardTitle>
-                            <CardDescription>{item.description}</CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <Button asChild variant="secondary" size="sm">
-                                <Link href={item.href}>Open</Link>
-                            </Button>
-                        </CardContent>
-                    </Card>
+                    <Link href={item.href} key={item.title} aria-label={`Go to ${item.title}`}>
+                        <Card
+                            key={item.title}
+                            className="overflow-hidden transition-colors hover:border-primary/50"
+                        >
+                            <CardHeader className="pb-2">
+                                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                                    <item.icon className="h-5 w-5" />
+                                </div>
+                                <CardTitle className="text-lg">{item.title}</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <CardDescription>{item.description}</CardDescription>
+                            </CardContent>
+                        </Card>
+                    </Link>
                 ))}
             </div>
         </div>
