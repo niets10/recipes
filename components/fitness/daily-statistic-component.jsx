@@ -29,9 +29,16 @@ function toNum(v) {
     return Number.isNaN(n) ? null : n;
 }
 
+const TABS = [
+    { id: 'gym', label: 'Gym exercises', icon: Dumbbell },
+    { id: 'activities', label: 'Activities', icon: Activity },
+    { id: 'nutrition', label: 'Nutrition', icon: UtensilsCrossed },
+];
+
 export function DailyStatisticComponent({ date, initialData }) {
     const router = useRouter();
     const [data, setData] = useState(initialData);
+    const [activeTab, setActiveTab] = useState('gym');
     const [nutritionSaving, setNutritionSaving] = useState(false);
     const [routineSelect, setRoutineSelect] = useState('');
     const [routines, setRoutines] = useState([]);
@@ -107,7 +114,7 @@ export function DailyStatisticComponent({ date, initialData }) {
     }
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-4">
             <div className="flex items-center gap-2">
                 <Button variant="ghost" size="icon" asChild>
                     <Link href={routes.statistics}><ChevronLeft className="size-4" /></Link>
@@ -118,7 +125,28 @@ export function DailyStatisticComponent({ date, initialData }) {
                 </h1>
             </div>
 
+            <div className="border-b">
+                <nav className="flex gap-1 overflow-x-auto" aria-label="Daily log sections">
+                    {TABS.map(({ id, label, icon: Icon }) => (
+                        <button
+                            key={id}
+                            type="button"
+                            onClick={() => setActiveTab(id)}
+                            className={`flex items-center gap-2 rounded-t-md px-3 py-2 text-sm font-medium transition-colors -mb-px border-b-2 shrink-0 ${
+                                activeTab === id
+                                    ? 'border-primary text-primary bg-muted/50'
+                                    : 'border-transparent text-muted-foreground hover:text-foreground hover:bg-muted/30'
+                            }`}
+                        >
+                            <Icon className="size-4 shrink-0" />
+                            {label}
+                        </button>
+                    ))}
+                </nav>
+            </div>
+
             {/* Nutrition */}
+            {activeTab === 'nutrition' && (
             <Card className="border-t-4 border-t-primary/40">
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2 text-lg">
@@ -154,8 +182,10 @@ export function DailyStatisticComponent({ date, initialData }) {
                     </form>
                 </CardContent>
             </Card>
+            )}
 
             {/* Activities */}
+            {activeTab === 'activities' && (
             <Card>
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2 text-lg">
@@ -194,8 +224,10 @@ export function DailyStatisticComponent({ date, initialData }) {
                     )}
                 </CardContent>
             </Card>
+            )}
 
-            {/* Gym exercises (add routine or add single; edit/remove any) — always visible so you can add a routine to create the day */}
+            {/* Gym exercises */}
+            {activeTab === 'gym' && (
             <Card>
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2 text-lg">
@@ -263,6 +295,7 @@ export function DailyStatisticComponent({ date, initialData }) {
                     )}
                 </CardContent>
             </Card>
+            )}
         </div>
     );
 }
