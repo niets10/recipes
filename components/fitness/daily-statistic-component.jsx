@@ -2,7 +2,6 @@
 
 import { useState, useCallback, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Combobox } from '@/components/ui/combobox';
@@ -21,8 +20,7 @@ import {
 import { getRoutinesForSelectAction } from '@/actions/database/routine-actions';
 import { getActivitiesForSelectAction } from '@/actions/database/activity-actions';
 import { getGymExercisesForSelectAction } from '@/actions/database/gym-exercise-actions';
-import { routes } from '@/lib/routes';
-import { ChevronLeft, Calendar, UtensilsCrossed, Activity, Dumbbell, Trash2 } from 'lucide-react';
+import { UtensilsCrossed, Activity, Dumbbell, Trash2 } from 'lucide-react';
 import { toastRichSuccess, toastRichError } from '@/lib/toast-library';
 import { Separator } from '@/components/ui/separator';
 
@@ -155,18 +153,6 @@ export function DailyStatisticComponent({ date, initialData }) {
 
     return (
         <div className="space-y-4">
-            <div className="flex items-center gap-2">
-                <Button variant="ghost" size="icon" asChild>
-                    <Link href={routes.statistics}>
-                        <ChevronLeft className="size-4" />
-                    </Link>
-                </Button>
-                <h1 className="text-2xl font-semibold tracking-tight flex items-center gap-2">
-                    <Calendar className="size-6 text-primary" />
-                    {date}
-                </h1>
-            </div>
-
             <Tabs defaultValue="gym" className="w-full">
                 <TabsList>
                     {TABS.map(({ id, label, icon: Icon }) => (

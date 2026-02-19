@@ -13,7 +13,7 @@ export function AppHeader({
     return (
         <header
             className={cn(
-                'flex h-14 shrink-0 items-center gap-4 border-b border-border/50 bg-background/95 px-4 backdrop-blur supports-[backdrop-filter]:bg-background/60 md:px-6',
+                'flex h-14 shrink-0 items-center gap-4 px-4 md:px-6 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 dark:bg-sidebar dark:backdrop-blur-none',
                 className
             )}
             {...props}

@@ -125,16 +125,16 @@
 }
 
 /* ──────────────────────────────────────────────
-   Dark mode — fitness app: dark grey + vibrant green
-   Near-black bg · #2C2C2E cards · green primary
+   Dark mode — fitness app: grey sidebar/header + grey cards
+   Near-black bg · charcoal sidebar/header · grey cards · united borders
    ────────────────────────────────────────────── */
 .dark {
-  /* Surfaces — dark grey, card slightly lighter (#2C2C2E) */
-  --background: oklch(0.12 0.01 280);
+  /* Surfaces — deep black main; grey cards (slightly darker than sidebar) */
+  --background: oklch(0.10 0.01 280);
   --foreground: oklch(0.98 0.005 90);
-  --card: oklch(0.20 0.012 280);
+  --card: oklch(0.18 0.012 280);
   --card-foreground: oklch(0.98 0.005 90);
-  --popover: oklch(0.20 0.012 280);
+  --popover: oklch(0.18 0.012 280);
   --popover-foreground: oklch(0.98 0.005 90);
 
   /* Brand — vibrant green (#4CAF50 / #8BC34A style) */
@@ -167,24 +167,24 @@
   --chart-4: oklch(0.68 0.12 70);
   --chart-5: oklch(0.60 0.15 200);
 
-  /* Sidebar — subtle gradient for selected item (no strong green) */
-  --sidebar: oklch(0.14 0.012 280);
+  /* Sidebar & header — same charcoal grey, united borders */
+  --sidebar: oklch(0.22 0.012 280);
   --sidebar-foreground: oklch(0.98 0.005 90);
-  --sidebar-primary: oklch(0.22 0.03 150);
+  --sidebar-primary: oklch(0.28 0.03 150);
   --sidebar-primary-foreground: oklch(0.92 0.02 150);
   --sidebar-primary-gradient: linear-gradient(
     135deg,
-    oklch(0.20 0.025 152),
-    oklch(0.22 0.02 165)
+    oklch(0.26 0.025 152),
+    oklch(0.28 0.02 165)
   );
   --sidebar-primary-gradient-intense: linear-gradient(
     135deg,
-    oklch(0.28 0.07 152),
-    oklch(0.30 0.06 165)
+    oklch(0.32 0.07 152),
+    oklch(0.34 0.06 165)
   );
-  --sidebar-accent: oklch(0.24 0.02 280);
+  --sidebar-accent: oklch(0.28 0.02 280);
   --sidebar-accent-foreground: oklch(0.98 0.005 90);
-  --sidebar-border: oklch(0.35 0.02 280 / 35%);
+  --sidebar-border: oklch(0.32 0.02 280);
   --sidebar-ring: oklch(0.62 0.18 145);
 
   /* ── Reusable effect tokens (dark) ── */
