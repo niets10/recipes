@@ -10,6 +10,7 @@ import {
     DialogDescription,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+import { Combobox } from '@/components/ui/combobox';
 import { Input } from '@/components/ui/input';
 import { getGymExercisesForSelectAction } from '@/actions/database/gym-exercise-actions';
 import { addExerciseToRoutineAction } from '@/actions/database/routine-actions';
@@ -85,20 +86,16 @@ export function AddExerciseToRoutine({ routineId, onSuccess }) {
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div className="space-y-2">
                         <label htmlFor="add-ge-select" className="text-sm font-medium">Exercise</label>
-                        <select
+                        <Combobox
                             id="add-ge-select"
-                            className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                            items={exercises}
                             value={gymExerciseId}
-                            onChange={(e) => setGymExerciseId(e.target.value)}
-                            required
-                        >
-                            <option value="">Select…</option>
-                            {exercises.map((ex) => (
-                                <option key={ex.id} value={ex.id}>
-                                    {ex.title}{ex.body_part ? ` (${ex.body_part})` : ''}
-                                </option>
-                            ))}
-                        </select>
+                            onValueChange={setGymExerciseId}
+                            getItemValue={(ex) => ex.id}
+                            getItemLabel={(ex) => ex.title + (ex.body_part ? ` (${ex.body_part})` : '')}
+                            placeholder="Select…"
+                            emptyMessage="No exercises found."
+                        />
                     </div>
                     <div className="grid grid-cols-3 gap-2">
                         <div className="space-y-2">

@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Combobox } from '@/components/ui/combobox';
 import { Input } from '@/components/ui/input';
 import {
     getOrCreateDailyStatisticIdAction,
@@ -197,17 +198,17 @@ export function DailyStatisticComponent({ date, initialData }) {
                 </CardHeader>
                 <CardContent className="space-y-4">
                     <div className="flex flex-wrap gap-2">
-                        <select
-                            className="flex h-9 rounded-md border border-input bg-transparent px-3 py-1 text-sm"
+                        <Combobox
+                            items={activities}
                             value={activitySelect}
-                            onChange={(e) => setActivitySelect(e.target.value)}
+                            onValueChange={setActivitySelect}
+                            getItemValue={(a) => a.id}
+                            getItemLabel={(a) => a.title}
+                            placeholder="Select activity…"
+                            emptyMessage="No activities found."
                             onFocus={() => activities.length === 0 && getActivitiesForSelectAction().then(setActivities)}
-                        >
-                            <option value="">Select activity…</option>
-                            {activities.map((a) => (
-                                <option key={a.id} value={a.id}>{a.title}</option>
-                            ))}
-                        </select>
+                            className="min-w-[180px]"
+                        />
                         <Button type="button" size="sm" onClick={handleAddActivity} disabled={!activitySelect}>
                             Log activity
                         </Button>
@@ -241,20 +242,19 @@ export function DailyStatisticComponent({ date, initialData }) {
                     {!hasData ? (
                         <>
                             <p className="text-sm text-muted-foreground">Add a routine to log exercises for this day. This will create the day&apos;s log so you can then add or remove exercises as needed.</p>
-                            <div className="flex flex-wrap gap-2">
-                                // TODO: Change this to shadcn ui
-                                <select
-                                    className="flex h-9 rounded-md border border-input bg-transparent px-3 py-1 text-sm"
+                            <div className="flex items-center gap-2 flex-nowrap">
+                                <Combobox
+                                    items={routines}
                                     value={routineSelect}
-                                    onChange={(e) => setRoutineSelect(e.target.value)}
+                                    onValueChange={setRoutineSelect}
+                                    getItemValue={(r) => r.id}
+                                    getItemLabel={(r) => r.name}
+                                    placeholder="Select routine…"
+                                    emptyMessage="No routines found."
                                     onFocus={() => routines.length === 0 && getRoutinesForSelectAction().then(setRoutines)}
-                                >
-                                    <option value="">Select routine…</option>
-                                    {routines.map((r) => (
-                                        <option key={r.id} value={r.id}>{r.name}</option>
-                                    ))}
-                                </select>
-                                <Button type="button" size="sm" onClick={handleAddRoutine} disabled={!routineSelect}>
+                                    className="min-w-0 flex-1 max-w-sm"
+                                />
+                                <Button type="button" size="sm" onClick={handleAddRoutine} disabled={!routineSelect} className="shrink-0">
                                     Add routine
                                 </Button>
                             </div>
@@ -262,20 +262,19 @@ export function DailyStatisticComponent({ date, initialData }) {
                     ) : (
                         <>
                             <p className="text-sm text-muted-foreground">Add a routine to insert all its exercises, or add exercises one by one. Edit or remove any entry.</p>
-                            <div className="flex flex-wrap gap-2">
-                                {/* TODO: Change this to shadcn ui */}
-                                <select
-                                    className="flex h-9 rounded-md border border-input bg-transparent px-3 py-1 text-sm"
+                            <div className="flex items-center gap-2 flex-nowrap">
+                                <Combobox
+                                    items={routines}
                                     value={routineSelect}
-                                    onChange={(e) => setRoutineSelect(e.target.value)}
+                                    onValueChange={setRoutineSelect}
+                                    getItemValue={(r) => r.id}
+                                    getItemLabel={(r) => r.name}
+                                    placeholder="Select routine…"
+                                    emptyMessage="No routines found."
                                     onFocus={() => routines.length === 0 && getRoutinesForSelectAction().then(setRoutines)}
-                                >
-                                    <option value="">Select routine…</option>
-                                    {routines.map((r) => (
-                                        <option key={r.id} value={r.id}>{r.name}</option>
-                                    ))}
-                                </select>
-                                <Button type="button" size="sm" onClick={handleAddRoutine} disabled={!routineSelect}>
+                                    className="min-w-0 flex-1 max-w-sm"
+                                />
+                                <Button type="button" size="sm" onClick={handleAddRoutine} disabled={!routineSelect} className="shrink-0">
                                     Add routine
                                 </Button>
                             </div>
@@ -387,25 +386,25 @@ function GymExercisesList({ entries, dailyStatisticId, onUpdate, onRemove, onAdd
                 </div>
             )}
             {showForm ? (
-                <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-5 rounded border p-3">
-                    <select
-                        className="flex h-9 rounded-md border border-input bg-transparent px-3 py-1 text-sm"
+                <div className="grid gap-2 grid-cols-1 sm:grid-cols-2 lg:grid-cols-[1fr_4rem_4rem_5rem_1.5fr_auto]">
+                    <Combobox
+                        items={exercises}
                         value={gymExerciseId}
-                        onChange={(e) => setGymExerciseId(e.target.value)}
+                        onValueChange={setGymExerciseId}
+                        getItemValue={(ex) => ex.id}
+                        getItemLabel={(ex) => ex.title}
+                        placeholder="Exercise…"
+                        emptyMessage="No exercises found."
                         onFocus={() => exercises.length === 0 && getGymExercisesForSelectAction().then(setExercises)}
-                    >
-                        <option value="">Exercise…</option>
-                        {exercises.map((ex) => (
-                            <option key={ex.id} value={ex.id}>{ex.title}</option>
-                        ))}
-                    </select>
-                    <Input type="number" min={0} placeholder="Sets" value={sets} onChange={(e) => setSets(e.target.value)} className="h-9" />
-                    <Input type="number" min={0} placeholder="Reps" value={reps} onChange={(e) => setReps(e.target.value)} className="h-9" />
-                    <Input type="number" min={0} step={0.5} placeholder="Weight" value={weight} onChange={(e) => setWeight(e.target.value)} className="h-9" />
-                    <div className="flex gap-2">
-                        <Input placeholder="Comments" value={comments} onChange={(e) => setComments(e.target.value)} className="h-9" />
-                        <Button size="sm" onClick={handleAdd} disabled={!gymExerciseId}>Add</Button>
-                        <Button size="sm" variant="outline" onClick={() => setShowForm(false)}>Cancel</Button>
+                        className="w-full min-w-0 lg:col-span-1"
+                    />
+                    <Input type="number" min={0} placeholder="Sets" value={sets} onChange={(e) => setSets(e.target.value)} className="h-9 w-full md:max-w-20" />
+                    <Input type="number" min={0} placeholder="Reps" value={reps} onChange={(e) => setReps(e.target.value)} className="h-9 w-full md:max-w-20" />
+                    <Input type="number" min={0} step={0.5} placeholder="Weight" value={weight} onChange={(e) => setWeight(e.target.value)} className="h-9 w-full md:max-w-20" />
+                    <Input placeholder="Comments" value={comments} onChange={(e) => setComments(e.target.value)} className="h-9 w-full min-w-0 sm:col-span-2 lg:col-span-1" />
+                    <div className="flex gap-2 sm:col-span-2 lg:col-span-1">
+                        <Button size="sm" onClick={handleAdd} disabled={!gymExerciseId} className="shrink-0">Add</Button>
+                        <Button size="sm" variant="outline" onClick={() => setShowForm(false)} className="shrink-0">Cancel</Button>
                     </div>
                 </div>
             ) : (
