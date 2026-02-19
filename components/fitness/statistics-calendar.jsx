@@ -94,7 +94,7 @@ export function StatisticsCalendar({ datesWithData = [], initialYear, initialMon
                     return (
                         <Link
                             key={key}
-                            href={`${routes.statisticsDay}?date=${key}`}
+                            href={routes.statisticsDayForDate(key)}
                             className={cn(
                                 'flex h-10 w-full items-center justify-center rounded-md text-sm transition-colors',
                                 'hover:bg-primary/10 hover:text-primary',

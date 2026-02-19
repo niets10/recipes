@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -41,9 +41,13 @@ export function DailyStatisticComponent({ date, initialData }) {
     const [activitySelect, setActivitySelect] = useState('');
     const [activities, setActivities] = useState([]);
 
+    // Sync local state when server sends new data (e.g. after router.refresh() following add/remove routine)
+    useEffect(() => {
+        setData(initialData);
+    }, [initialData]);
+
     const refresh = useCallback(() => {
         router.refresh();
-        setData((prev) => prev);
     }, [router]);
 
     const hasData = data != null;
@@ -78,7 +82,7 @@ export function DailyStatisticComponent({ date, initialData }) {
             toastRichError({ message: res.error });
             return;
         }
-        const addRes = await addRoutineToDayAction(res.id, routineSelect);
+        const addRes = await addRoutineToDayAction(res.id, routineSelect, date);
         if (addRes?.success) {
             toastRichSuccess({ message: 'Routine added' });
             setRoutineSelect('');
@@ -180,7 +184,7 @@ export function DailyStatisticComponent({ date, initialData }) {
                                     key={entry.id}
                                     entry={entry}
                                     onRemove={async () => {
-                                        await removeRoutineFromDayAction(entry.id);
+                                        await removeRoutineFromDayAction(entry.id, date);
                                         toastRichSuccess({ message: 'Routine removed' });
                                         refresh();
                                     }}

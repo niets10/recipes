@@ -90,7 +90,7 @@ export async function upsertDailyStatisticAction(formData) {
         if (error) return { error: { _form: [error.message] } };
     }
     revalidatePath(routes.statistics);
-    revalidatePath(`${routes.statisticsDay}?date=${v.date}`);
+    revalidatePath(routes.statisticsDayForDate(v.date));
     return { success: true, date: v.date };
 }
 
@@ -101,11 +101,11 @@ export async function getOrCreateDailyStatisticIdAction(dateStr) {
     const { data: created, error } = await supabase.from('daily_statistics').insert({ date: dateStr }).select('id').single();
     if (error) return { error: error.message };
     revalidatePath(routes.statistics);
-    revalidatePath(`${routes.statisticsDay}?date=${dateStr}`);
+    revalidatePath(routes.statisticsDayForDate(dateStr));
     return { id: created.id };
 }
 
-export async function addRoutineToDayAction(dailyStatisticId, routineId) {
+export async function addRoutineToDayAction(dailyStatisticId, routineId, dateStr) {
     const supabase = await createClient();
 
     const { data: routineExercises } = await supabase
@@ -135,15 +135,17 @@ export async function addRoutineToDayAction(dailyStatisticId, routineId) {
     }
     revalidatePath(routes.statistics);
     revalidatePath(routes.statisticsDay);
+    if (dateStr) revalidatePath(routes.statisticsDayForDate(dateStr));
     return { success: true, entryId: entry.id };
 }
 
-export async function removeRoutineFromDayAction(dailyRoutineEntryId) {
+export async function removeRoutineFromDayAction(dailyRoutineEntryId, dateStr) {
     const supabase = await createClient();
     const { error } = await supabase.from('daily_routine_entries').delete().eq('id', dailyRoutineEntryId);
     if (error) throw new Error(error.message);
     revalidatePath(routes.statistics);
     revalidatePath(routes.statisticsDay);
+    if (dateStr) revalidatePath(routes.statisticsDayForDate(dateStr));
     return { success: true };
 }
 
@@ -253,6 +255,6 @@ export async function createDailyStatisticForDateAction(dateStr) {
     const { data, error } = await supabase.from('daily_statistics').insert({ date: dateStr }).select('id').single();
     if (error) return { error: error.message };
     revalidatePath(routes.statistics);
-    revalidatePath(`${routes.statisticsDay}?date=${dateStr}`);
+    revalidatePath(routes.statisticsDayForDate(dateStr));
     return { success: true, dailyStatisticId: data.id };
 }

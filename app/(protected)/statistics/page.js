@@ -34,7 +34,7 @@ export default async function StatisticsPage() {
                     <p className="text-muted-foreground mt-1">Click a day to view or log your daily statistic.</p>
                 </div>
                 <Button asChild>
-                    <Link href={`${routes.statisticsDay}?date=${todayStr}`}>Today</Link>
+                    <Link href={routes.statisticsDayForDate(todayStr)}>Today</Link>
                 </Button>
             </div>
 
