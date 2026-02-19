@@ -43,7 +43,7 @@ function AvailableExerciseRow({ exercise, routineId, onAdd }) {
         <li className="flex items-center justify-between gap-2 rounded-md border border-border px-3 py-2 text-sm">
             <span>
                 {exerciseHref ? (
-                    <Link href={exerciseHref} className="font-medium text-primary hover:underline">
+                    <Link href={exerciseHref} className="font-medium text-primary hover:underline" target="_blank">
                         {title}
                     </Link>
                 ) : (
@@ -115,7 +115,7 @@ function RoutineExerciseRow({ re, routineId, index, total, onMoveUp, onMoveDown,
             </td>
             <td className="py-1 pr-1 align-middle">
                 {exerciseHref ? (
-                    <Link href={exerciseHref} className="font-medium text-primary hover:underline">
+                    <Link href={exerciseHref} className="font-medium text-primary hover:underline" target="_blank">
                         {title}
                     </Link>
                 ) : (
