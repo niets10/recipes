@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { getGymExercisesPageAction } from '@/actions/database/gym-exercise-actions';
 import { GymExerciseCard } from '@/components/fitness/gym-exercise-card';
 import { Button } from '@/components/ui/button';
@@ -8,8 +8,14 @@ import { Button } from '@/components/ui/button';
 export function GymExercisesList({ initialExercises, initialHasMore, query, bodyPart }) {
     const [exercises, setExercises] = useState(initialExercises);
     const [hasMore, setHasMore] = useState(initialHasMore);
-    const [page, setPage] = useState(1);
+    const [page, setPage] = useState(initialExercises.length > 0 ? 1 : 0);
     const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        setExercises(initialExercises);
+        setHasMore(initialHasMore);
+        setPage(initialExercises.length > 0 ? 1 : 0);
+    }, [initialExercises, initialHasMore]);
 
     const loadMore = useCallback(async () => {
         setLoading(true);

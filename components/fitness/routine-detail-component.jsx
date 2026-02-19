@@ -114,21 +114,19 @@ function RoutineExerciseRow({ re, routineId, index, total, onMoveUp, onMoveDown,
 
 export function RoutineDetailComponent({ routine }) {
     const router = useRouter();
-    const [data, setData] = useState(routine);
 
     const refresh = useCallback(() => {
         router.refresh();
-        setData((prev) => ({ ...prev }));
     }, [router]);
 
-    const exercises = data.routine_exercises ?? [];
+    const exercises = routine.routine_exercises ?? [];
     const orderedIds = exercises.map((e) => e.id);
 
     async function moveUp(index) {
         if (index <= 0) return;
         const next = [...orderedIds];
         [next[index - 1], next[index]] = [next[index], next[index - 1]];
-        await reorderRoutineExercisesAction(data.id, next);
+        await reorderRoutineExercisesAction(routine.id, next);
         toastRichSuccess({ message: 'Reordered' });
         refresh();
     }
@@ -137,7 +135,7 @@ export function RoutineDetailComponent({ routine }) {
         if (index >= orderedIds.length - 1) return;
         const next = [...orderedIds];
         [next[index], next[index + 1]] = [next[index + 1], next[index]];
-        await reorderRoutineExercisesAction(data.id, next);
+        await reorderRoutineExercisesAction(routine.id, next);
         toastRichSuccess({ message: 'Reordered' });
         refresh();
     }
