@@ -22,9 +22,6 @@ export function EditGymExerciseForm({ exercise, onSuccess, className }) {
             id: exercise.id,
             title: exercise.title ?? '',
             description: exercise.description ?? '',
-            sets: exercise.sets ?? '',
-            reps: exercise.reps ?? '',
-            weight: exercise.weight ?? '',
             comments: exercise.comments ?? '',
             body_part: exercise.body_part ?? '',
         },
@@ -41,9 +38,6 @@ export function EditGymExerciseForm({ exercise, onSuccess, className }) {
             formData.set('id', data.id);
             formData.set('title', data.title);
             formData.set('description', data.description ?? '');
-            formData.set('sets', data.sets ?? '');
-            formData.set('reps', data.reps ?? '');
-            formData.set('weight', data.weight ?? '');
             formData.set('comments', data.comments ?? '');
             formData.set('body_part', data.body_part ?? '');
             const result = await updateGymExerciseAction(formData);
@@ -78,20 +72,6 @@ export function EditGymExerciseForm({ exercise, onSuccess, className }) {
             <div className="space-y-2">
                 <label htmlFor="ge-edit-body_part" className="text-sm font-medium">Body part</label>
                 <Input id="ge-edit-body_part" placeholder="e.g. Chest, Back" {...register('body_part')} />
-            </div>
-            <div className="grid grid-cols-3 gap-2">
-                <div className="space-y-2">
-                    <label htmlFor="ge-edit-sets" className="text-sm font-medium">Sets</label>
-                    <Input id="ge-edit-sets" type="number" min={0} {...register('sets')} />
-                </div>
-                <div className="space-y-2">
-                    <label htmlFor="ge-edit-reps" className="text-sm font-medium">Reps</label>
-                    <Input id="ge-edit-reps" type="number" min={0} {...register('reps')} />
-                </div>
-                <div className="space-y-2">
-                    <label htmlFor="ge-edit-weight" className="text-sm font-medium">Weight (kg)</label>
-                    <Input id="ge-edit-weight" type="number" min={0} step={0.5} {...register('weight')} />
-                </div>
             </div>
             <div className="space-y-2">
                 <label htmlFor="ge-edit-description" className="text-sm font-medium">Description</label>

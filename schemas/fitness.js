@@ -6,9 +6,6 @@ const optionalNum = (schema) => z.union([z.literal(''), z.literal(undefined), sc
 export const CreateGymExerciseSchema = z.object({
     title: z.string().min(1, { message: 'Title is required' }).max(200),
     description: optionalString,
-    sets: optionalNum(z.coerce.number().int().min(0)),
-    reps: optionalNum(z.coerce.number().int().min(0)),
-    weight: optionalNum(z.coerce.number().min(0)),
     comments: optionalString,
     body_part: optionalString,
 });

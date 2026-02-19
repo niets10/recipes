@@ -13,9 +13,6 @@ import { toastRichError } from '@/lib/toast-library';
 const defaultValues = {
     title: '',
     description: '',
-    sets: '',
-    reps: '',
-    weight: '',
     comments: '',
     body_part: '',
 };
@@ -41,9 +38,6 @@ export function CreateGymExerciseForm({ onSuccess, className }) {
             const formData = new FormData();
             formData.set('title', data.title);
             formData.set('description', data.description ?? '');
-            formData.set('sets', data.sets ?? '');
-            formData.set('reps', data.reps ?? '');
-            formData.set('weight', data.weight ?? '');
             formData.set('comments', data.comments ?? '');
             formData.set('body_part', data.body_part ?? '');
             const result = await createGymExerciseAction(formData);
@@ -78,20 +72,6 @@ export function CreateGymExerciseForm({ onSuccess, className }) {
             <div className="space-y-2">
                 <label htmlFor="ge-body_part" className="text-sm font-medium">Body part</label>
                 <Input id="ge-body_part" placeholder="e.g. Chest, Back" {...register('body_part')} />
-            </div>
-            <div className="grid grid-cols-3 gap-2">
-                <div className="space-y-2">
-                    <label htmlFor="ge-sets" className="text-sm font-medium">Sets</label>
-                    <Input id="ge-sets" type="number" min={0} placeholder="0" {...register('sets')} />
-                </div>
-                <div className="space-y-2">
-                    <label htmlFor="ge-reps" className="text-sm font-medium">Reps</label>
-                    <Input id="ge-reps" type="number" min={0} placeholder="0" {...register('reps')} />
-                </div>
-                <div className="space-y-2">
-                    <label htmlFor="ge-weight" className="text-sm font-medium">Weight (kg)</label>
-                    <Input id="ge-weight" type="number" min={0} step={0.5} placeholder="0" {...register('weight')} />
-                </div>
             </div>
             <div className="space-y-2">
                 <label htmlFor="ge-description" className="text-sm font-medium">Description (optional)</label>

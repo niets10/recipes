@@ -7,9 +7,6 @@ CREATE TABLE gym_exercises (
   user_id UUID NOT NULL REFERENCES auth.users(id) DEFAULT auth.uid(),
   title TEXT NOT NULL,
   description TEXT,
-  sets INTEGER,
-  reps INTEGER,
-  weight NUMERIC,
   comments TEXT,
   body_part TEXT,
   created_at TIMESTAMPTZ DEFAULT NOW()

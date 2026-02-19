@@ -6,12 +6,6 @@ import { CreateGymExerciseSchema, UpdateGymExerciseSchema } from '@/schemas';
 import { routes } from '@/lib/routes';
 import { z } from 'zod';
 
-function toNum(val) {
-    if (val === '' || val === undefined || val === null) return null;
-    const n = Number(val);
-    return Number.isNaN(n) ? null : n;
-}
-
 export async function getGymExercisesAction() {
     const supabase = await createClient();
     const { data, error } = await supabase.from('gym_exercises').select('*').order('created_at', { ascending: false });
@@ -60,9 +54,6 @@ export async function createGymExerciseAction(formData) {
     const { error } = await supabase.from('gym_exercises').insert({
         title: v.title,
         description: v.description || null,
-        sets: toNum(v.sets),
-        reps: toNum(v.reps),
-        weight: toNum(v.weight),
         comments: v.comments || null,
         body_part: v.body_part || null,
     });
@@ -85,9 +76,6 @@ export async function updateGymExerciseAction(formData) {
         .update({
             title: v.title,
             description: v.description || null,
-            sets: toNum(v.sets),
-            reps: toNum(v.reps),
-            weight: toNum(v.weight),
             comments: v.comments || null,
             body_part: v.body_part || null,
         })
