@@ -31,6 +31,25 @@ export async function getRoutinesWithCountsAction() {
     return (routines || []).map((r) => ({ ...r, exerciseCount: byRoutine[r.id] || 0 }));
 }
 
+export async function getRoutinesPageAction({ page = 0, query } = {}) {
+    const supabase = await createClient();
+    let request = supabase.from('routines').select('*');
+    if (query) {
+        request = request.ilike('name', `%${query}%`);
+    }
+    const { data: routines, error } = await request.order('created_at', { ascending: false }).range(page * 10, (page + 1) * 10 - 1);
+    if (error) throw new Error(error.message);
+    if (!routines?.length) return { routines: [], hasMore: false };
+    const ids = routines.map((r) => r.id);
+    const { data: counts } = await supabase.from('routine_exercises').select('routine_id').in('routine_id', ids);
+    const byRoutine = (counts || []).reduce((acc, row) => {
+        acc[row.routine_id] = (acc[row.routine_id] || 0) + 1;
+        return acc;
+    }, {});
+    const withCounts = routines.map((r) => ({ ...r, exerciseCount: byRoutine[r.id] || 0 }));
+    return { routines: withCounts, hasMore: routines.length === 10 };
+}
+
 export async function getRoutineByIdAction(id) {
     const supabase = await createClient();
     const { data: routine, error: routineError } = await supabase.from('routines').select('*').eq('id', id).single();

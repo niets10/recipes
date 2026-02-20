@@ -21,7 +21,8 @@ export async function getActivitiesAction() {
 
 export async function getActivitiesPageAction({ page = 0, query } = {}) {
     const supabase = await createClient();
-    let request = supabase.from('activities').select('*');
+    const columns = 'id, title, description, time_minutes, calories, created_at';
+    let request = supabase.from('activities').select(columns);
     if (query) {
         request = request.or(`title.ilike.%${query}%,description.ilike.%${query}%`);
     }

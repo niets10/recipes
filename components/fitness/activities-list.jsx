@@ -11,12 +11,30 @@ export function ActivitiesList({ initialActivities, initialHasMore, query }) {
     const [page, setPage] = useState(1);
     const [loading, setLoading] = useState(false);
 
-    // Sync with server data after router.refresh() (e.g. when a new activity is created)
+    // When showing search results, refetch via the server action so we get the same data
+    // shape as "all" (action return value). On client-side navigation, RSC payload
+    // serialization can drop numeric fields (e.g. time_minutes, calories), so search
+    // results would render with missing meta. Refetching avoids that.
     useEffect(() => {
+        if (query === undefined) return;
+        let cancelled = false;
+        getActivitiesPageAction({ page: 0, query }).then((result) => {
+            if (cancelled) return;
+            const list = Array.isArray(result?.activities) ? result.activities : [];
+            setActivities(list);
+            setHasMore(Boolean(result?.hasMore));
+            setPage(list.length > 0 ? 1 : 0);
+        });
+        return () => { cancelled = true; };
+    }, [query]);
+
+    // Sync with server data when not searching (initial load, or router.refresh())
+    useEffect(() => {
+        if (query !== undefined) return;
         setActivities(initialActivities);
         setHasMore(initialHasMore);
-        setPage(1);
-    }, [initialActivities, initialHasMore]);
+        setPage(initialActivities.length > 0 ? 1 : 0);
+    }, [query, initialActivities, initialHasMore]);
 
     const loadMore = useCallback(async () => {
         setLoading(true);

@@ -5,6 +5,6 @@ export const metadata = {
     description: 'Workout routines',
 };
 
-export default async function RoutinesPage() {
-    return <RoutinesComponent />;
+export default async function RoutinesPage({ searchParams }) {
+    return <RoutinesComponent searchParams={searchParams} />;
 }

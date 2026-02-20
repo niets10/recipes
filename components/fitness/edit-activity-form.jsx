@@ -10,7 +10,7 @@ import { UpdateActivitySchema } from '@/schemas';
 import { cn } from '@/lib/utils';
 import { toastRichError } from '@/lib/toast-library';
 
-export function EditActivityForm({ activity, onSuccess, className }) {
+export function EditActivityForm({ activity, onSuccess, className, renderActions }) {
     const {
         register,
         handleSubmit,
@@ -61,21 +61,21 @@ export function EditActivityForm({ activity, onSuccess, className }) {
 
     return (
         <form onSubmit={handleSubmit(onSubmit)} className={cn('space-y-4', className)} noValidate>
-            {errors.root && <p className="text-sm text-destructive" role="alert">{errors.root.message}</p>}
+            {errors.root && (
+                <p className="text-sm text-destructive" role="alert">{errors.root.message}</p>
+            )}
             <div className="space-y-2">
                 <label htmlFor="act-edit-title" className="text-sm font-medium">Title</label>
-                <Input id="act-edit-title" {...register('title')} className={errors.title ? 'border-destructive' : ''} />
+                <Input id="act-edit-title" placeholder="e.g. Running" {...register('title')} className={errors.title ? 'border-destructive' : ''} />
                 {errors.title && <p className="text-sm text-destructive">{errors.title.message}</p>}
             </div>
-            <div className="grid grid-cols-2 gap-2">
-                <div className="space-y-2">
-                    <label htmlFor="act-edit-time" className="text-sm font-medium">Time (min)</label>
-                    <Input id="act-edit-time" type="number" min={0} {...register('time_minutes')} />
-                </div>
-                <div className="space-y-2">
-                    <label htmlFor="act-edit-calories" className="text-sm font-medium">Calories</label>
-                    <Input id="act-edit-calories" type="number" min={0} {...register('calories')} />
-                </div>
+            <div className="space-y-2">
+                <label htmlFor="act-edit-time" className="text-sm font-medium">Time (min)</label>
+                <Input id="act-edit-time" type="number" min={0} {...register('time_minutes')} />
+            </div>
+            <div className="space-y-2">
+                <label htmlFor="act-edit-calories" className="text-sm font-medium">Calories</label>
+                <Input id="act-edit-calories" type="number" min={0} {...register('calories')} />
             </div>
             <div className="space-y-2">
                 <label htmlFor="act-edit-description" className="text-sm font-medium">Description</label>
@@ -86,8 +86,16 @@ export function EditActivityForm({ activity, onSuccess, className }) {
                     {...register('description')}
                 />
             </div>
-            <div className="flex justify-end gap-2 pt-2">
-                <Button type="submit" disabled={isSubmitting}>{isSubmitting ? 'Saving…' : 'Save'}</Button>
+            <div className="pt-2">
+                {renderActions ? (
+                    renderActions({ isSubmitting })
+                ) : (
+                    <div className="flex justify-end gap-2">
+                        <Button type="submit" disabled={isSubmitting}>
+                            {isSubmitting ? 'Saving…' : 'Save'}
+                        </Button>
+                    </div>
+                )}
             </div>
         </form>
     );

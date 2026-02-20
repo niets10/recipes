@@ -49,10 +49,18 @@ export function ActivityDetailComponent({ activity }) {
                         <CardTitle className="text-lg">Edit</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <EditActivityForm activity={activity} onSuccess={handleSuccess} />
-                        <div className="mt-4 pt-4 border-t">
-                            <DeleteActivity activityId={activity.id} activityTitle={activity.title} />
-                        </div>
+                        <EditActivityForm
+                            activity={activity}
+                            onSuccess={handleSuccess}
+                            renderActions={({ isSubmitting }) => (
+                                <div className="flex justify-end gap-2">
+                                    <DeleteActivity activityId={activity.id} activityTitle={activity.title} />
+                                    <Button type="submit" size="default" disabled={isSubmitting}>
+                                        {isSubmitting ? 'Saving…' : 'Save'}
+                                    </Button>
+                                </div>
+                            )}
+                        />
                     </CardContent>
                 </Card>
             </div>
