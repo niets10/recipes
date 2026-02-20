@@ -50,82 +50,85 @@
 }
 
 /* ──────────────────────────────────────────────
-   Light mode — green accent, soft surfaces
+   Light mode — Happy Hues palette 9
+   https://www.happyhues.co/palettes/9
+   Background #eff0f3 · Card #fffffe · Button #ff8e3c · Tertiary #d9376e
    ────────────────────────────────────────────── */
 :root {
   --radius: 0.875rem;
 
-  /* Surfaces */
-  --background: oklch(0.98 0.005 75);
-  --foreground: oklch(0.18 0.035 55);
-  --card: oklch(0.993 0.003 75);
-  --card-foreground: oklch(0.18 0.035 55);
-  --popover: oklch(0.993 0.003 75);
-  --popover-foreground: oklch(0.18 0.035 55);
+  /* Surfaces — palette 9 */
+  --background: oklch(0.948 0.006 264);
+  --foreground: oklch(0.183 0 0);
+  --card: oklch(0.999 0 0);
+  --card-foreground: oklch(0.183 0 0);
+  --popover: oklch(0.999 0 0);
+  --popover-foreground: oklch(0.183 0 0);
 
-  /* Brand — vibrant green */
-  --primary: oklch(0.58 0.18 145);
-  --primary-foreground: oklch(0.99 0.005 90);
-  --secondary: oklch(0.92 0.04 145);
-  --secondary-foreground: oklch(0.25 0.06 145);
+  /* Brand — Button #ff8e3c (orange) */
+  --primary: oklch(0.72 0.16 55);
+  --primary-foreground: oklch(0.183 0 0);
+  --secondary: oklch(0.94 0.02 55);
+  --secondary-foreground: oklch(0.28 0 0);
 
-  /* Neutral tints */
-  --muted: oklch(0.95 0.01 75);
-  --muted-foreground: oklch(0.5 0.02 55);
-  --accent: oklch(0.93 0.04 145);
-  --accent-foreground: oklch(0.25 0.04 55);
+  /* Neutral tints — Paragraph #2a2a2a */
+  --muted: oklch(0.92 0.008 264);
+  --muted-foreground: oklch(0.279 0 0);
+  --accent: oklch(0.93 0.04 55);
+  --accent-foreground: oklch(0.28 0 0);
 
-  /* Feedback */
-  --destructive: oklch(0.55 0.24 28);
+  /* Feedback — same red as dark mode for destructive */
+  --destructive: oklch(0.58 0.22 25);
   --success: oklch(0.58 0.18 145);
   --warning: oklch(0.78 0.15 85);
   --info: oklch(0.6 0.12 250);
 
   /* Chrome */
-  --border: oklch(0.9 0.015 75);
-  --input: oklch(0.9 0.015 75);
-  --ring: oklch(0.58 0.18 145);
+  --border: oklch(0.88 0.01 264);
+  --input: oklch(0.88 0.01 264);
+  --ring: oklch(0.72 0.16 55);
 
-  /* Charts */
-  --chart-1: oklch(0.58 0.18 145);
-  --chart-2: oklch(0.6 0.12 180);
-  --chart-3: oklch(0.62 0.19 330);
+  /* Charts — orange primary + palette accents */
+  --chart-1: oklch(0.72 0.16 55);
+  --chart-2: oklch(0.58 0.22 355);
+  --chart-3: oklch(0.6 0.12 180);
   --chart-4: oklch(0.78 0.15 85);
   --chart-5: oklch(0.55 0.14 150);
 
-  /* Sidebar — noticeably distinct from page background (warm brown) */
-  --sidebar: oklch(0.90 0.022 65);
-  --sidebar-foreground: oklch(0.18 0.035 55);
-  --sidebar-primary: oklch(0.94 0.03 150);
-  --sidebar-primary-foreground: oklch(0.28 0.04 155);
+  /* Sidebar — Card background #fffffe, distinct from page #eff0f3 */
+  --sidebar: oklch(0.999 0 0);
+  --sidebar-foreground: oklch(0.183 0 0);
+  /* Softer primary: selected menu item + top-left icon (pastel orange) */
+  --sidebar-primary: oklch(0.88 0.06 55);
+  --sidebar-primary-foreground: oklch(0.28 0.02 55);
   --sidebar-primary-gradient: linear-gradient(
     135deg,
-    oklch(0.96 0.018 148),
-    oklch(0.94 0.022 162)
+    oklch(0.88 0.06 50),
+    oklch(0.86 0.07 55)
   );
   --sidebar-primary-gradient-intense: linear-gradient(
     135deg,
-    oklch(0.90 0.06 148),
-    oklch(0.88 0.07 162)
+    oklch(0.82 0.10 50),
+    oklch(0.80 0.11 55)
   );
-  --sidebar-accent: oklch(0.92 0.05 145);
-  --sidebar-accent-foreground: oklch(0.35 0.06 145);
-  --sidebar-border: oklch(0.9 0.02 65);
-  --sidebar-ring: oklch(0.58 0.18 145);
+  --sidebar-accent: oklch(0.94 0.04 55);
+  --sidebar-accent-foreground: oklch(0.28 0 0);
+  --sidebar-border: oklch(0.88 0.012 264);
+  --sidebar-ring: oklch(0.72 0.16 55);
 
   /* ── Reusable effect tokens ── */
-  --gradient-brand: linear-gradient(135deg, oklch(0.58 0.18 145), oklch(0.65 0.16 130));
-  --gradient-warm: linear-gradient(135deg, oklch(0.58 0.18 145), oklch(0.62 0.15 120));
+  --gradient-brand: linear-gradient(135deg, oklch(0.72 0.16 55), oklch(0.68 0.18 45));
+  --gradient-warm: linear-gradient(135deg, oklch(0.72 0.16 55), oklch(0.58 0.22 355));
   --gradient-surface: linear-gradient(180deg, var(--accent), var(--background));
 
   --shadow-xs: 0 1px 2px oklch(0 0 0 / 5%);
   --shadow-soft: 0 2px 8px oklch(0 0 0 / 6%);
-  --shadow-warm: 0 4px 14px oklch(0.58 0.18 145 / 12%);
+  --shadow-warm: 0 4px 14px oklch(0.72 0.16 55 / 12%);
   --shadow-elevated: 0 8px 25px oklch(0 0 0 / 8%);
 
-  /* Fitness cards — top border in same tone as sidebar (soft green/teal) */
-  --fitness-card-border: oklch(0.52 0.08 152);
-  --fitness-card-border-hover: oklch(0.48 0.10 150);
+  /* Fitness cards — top border (orange accent from palette) */
+  --fitness-card-border: oklch(0.65 0.18 55);
+  --fitness-card-border-hover: oklch(0.58 0.22 55);
 }
 
 /* ──────────────────────────────────────────────
