@@ -44,13 +44,13 @@ export function AppSidebar() {
                     <SidebarMenuItem>
                         <SidebarMenuButton size="lg" asChild>
                             <Link href={routes.home} onClick={closeMobileSidebar}>
-                                <div className="flex aspect-square size-10 items-center justify-center rounded-xl bg-primary text-primary-foreground">
-                                    <UtensilsCrossed className="size-4" />
+                                <div className="flex aspect-square size-10 items-center justify-center rounded-xl bg-sidebar-primary text-sidebar-primary-foreground">
+                                    <Dumbbell className="size-4" />
                                 </div>
                                 <div className="flex flex-col gap-0.5 leading-none">
-                                    <span className="font-semibold">Recipes</span>
+                                    <span className="font-semibold">Fitness</span>
                                     <span className="text-xs text-muted-foreground">
-                                        Manage your recipes
+                                        Workouts & nutrition
                                     </span>
                                 </div>
                             </Link>

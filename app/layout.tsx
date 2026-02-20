@@ -17,16 +17,16 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
     metadataBase: new URL(defaultUrl),
-    title: 'Recipes',
-    description: 'A recipe app built with Next.js and Supabase',
+    title: 'Fitness',
+    description: 'Track workouts, routines, and nutrition',
     icons: {
-        icon: '/icons/utensils-crossed.svg',
-        apple: '/icons/utensils-crossed-192.png',
+        icon: '/icons/fitness.svg',
+        apple: '/icons/fitness-192.png',
     },
     appleWebApp: {
         capable: true,
         statusBarStyle: 'default',
-        title: 'Recipes',
+        title: 'Fitness',
     },
     formatDetection: {
         telephone: false,
