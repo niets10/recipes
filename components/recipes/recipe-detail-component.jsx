@@ -19,7 +19,7 @@ export async function RecipeDetailComponent({ params }) {
     if (!recipe) {
         return (
             <div className="space-y-6">
-                <div className="flex items-center gap-2">
+                <div className="hidden md:flex items-center gap-2">
                     <Button variant="ghost" size="icon" asChild>
                         <Link href={routes.recipes}><ChevronLeft className="size-4" /></Link>
                     </Button>
@@ -44,7 +44,7 @@ export async function RecipeDetailComponent({ params }) {
         <div className="space-y-6">
             <SetBreadcrumbLabel label={breadcrumbLabel} />
 
-            <div className="flex items-center gap-2">
+            <div className="hidden md:flex items-center gap-2">
                 <Button variant="ghost" size="icon" asChild>
                     <Link href={routes.recipes}><ChevronLeft className="size-4" /></Link>
                 </Button>

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useCallback, useEffect } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -20,8 +21,9 @@ import {
 import { getRoutinesForSelectAction } from '@/actions/database/routine-actions';
 import { getActivitiesForSelectAction } from '@/actions/database/activity-actions';
 import { getGymExercisesForSelectAction } from '@/actions/database/gym-exercise-actions';
-import { UtensilsCrossed, Activity, Dumbbell, Trash2 } from 'lucide-react';
+import { UtensilsCrossed, Activity, Dumbbell, Trash2, ChevronLeft } from 'lucide-react';
 import { toastRichSuccess, toastRichError } from '@/lib/toast-library';
+import { routes } from '@/lib/routes';
 import { Separator } from '@/components/ui/separator';
 
 function toNum(v) {
@@ -153,6 +155,11 @@ export function DailyStatisticComponent({ date, initialData }) {
 
     return (
         <div className="space-y-4">
+            <div className="hidden md:flex items-center gap-2">
+                <Button variant="ghost" size="icon" asChild>
+                    <Link href={routes.statistics}><ChevronLeft className="size-4" /></Link>
+                </Button>
+            </div>
             <Tabs defaultValue="gym" className="w-full">
                 <TabsList>
                     {TABS.map(({ id, label, icon: Icon }) => (

@@ -213,7 +213,7 @@ export function RoutineDetailComponent({ routine }) {
 
     return (
         <div className="space-y-6">
-            <div className="flex items-center gap-2">
+            <div className="hidden md:flex items-center gap-2">
                 <Button variant="ghost" size="icon" asChild>
                     <Link href={routes.fitnessRoutines}><ChevronLeft className="size-4" /></Link>
                 </Button>
