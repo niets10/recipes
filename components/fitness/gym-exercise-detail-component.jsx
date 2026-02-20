@@ -37,9 +37,9 @@ export function GymExerciseDetailComponent({ exercise }) {
                             {exercise.title || 'Untitled'}
                         </CardTitle>
                         {exercise.body_part && (
-                            <p className="text-sm text-muted-foreground">
+                            <div className="text-sm text-muted-foreground">
                                 <Badge variant="secondary">{exercise.body_part}</Badge>
-                            </p>
+                            </div>
                         )}
                     </div>
                     <div className="flex items-center gap-2">
