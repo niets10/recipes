@@ -34,7 +34,7 @@ export function HomeFitnessStats({ data }) {
 
     if (!hasAnyData) {
         return (
-            <Card className="border-l-4 border-l-primary/60" style={{ boxShadow: 'var(--shadow-soft)' }}>
+            <Card className="border-t-4 fitness-card-border">
                 <CardHeader className="pb-2">
                     <CardTitle className="text-base flex items-center gap-2">
                         <Dumbbell className="size-4 text-primary" />
@@ -66,7 +66,7 @@ export function HomeFitnessStats({ data }) {
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                <Card className="border-l-4 border-l-primary/60 sm:col-span-2 lg:col-span-1" style={{ boxShadow: 'var(--shadow-soft)' }}>
+                <Card className="border-t-4 fitness-card-border sm:col-span-2 lg:col-span-1">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <span className="text-sm font-medium text-muted-foreground">Worked out today</span>
                         {workedOutToday ? (
@@ -111,7 +111,7 @@ export function HomeFitnessStats({ data }) {
             </div>
 
             {weekWorkouts.length > 0 && (
-                <Card>
+                <Card className="border-t-4 fitness-card-border">
                     <CardHeader className="pb-2">
                         <CardTitle className="text-base">This week&apos;s workouts</CardTitle>
                         <p className="text-xs text-muted-foreground font-normal">Exercises and activities by day</p>
