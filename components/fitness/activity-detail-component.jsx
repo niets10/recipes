@@ -2,18 +2,17 @@
 
 import { useCallback } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { EditActivityForm } from '@/components/fitness/edit-activity-form';
+import { EditActivity } from '@/components/fitness/edit-activity';
 import { DeleteActivity } from '@/components/fitness/delete-activity';
 import { routes } from '@/lib/routes';
 import { ChevronLeft, Activity } from 'lucide-react';
-import { toastRichSuccess } from '@/lib/toast-library';
 
 export function ActivityDetailComponent({ activity }) {
-    const handleSuccess = useCallback(() => {
-        toastRichSuccess({ message: 'Activity updated' });
-    }, []);
+    const router = useRouter();
+    const refresh = useCallback(() => { router.refresh(); }, [router]);
 
     if (!activity) {
         return <div className="text-muted-foreground">Activity not found.</div>;
@@ -27,43 +26,26 @@ export function ActivityDetailComponent({ activity }) {
                 <Button variant="ghost" size="icon" asChild>
                     <Link href={routes.fitnessActivities}><ChevronLeft className="size-4" /></Link>
                 </Button>
-                <h1 className="text-2xl font-semibold tracking-tight">{activity.title || 'Untitled'}</h1>
             </div>
 
-            <div className="grid gap-6 lg:grid-cols-2">
-                <Card className="border-t-4 fitness-card-border">
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2 text-lg">
+            <Card className="border-t-4 fitness-card-border">
+                <CardHeader className="flex flex-row items-start justify-between gap-4">
+                    <div className="space-y-1">
+                        <CardTitle className="flex items-center gap-2 text-2xl font-semibold tracking-tight">
                             <Activity className="size-5 text-primary" />
-                            Details
+                            {activity.title || 'Untitled'}
                         </CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-2 text-sm">
-                        {meta && <p className="text-muted-foreground">{meta}</p>}
-                        {activity.description && <p>{activity.description}</p>}
-                    </CardContent>
-                </Card>
-
-                <Card>
-                    <CardHeader>
-                        <CardTitle className="text-lg">Edit</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <EditActivityForm
-                            activity={activity}
-                            onSuccess={handleSuccess}
-                            renderActions={({ isSubmitting }) => (
-                                <div className="flex justify-end gap-2">
-                                    <DeleteActivity activityId={activity.id} activityTitle={activity.title} />
-                                    <Button type="submit" size="default" disabled={isSubmitting}>
-                                        {isSubmitting ? 'Saving…' : 'Save'}
-                                    </Button>
-                                </div>
-                            )}
-                        />
-                    </CardContent>
-                </Card>
-            </div>
+                        {meta && <p className="text-sm text-muted-foreground">{meta}</p>}
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <EditActivity activity={activity} onSuccess={refresh} />
+                        <DeleteActivity activityId={activity.id} activityTitle={activity.title} />
+                    </div>
+                </CardHeader>
+                <CardContent className="space-y-2 text-sm">
+                    {activity.description && <p>{activity.description}</p>}
+                </CardContent>
+            </Card>
         </div>
     );
 }

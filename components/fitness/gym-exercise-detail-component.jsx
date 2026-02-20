@@ -2,19 +2,18 @@
 
 import { useCallback } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { EditGymExerciseForm } from '@/components/fitness/edit-gym-exercise-form';
+import { EditGymExercise } from '@/components/fitness/edit-gym-exercise';
 import { DeleteGymExercise } from '@/components/fitness/delete-gym-exercise';
 import { routes } from '@/lib/routes';
 import { ChevronLeft, Dumbbell } from 'lucide-react';
-import { toastRichSuccess } from '@/lib/toast-library';
 
 export function GymExerciseDetailComponent({ exercise }) {
-    const handleSuccess = useCallback(() => {
-        toastRichSuccess({ message: 'Exercise updated' });
-    }, []);
+    const router = useRouter();
+    const refresh = useCallback(() => { router.refresh(); }, [router]);
 
     if (!exercise) {
         return (
@@ -28,49 +27,36 @@ export function GymExerciseDetailComponent({ exercise }) {
                 <Button variant="ghost" size="icon" asChild>
                     <Link href={routes.fitnessGymExercises}><ChevronLeft className="size-4" /></Link>
                 </Button>
-                <h1 className="text-2xl font-semibold tracking-tight">{exercise.title || 'Untitled'}</h1>
-                {exercise.body_part && <Badge variant="secondary">{exercise.body_part}</Badge>}
             </div>
 
-            <div className="grid gap-6 lg:grid-cols-2">
-                <Card className="border-t-4 fitness-card-border">
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2 text-lg">
+            <Card className="border-t-4 fitness-card-border">
+                <CardHeader className="flex flex-row items-start justify-between gap-4">
+                    <div className="space-y-1">
+                        <CardTitle className="flex items-center gap-2 text-2xl font-semibold tracking-tight">
                             <Dumbbell className="size-5 text-primary" />
-                            Details
+                            {exercise.title || 'Untitled'}
                         </CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-2 text-sm">
-                        {(exercise.sets != null || exercise.reps != null || exercise.weight != null) && (
-                            <p className="text-muted-foreground">
-                                {[exercise.sets != null && `${exercise.sets} sets`, exercise.reps != null && `${exercise.reps} reps`, exercise.weight != null && `${exercise.weight} kg`].filter(Boolean).join(' · ')}
+                        {exercise.body_part && (
+                            <p className="text-sm text-muted-foreground">
+                                <Badge variant="secondary">{exercise.body_part}</Badge>
                             </p>
                         )}
-                        {exercise.description && <p>{exercise.description}</p>}
-                        {exercise.comments && <p className="text-muted-foreground italic">{exercise.comments}</p>}
-                    </CardContent>
-                </Card>
-
-                <Card>
-                    <CardHeader>
-                        <CardTitle className="text-lg">Edit</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <EditGymExerciseForm
-                            exercise={exercise}
-                            onSuccess={handleSuccess}
-                            renderActions={({ isSubmitting }) => (
-                                <div className="flex justify-end gap-2">
-                                    <DeleteGymExercise exerciseId={exercise.id} exerciseTitle={exercise.title} />
-                                    <Button type="submit" size="default" disabled={isSubmitting}>
-                                        {isSubmitting ? 'Saving…' : 'Save'}
-                                    </Button>
-                                </div>
-                            )}
-                        />
-                    </CardContent>
-                </Card>
-            </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <EditGymExercise exercise={exercise} onSuccess={refresh} />
+                        <DeleteGymExercise exerciseId={exercise.id} exerciseTitle={exercise.title} />
+                    </div>
+                </CardHeader>
+                <CardContent className="space-y-2 text-sm">
+                    {(exercise.sets != null || exercise.reps != null || exercise.weight != null) && (
+                        <p className="text-muted-foreground">
+                            {[exercise.sets != null && `${exercise.sets} sets`, exercise.reps != null && `${exercise.reps} reps`, exercise.weight != null && `${exercise.weight} kg`].filter(Boolean).join(' · ')}
+                        </p>
+                    )}
+                    {exercise.description && <p>{exercise.description}</p>}
+                    {exercise.comments && <p className="text-muted-foreground italic">{exercise.comments}</p>}
+                </CardContent>
+            </Card>
         </div>
     );
 }

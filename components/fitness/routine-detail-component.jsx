@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { EditRoutine } from '@/components/fitness/edit-routine';
 import { removeExerciseFromRoutineAction, updateRoutineExerciseAction, reorderRoutineExercisesAction, addExerciseToRoutineAction } from '@/actions/database/routine-actions';
 import { getGymExercisesForSelectAction } from '@/actions/database/gym-exercise-actions';
 import { routes } from '@/lib/routes';
@@ -216,17 +217,22 @@ export function RoutineDetailComponent({ routine }) {
                 <Button variant="ghost" size="icon" asChild>
                     <Link href={routes.fitnessRoutines}><ChevronLeft className="size-4" /></Link>
                 </Button>
-                <h1 className="text-2xl font-semibold tracking-tight">{routine.name || 'Untitled'}</h1>
             </div>
 
             <Card className="border-t-4 fitness-card-border">
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-2 text-lg">
+                <CardHeader className="flex flex-row items-start justify-between gap-4">
+                    <CardTitle className="text-2xl font-semibold tracking-tight">
+                        {routine.name || 'Untitled'}
+                    </CardTitle>
+                    <div className="flex items-center gap-2">
+                        <EditRoutine routine={routine} onSuccess={refresh} />
+                    </div>
+                </CardHeader>
+                <CardContent className="pt-0">
+                    <p className="flex items-center gap-2 text-lg font-medium text-muted-foreground mb-4">
                         <ListOrdered className="size-5 text-primary" />
                         Exercises in this routine
-                    </CardTitle>
-                </CardHeader>
-                <CardContent>
+                    </p>
                     {exercises.length === 0 ? (
                         <p className="text-muted-foreground text-sm py-4">No exercises in this routine. Add one from the list below.</p>
                     ) : (
