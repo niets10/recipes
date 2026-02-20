@@ -42,7 +42,7 @@ export function AppSidebar() {
             <SidebarHeader>
                 <SidebarMenu>
                     <SidebarMenuItem>
-                        <SidebarMenuButton size="lg" asChild>
+                        <SidebarMenuButton size="lg" asChild className="hover:bg-transparent active:bg-transparent">
                             <Link href={routes.home} onClick={closeMobileSidebar}>
                                 <div className="flex aspect-square size-10 items-center justify-center rounded-xl bg-sidebar-primary text-sidebar-primary-foreground">
                                     <Dumbbell className="size-4" />
