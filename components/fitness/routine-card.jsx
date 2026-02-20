@@ -11,8 +11,8 @@ export function RoutineCard({ routine, exerciseCount = 0 }) {
         <Link href={`${routes.fitnessRoutines}/${routine.id}`} aria-label={`Open routine: ${routine.name || 'Untitled'}`}>
             <Card className="modern-card modern-card-hover overflow-hidden active:scale-[0.99]">
                 <CardHeader className="pb-2">
-                    <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/15 text-primary">
-                        <ListOrdered className="h-7 w-7" />
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/15 text-primary">
+                        <ListOrdered className="h-5 w-5" />
                     </div>
                     <CardTitle className="text-xl">{routine.name || 'Untitled'}</CardTitle>
                 </CardHeader>

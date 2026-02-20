@@ -44,8 +44,8 @@ export default function FitnessPage() {
                             className="modern-card modern-card-hover overflow-hidden active:scale-[0.99]"
                         >
                             <CardHeader className="pb-2">
-                                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/15 text-primary">
-                                    <item.icon className="h-7 w-7" />
+                                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/15 text-primary">
+                                    <item.icon className="h-5 w-5" />
                                 </div>
                                 <CardTitle className="text-xl">{item.title}</CardTitle>
                             </CardHeader>
