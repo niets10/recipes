@@ -269,9 +269,11 @@ function getRangeBounds(rangeKey) {
     const m = today.getMonth();
     const pad = (n) => String(n).padStart(2, '0');
     let startStr, endStr;
-    if (rangeKey === 'last15') {
+    if (rangeKey === 'currentWeek') {
+        const dayOfWeek = today.getDay();
+        const toMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
         const start = new Date(today);
-        start.setDate(start.getDate() - 14);
+        start.setDate(start.getDate() - toMonday);
         startStr = start.toISOString().slice(0, 10);
         endStr = today.toISOString().slice(0, 10);
     } else if (rangeKey === 'currentMonth') {
@@ -291,11 +293,89 @@ function getRangeBounds(rangeKey) {
 }
 
 /**
- * Fetch fitness stats for tab ranges: Last 15 days, Current month, Last month.
+ * Fetch fitness summary for home dashboard: today's workout status + last 7 days stats + per-day exercise/activity names.
+ */
+export async function getHomeFitnessSummaryAction() {
+    const supabase = await createClient();
+    const today = new Date();
+    const endStr = today.toISOString().slice(0, 10);
+    const start = new Date(today);
+    start.setDate(start.getDate() - 6);
+    const startStr = start.toISOString().slice(0, 10);
+
+    const data = await getFitnessStatsForRange(supabase, startStr, endStr);
+    if (data.error) return { error: data.error };
+
+    const todayEntry = data.dailySeries?.find((d) => d.date === endStr);
+    const workedOutToday = (todayEntry?.workoutCount ?? 0) > 0;
+
+    const { data: statsInRange } = await supabase
+        .from('daily_statistics')
+        .select('id, date')
+        .gte('date', startStr)
+        .lte('date', endStr);
+    const statIds = (statsInRange || []).map((s) => s.id);
+    const dateByStatId = new Map((statsInRange || []).map((s) => [s.id, s.date]));
+
+    let gymEntries = [];
+    let activityEntries = [];
+    if (statIds.length > 0) {
+        const [gymRes, activityRes] = await Promise.all([
+            supabase
+                .from('daily_gym_exercise_entries')
+                .select('daily_statistic_id, gym_exercises(title)')
+                .in('daily_statistic_id', statIds),
+            supabase
+                .from('daily_activity_entries')
+                .select('daily_statistic_id, activities(title)')
+                .in('daily_statistic_id', statIds),
+        ]);
+        gymEntries = gymRes.data || [];
+        activityEntries = activityRes.data || [];
+    }
+
+    const statIdToItems = new Map();
+    gymEntries.forEach((e) => {
+        const id = e.daily_statistic_id;
+        if (!statIdToItems.has(id)) statIdToItems.set(id, []);
+        const name = e.gym_exercises?.title || 'Gym exercise';
+        statIdToItems.get(id).push({ type: 'gym', name });
+    });
+    activityEntries.forEach((e) => {
+        const id = e.daily_statistic_id;
+        if (!statIdToItems.has(id)) statIdToItems.set(id, []);
+        const name = e.activities?.title || 'Activity';
+        statIdToItems.get(id).push({ type: 'activity', name });
+    });
+
+    const dayToShortLabel = new Map((data.dailySeries || []).map((d) => [d.date, d.shortLabel]));
+    const weekWorkouts = [];
+    (data.dailySeries || []).forEach((d) => {
+        const items = statIdToItems.get(
+            (statsInRange || []).find((s) => s.date === d.date)?.id
+        ) || [];
+        if (items.length > 0) {
+            weekWorkouts.push({
+                date: d.date,
+                shortLabel: d.shortLabel,
+                items,
+            });
+        }
+    });
+
+    return {
+        workedOutToday,
+        last7: data,
+        weekWorkouts,
+    };
+}
+
+/**
+ * Fetch fitness stats for tab ranges: Current week, Current month, Last month.
  */
 export async function getFitnessStatsForChartsAction() {
     const supabase = await createClient();
-    const ranges = ['last15', 'currentMonth', 'lastMonth'];
+    const ranges = ['currentWeek', 'currentMonth', 'lastMonth'];
     const result = {};
     for (const key of ranges) {
         const { startStr, endStr } = getRangeBounds(key);

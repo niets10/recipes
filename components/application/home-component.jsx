@@ -4,15 +4,20 @@ import { StatCard } from '@/components/application/stat-card';
 import { Button } from '@/components/ui/button';
 import { routes } from '@/lib/routes';
 import { getRecipeCountAction } from '@/actions/database/recipe-actions';
+import { getHomeFitnessSummaryAction } from '@/actions/database/daily-statistic-actions';
+import { HomeFitnessStats } from '@/components/application/home-fitness-stats';
 
 export async function HomeComponent() {
-    const totalRecipes = await getRecipeCountAction();
+    const [totalRecipes, homeFitness] = await Promise.all([
+        getRecipeCountAction(),
+        getHomeFitnessSummaryAction().catch(() => ({ error: true })),
+    ]);
 
     return (
         <div className="space-y-8">
             <div>
                 <h1 className="text-2xl font-semibold tracking-tight">Dashboard</h1>
-                <p className="text-muted-foreground mt-1">Overview of your recipe collection.</p>
+                <p className="text-muted-foreground mt-1">Overview of your recipe collection and fitness.</p>
             </div>
 
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -29,6 +34,8 @@ export async function HomeComponent() {
                     icon={ChefHat}
                 />
             </div>
+
+            <HomeFitnessStats data={homeFitness} />
 
             <div
                 className="rounded-xl border border-primary/15 p-6"

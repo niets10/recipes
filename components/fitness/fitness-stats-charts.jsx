@@ -9,19 +9,19 @@ import { routes } from '@/lib/routes';
 import { Activity, Footprints, Flame, TrendingUp } from 'lucide-react';
 
 const TAB_KEYS = [
-    { key: 'last15', label: 'Last 15 days' },
+    { key: 'currentWeek', label: 'Current week' },
     { key: 'currentMonth', label: 'Current month' },
     { key: 'lastMonth', label: 'Last month' },
 ];
 
 export function FitnessStatsCharts({ stats }) {
-    const [activeTab, setActiveTab] = useState('last15');
+    const [activeTab, setActiveTab] = useState('currentWeek');
 
     const hasError = stats?.error;
-    const last15 = stats?.last15;
+    const currentWeek = stats?.currentWeek;
     const currentMonth = stats?.currentMonth;
     const lastMonth = stats?.lastMonth;
-    const tabData = { last15, currentMonth, lastMonth };
+    const tabData = { currentWeek, currentMonth, lastMonth };
 
     const anyHasData = useMemo(() => {
         return TAB_KEYS.some(({ key }) => {
@@ -31,7 +31,7 @@ export function FitnessStatsCharts({ stats }) {
             const ab = data.activityBreakdown ?? [];
             return (s?.daysWithWorkout > 0) || (s?.totalSteps > 0) || (s?.avgSteps > 0) || ab.length > 0;
         });
-    }, [tabData.last15, tabData.currentMonth, tabData.lastMonth]);
+    }, [tabData.currentWeek, tabData.currentMonth, tabData.lastMonth]);
 
     if (hasError) {
         return (
