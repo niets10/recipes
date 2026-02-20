@@ -93,8 +93,8 @@
   --chart-4: oklch(0.78 0.15 85);
   --chart-5: oklch(0.55 0.14 150);
 
-  /* Sidebar — subtle gradient for selected item (no strong green) */
-  --sidebar: oklch(0.96 0.012 65);
+  /* Sidebar — noticeably distinct from page background (warm brown) */
+  --sidebar: oklch(0.90 0.022 65);
   --sidebar-foreground: oklch(0.18 0.035 55);
   --sidebar-primary: oklch(0.94 0.03 150);
   --sidebar-primary-foreground: oklch(0.28 0.04 155);
@@ -171,8 +171,8 @@
   --chart-4: oklch(0.68 0.12 70);
   --chart-5: oklch(0.60 0.15 200);
 
-  /* Sidebar & header — same charcoal grey, united borders */
-  --sidebar: oklch(0.22 0.012 280);
+  /* Sidebar & header — same charcoal grey, united borders (more noticeable) */
+  --sidebar: oklch(0.26 0.015 280);
   --sidebar-foreground: oklch(0.98 0.005 90);
   --sidebar-primary: oklch(0.28 0.03 150);
   --sidebar-primary-foreground: oklch(0.92 0.02 150);
