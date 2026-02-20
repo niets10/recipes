@@ -31,7 +31,7 @@ export function ActivityDetailComponent({ activity }) {
             </div>
 
             <div className="grid gap-6 lg:grid-cols-2">
-                <Card className="border-t-4 border-t-primary/40">
+                <Card className="border-t-4 fitness-card-border">
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2 text-lg">
                             <Activity className="size-5 text-primary" />

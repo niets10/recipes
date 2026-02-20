@@ -18,7 +18,7 @@ export function FitnessEntityCard({ href, icon, title, meta, description, badge,
         <Link href={href} aria-label={ariaLabel}>
             <Card
                 className={cn(
-                    'h-full border-t-4 border-t-primary/40 transition-all hover:border-t-primary hover:shadow-md cursor-pointer',
+                    'h-full border-t-4 fitness-card-border transition-all hover:shadow-md cursor-pointer',
                     className
                 )}
             >

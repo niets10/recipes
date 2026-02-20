@@ -165,7 +165,7 @@ export function DailyStatisticComponent({ date, initialData }) {
 
                 {/* Nutrition */}
                 <TabsContent value="nutrition" className="mt-4">
-                    <Card className="border-t-4 border-t-primary/40">
+                    <Card className="border-t-4 fitness-card-border">
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2 text-lg">
                                 <UtensilsCrossed className="size-5 text-primary" />
@@ -252,7 +252,7 @@ export function DailyStatisticComponent({ date, initialData }) {
 
                 {/* Activities */}
                 <TabsContent value="activities" className="mt-4">
-                    <Card className="border-t-4 border-t-primary/40">
+                    <Card className="border-t-4 fitness-card-border">
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2 text-lg">
                                 <Activity className="size-5 text-primary" />
@@ -314,7 +314,7 @@ export function DailyStatisticComponent({ date, initialData }) {
 
                 {/* Gym exercises */}
                 <TabsContent value="gym" className="mt-4">
-                    <Card className="border-t-4 border-t-primary/40">
+                    <Card className="border-t-4 fitness-card-border">
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2 text-lg">
                                 <Dumbbell className="size-5 text-primary" />

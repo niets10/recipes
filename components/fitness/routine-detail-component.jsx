@@ -219,7 +219,7 @@ export function RoutineDetailComponent({ routine }) {
                 <h1 className="text-2xl font-semibold tracking-tight">{routine.name || 'Untitled'}</h1>
             </div>
 
-            <Card className="border-t-4 border-t-primary/40">
+            <Card className="border-t-4 fitness-card-border">
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2 text-lg">
                         <ListOrdered className="size-5 text-primary" />
