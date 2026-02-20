@@ -38,7 +38,7 @@ export function DeleteGymExercise({ exerciseId, exerciseTitle }) {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button type="button" variant="destructive" size="default">Delete</Button>
+                <Button type="button" variant="destructive" size="sm">Delete</Button>
             </DialogTrigger>
             <DialogContent>
                 <DialogHeader>
