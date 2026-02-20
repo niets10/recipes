@@ -161,11 +161,11 @@ export function DailyStatisticComponent({ date, initialData }) {
                 </Button>
             </div>
             <Tabs defaultValue="gym" className="w-full">
-                <TabsList>
+                <TabsList className="w-full sm:w-fit">
                     {TABS.map(({ id, label, icon: Icon }) => (
-                        <TabsTrigger key={id} value={id}>
+                        <TabsTrigger key={id} value={id} className="flex-1 sm:flex-initial px-2 sm:px-3" aria-label={label}>
                             <Icon className="size-4 shrink-0" />
-                            {label}
+                            <span className="hidden sm:inline">{label}</span>
                         </TabsTrigger>
                     ))}
                 </TabsList>
