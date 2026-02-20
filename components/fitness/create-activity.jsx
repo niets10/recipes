@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 import {
     Dialog,
     DialogTrigger,
@@ -14,11 +15,13 @@ import { CreateActivityForm } from '@/components/fitness/create-activity-form';
 import { toastRichSuccess } from '@/lib/toast-library';
 
 export function CreateActivity() {
+    const router = useRouter();
     const [open, setOpen] = useState(false);
     const handleSuccess = useCallback(() => {
         toastRichSuccess({ message: 'Activity created' });
         setOpen(false);
-    }, []);
+        router.refresh();
+    }, [router]);
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>

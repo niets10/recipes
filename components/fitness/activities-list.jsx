@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { getActivitiesPageAction } from '@/actions/database/activity-actions';
 import { ActivityCard } from '@/components/fitness/activity-card';
 import { Button } from '@/components/ui/button';
@@ -10,6 +10,13 @@ export function ActivitiesList({ initialActivities, initialHasMore, query }) {
     const [hasMore, setHasMore] = useState(initialHasMore);
     const [page, setPage] = useState(1);
     const [loading, setLoading] = useState(false);
+
+    // Sync with server data after router.refresh() (e.g. when a new activity is created)
+    useEffect(() => {
+        setActivities(initialActivities);
+        setHasMore(initialHasMore);
+        setPage(1);
+    }, [initialActivities, initialHasMore]);
 
     const loadMore = useCallback(async () => {
         setLoading(true);
