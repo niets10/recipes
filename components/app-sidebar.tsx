@@ -38,7 +38,7 @@ export function AppSidebar() {
     const closeMobileSidebar = () => setOpenMobile(false);
 
     return (
-        <Sidebar>
+        <Sidebar variant="borderless" collapsible="icon" className="bg-sidebar">
             <SidebarHeader>
                 <SidebarMenu>
                     <SidebarMenuItem>

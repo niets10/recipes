@@ -152,7 +152,7 @@ function Sidebar({
     ...props
 }: React.ComponentProps<'div'> & {
     side?: 'left' | 'right';
-    variant?: 'sidebar' | 'floating' | 'inset';
+    variant?: 'sidebar' | 'floating' | 'inset' | 'borderless';
     collapsible?: 'offcanvas' | 'icon' | 'none';
 }) {
     const { isMobile, state, openMobile, setOpenMobile } = useSidebar();
@@ -228,7 +228,10 @@ function Sidebar({
                     // Adjust the padding for floating and inset variants.
                     variant === 'floating' || variant === 'inset'
                         ? 'p-2 group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)+1rem+2px)]'
-                        : 'group-data-[collapsible=icon]:w-[var(--sidebar-width-icon)] group-data-[side=right]:border-l border-sidebar-border',
+                        : 'group-data-[collapsible=icon]:w-[var(--sidebar-width-icon)] group-data-[side=left]:border-r group-data-[side=right]:border-l border-sidebar-border',
+                    variant === 'borderless' &&
+                        'group-data-[collapsible=icon]:w-(--sidebar-width-icon) group-data-[side=left]:border-r-0 group-data-[side=right]:border-l-0',
+
                     className
                 )}
                 {...props}
