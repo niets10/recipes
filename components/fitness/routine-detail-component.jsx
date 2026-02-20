@@ -9,8 +9,9 @@ import { Input } from '@/components/ui/input';
 import { EditRoutine } from '@/components/fitness/edit-routine';
 import { removeExerciseFromRoutineAction, updateRoutineExerciseAction, reorderRoutineExercisesAction, addExerciseToRoutineAction } from '@/actions/database/routine-actions';
 import { getGymExercisesForSelectAction } from '@/actions/database/gym-exercise-actions';
+import { BackLink } from '@/components/application/back-link';
 import { routes } from '@/lib/routes';
-import { ChevronLeft, ListOrdered, ChevronUp, ChevronDown, Trash2, Plus, Dumbbell } from 'lucide-react';
+import { ListOrdered, ChevronUp, ChevronDown, Trash2, Plus, Dumbbell } from 'lucide-react';
 import { toastRichSuccess, toastRichError } from '@/lib/toast-library';
 
 function AvailableExerciseRow({ exercise, routineId, onAdd }) {
@@ -213,18 +214,15 @@ export function RoutineDetailComponent({ routine }) {
 
     return (
         <div className="space-y-6">
-            <div className="hidden md:flex items-center gap-2">
-                <Button variant="ghost" size="icon" asChild>
-                    <Link href={routes.fitnessRoutines}><ChevronLeft className="size-4" /></Link>
-                </Button>
-            </div>
-
             <Card className="border-t-4 fitness-card-border">
                 <CardHeader className="flex flex-row items-start justify-between gap-4">
-                    <CardTitle className="text-2xl font-semibold tracking-tight">
-                        {routine.name || 'Untitled'}
-                    </CardTitle>
-                    <div className="flex items-center gap-2">
+                    <div className="flex min-w-0 flex-1 items-center gap-2">
+                        <BackLink href={routes.fitnessRoutines} label="Back to routines" />
+                        <CardTitle className="min-w-0 truncate text-2xl font-semibold tracking-tight">
+                            {routine.name || 'Untitled'}
+                        </CardTitle>
+                    </div>
+                    <div className="flex shrink-0 items-center gap-2">
                         <EditRoutine routine={routine} onSuccess={refresh} />
                     </div>
                 </CardHeader>

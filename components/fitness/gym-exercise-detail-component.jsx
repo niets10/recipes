@@ -1,15 +1,14 @@
 'use client';
 
 import { useCallback } from 'react';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { EditGymExercise } from '@/components/fitness/edit-gym-exercise';
 import { DeleteGymExercise } from '@/components/fitness/delete-gym-exercise';
+import { BackLink } from '@/components/application/back-link';
 import { routes } from '@/lib/routes';
-import { ChevronLeft, Dumbbell } from 'lucide-react';
+import { Dumbbell } from 'lucide-react';
 
 export function GymExerciseDetailComponent({ exercise }) {
     const router = useRouter();
@@ -23,15 +22,11 @@ export function GymExerciseDetailComponent({ exercise }) {
 
     return (
         <div className="space-y-6">
-            <div className="hidden md:flex items-center gap-2">
-                <Button variant="ghost" size="icon" asChild>
-                    <Link href={routes.fitnessGymExercises}><ChevronLeft className="size-4" /></Link>
-                </Button>
-            </div>
-
             <Card className="border-t-4 fitness-card-border">
                 <CardHeader className="flex flex-row items-start justify-between gap-4">
-                    <div className="space-y-1">
+                    <div className="flex min-w-0 flex-1 items-start gap-2">
+                        <BackLink href={routes.fitnessGymExercises} label="Back to gym exercises" />
+                        <div className="space-y-1 min-w-0">
                         <CardTitle className="flex items-center gap-2 text-2xl font-semibold tracking-tight">
                             <Dumbbell className="size-5 text-primary" />
                             {exercise.title || 'Untitled'}
@@ -41,8 +36,9 @@ export function GymExerciseDetailComponent({ exercise }) {
                                 <Badge variant="secondary">{exercise.body_part}</Badge>
                             </div>
                         )}
+                        </div>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex shrink-0 items-center gap-2">
                         <EditGymExercise exercise={exercise} onSuccess={refresh} />
                         <DeleteGymExercise exerciseId={exercise.id} exerciseTitle={exercise.title} />
                     </div>
