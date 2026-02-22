@@ -7,6 +7,8 @@ import debounce from 'lodash/debounce';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
+import { cn } from '@/lib/utils';
 import { EditRoutine } from '@/components/fitness/edit-routine';
 import { removeExerciseFromRoutineAction, updateRoutineExerciseAction, reorderRoutineExercisesAction, addExerciseToRoutineAction } from '@/actions/database/routine-actions';
 import { getGymExercisesForSelectPageAction } from '@/actions/database/gym-exercise-actions';
@@ -15,10 +17,12 @@ import { routes } from '@/lib/routes';
 import { ListOrdered, ChevronUp, ChevronDown, Trash2, Plus, Dumbbell, Search } from 'lucide-react';
 import { toastRichSuccess, toastRichError } from '@/lib/toast-library';
 
-function AvailableExerciseRow({ exercise, routineId, onAdd }) {
+function AvailableExerciseCard({ exercise, routineId, onAdd }) {
     const [adding, setAdding] = useState(false);
 
-    async function handleAdd() {
+    async function handleAdd(e) {
+        e.preventDefault();
+        e.stopPropagation();
         setAdding(true);
         try {
             const result = await addExerciseToRoutineAction({
@@ -43,29 +47,46 @@ function AvailableExerciseRow({ exercise, routineId, onAdd }) {
     const exerciseHref = exercise.id ? `${routes.fitnessGymExercises}/${exercise.id}` : null;
 
     return (
-        <li className="flex items-center justify-between gap-2 rounded-xl border border-border/60 bg-card/50 px-4 py-3 text-sm">
-            <span>
-                {exerciseHref ? (
-                    <Link href={exerciseHref} className="font-medium text-primary hover:underline" target="_blank">
-                        {title}
-                    </Link>
-                ) : (
-                    <span className="font-medium">{title}</span>
-                )}
-                {bodyPart && <span className="text-muted-foreground ml-1">({bodyPart})</span>}
-            </span>
-            <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8 shrink-0 text-primary hover:text-primary hover:bg-primary/10"
-                onClick={handleAdd}
-                disabled={adding}
-                aria-label={`Add ${title} to routine`}
-            >
-                <Plus className="size-4" />
-            </Button>
-        </li>
+        <Card
+            className={cn(
+                'h-full border-t-4 fitness-card-border transition-all hover:shadow-md flex flex-col'
+            )}
+        >
+            <CardHeader className="pb-2 flex-1">
+                <div className="flex items-start justify-between gap-2">
+                    <div className="flex items-center gap-2 min-w-0 flex-1">
+                        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10">
+                            <Dumbbell className="size-4 text-primary" />
+                        </div>
+                        {exerciseHref ? (
+                            <Link
+                                href={exerciseHref}
+                                className="leading-tight truncate hover:underline"
+                                target="_blank"
+                            >
+                                {title}
+                            </Link>
+                        ) : (
+                            <h3 className="leading-tight truncate">{title}</h3>
+                        )}
+                    </div>
+                    <div className="flex shrink-0 items-center gap-1">
+                        {bodyPart && <Badge variant="secondary" className="text-xs">{bodyPart}</Badge>}
+                        <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 text-primary hover:text-primary hover:bg-primary/10"
+                            onClick={handleAdd}
+                            disabled={adding}
+                            aria-label={`Add ${title} to routine`}
+                        >
+                            <Plus className="size-4" />
+                        </Button>
+                    </div>
+                </div>
+            </CardHeader>
+        </Card>
     );
 }
 
@@ -354,16 +375,16 @@ export function RoutineDetailComponent({ routine }) {
                         </p>
                     ) : (
                         <>
-                            <ul className="space-y-1">
+                            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                                 {availableExercises.map((ex) => (
-                                    <AvailableExerciseRow
+                                    <AvailableExerciseCard
                                         key={ex.id}
                                         exercise={ex}
                                         routineId={routine.id}
                                         onAdd={refresh}
                                     />
                                 ))}
-                            </ul>
+                            </div>
                             {hasMore && (
                                 <div className="flex justify-center pt-4">
                                     <Button variant="outline" onClick={loadMore} disabled={loading}>
