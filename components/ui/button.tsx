@@ -10,7 +10,7 @@ const buttonVariants = cva(
         variants: {
             variant: {
                 default:
-                    'bg-primary text-primary-foreground hover:bg-primary/90',
+                    '[background:var(--sidebar-primary-gradient)] text-sidebar-primary-foreground hover:brightness-[1.08] focus-visible:ring-sidebar-ring',
                 soft: '[background:var(--sidebar-primary-gradient-intense)] text-sidebar-primary-foreground hover:brightness-[0.97] focus-visible:ring-sidebar-ring',
                 destructive:
                     'bg-destructive text-destructive-foreground hover:bg-destructive/90 focus-visible:ring-destructive',
