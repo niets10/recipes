@@ -1,8 +1,3 @@
-import Link from 'next/link';
-import { ChefHat, BookOpen, ArrowRight } from 'lucide-react';
-import { StatCard } from '@/components/application/stat-card';
-import { Button } from '@/components/ui/button';
-import { routes } from '@/lib/routes';
 import { getRecipeCountAction } from '@/actions/database/recipe-actions';
 import { getHomeFitnessSummaryAction } from '@/actions/database/daily-statistic-actions';
 import { HomeFitnessStats } from '@/components/application/home-fitness-stats';

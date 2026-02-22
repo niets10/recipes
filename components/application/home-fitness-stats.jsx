@@ -35,11 +35,14 @@ export function HomeFitnessStats({ data }) {
     if (!hasAnyData) {
         return (
             <Card className="border-t-4 fitness-card-border">
-                <CardHeader className="pb-2">
+                <CardHeader className="pb-2 flex flex-row items-center justify-between space-y-0">
                     <CardTitle className="text-base flex items-center gap-2">
                         <Dumbbell className="size-4 text-primary" />
                         Fitness at a glance
                     </CardTitle>
+                    <Button asChild size="sm" variant="link" className="text-primary shrink-0">
+                        <Link href={routes.statisticsDayForDate(getTodayStr())}>Create today&apos;s Daily Statistic</Link>
+                    </Button>
                 </CardHeader>
                 <CardContent>
                     <p className="text-sm text-muted-foreground mb-4">
@@ -60,9 +63,14 @@ export function HomeFitnessStats({ data }) {
 
     return (
         <div className="space-y-4">
-            <div className="flex items-center gap-2">
-                <Dumbbell className="size-5 text-primary" />
-                <h2 className="font-medium">Fitness at a glance</h2>
+            <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                    <Dumbbell className="size-5 text-primary" />
+                    <h2 className="font-medium">Fitness at a glance</h2>
+                </div>
+                <Button asChild size="sm" variant="link" className="text-primary shrink-0">
+                    <Link href={routes.statisticsDayForDate(todayStr)}>Create today&apos;s Activity</Link>
+                </Button>
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
