@@ -15,6 +15,13 @@ export async function getRecipesAction() {
     return data;
 }
 
+export async function getRecipesForSelectAction() {
+    const supabase = await createClient();
+    const { data, error } = await supabase.from('recipes').select('id, title').order('title');
+    if (error) throw new Error(error.message);
+    return data;
+}
+
 export async function getRecipesPageAction({ page, query } = {}) {
     const supabase = await createClient();
     let request = supabase.from('recipes').select('*');

@@ -17,10 +17,13 @@ import {
     addGymExerciseToDayAction,
     removeGymExerciseFromDayAction,
     updateDailyGymExerciseEntryAction,
+    addRecipeToDayAction,
+    removeRecipeFromDayAction,
 } from '@/actions/database/daily-statistic-actions';
 import { getRoutinesForSelectAction } from '@/actions/database/routine-actions';
 import { getActivitiesForSelectAction } from '@/actions/database/activity-actions';
 import { getGymExercisesForSelectAction } from '@/actions/database/gym-exercise-actions';
+import { getRecipesForSelectAction } from '@/actions/database/recipe-actions';
 import { UtensilsCrossed, Activity, Dumbbell, Trash2, Save } from 'lucide-react';
 import { toastRichSuccess, toastRichError } from '@/lib/toast-library';
 import { routes } from '@/lib/routes';
@@ -37,6 +40,13 @@ const TABS = [
     { id: 'gym', label: 'Gym exercises', icon: Dumbbell },
     { id: 'activities', label: 'Activities', icon: Activity },
     { id: 'nutrition', label: 'Nutrition', icon: UtensilsCrossed },
+];
+
+const MEAL_SECTIONS = [
+    { id: 'breakfast', label: 'Breakfast' },
+    { id: 'lunch', label: 'Lunch' },
+    { id: 'dinner', label: 'Dinner' },
+    { id: 'other', label: 'Other' },
 ];
 
 export function DailyStatisticComponent({ date, initialData }) {
@@ -158,19 +168,50 @@ export function DailyStatisticComponent({ date, initialData }) {
         }
     }
 
+    async function handleAddRecipe(mealType, recipeId) {
+        if (!recipeId) return;
+        let statisticId = dailyStatisticId;
+        if (!statisticId) {
+            const createRes = await getOrCreateDailyStatisticIdAction(date);
+            if (createRes?.error) {
+                toastRichError({ message: createRes.error });
+                return;
+            }
+            statisticId = createRes.id;
+        }
+        const res = await addRecipeToDayAction(statisticId, recipeId, mealType);
+        if (res?.success) {
+            toastRichSuccess({ message: 'Recipe added' });
+            refresh();
+        } else if (res?.error) toastRichError({ message: res.error });
+    }
+
+    async function handleRemoveRecipe(dailyRecipeEntryId) {
+        const res = await removeRecipeFromDayAction(dailyRecipeEntryId);
+        if (res?.success) {
+            toastRichSuccess({ message: 'Recipe removed' });
+            refresh();
+        } else if (res?.error) toastRichError({ message: res.error });
+    }
+
     return (
         <div className="space-y-4">
             <Tabs defaultValue="gym" className="w-full">
                 <div className="flex items-center gap-2">
                     <BackLink label="Back to statistics" />
                     <TabsList className="min-w-0 flex-1 sm:w-fit sm:flex-initial">
-                    {TABS.map(({ id, label, icon: Icon }) => (
-                        <TabsTrigger key={id} value={id} className="flex-1 sm:flex-initial px-2 sm:px-3" aria-label={label}>
-                            <Icon className="size-4 shrink-0" />
-                            <span className="hidden sm:inline">{label}</span>
-                        </TabsTrigger>
-                    ))}
-                </TabsList>
+                        {TABS.map(({ id, label, icon: Icon }) => (
+                            <TabsTrigger
+                                key={id}
+                                value={id}
+                                className="flex-1 sm:flex-initial px-2 sm:px-3 hover:cursor-pointer"
+                                aria-label={label}
+                            >
+                                <Icon className="size-4 shrink-0" />
+                                <span className="hidden sm:inline">{label}</span>
+                            </TabsTrigger>
+                        ))}
+                    </TabsList>
                 </div>
 
                 {/* Nutrition */}
@@ -182,7 +223,26 @@ export function DailyStatisticComponent({ date, initialData }) {
                                 Nutrition
                             </CardTitle>
                         </CardHeader>
-                        <CardContent>
+                        <CardContent className="space-y-6">
+                            {/* Recipes by meal: breakfast, lunch, dinner, other */}
+                            <div className="space-y-4">
+                                <h3 className="text-sm font-medium text-muted-foreground">
+                                    Recipes by meal
+                                </h3>
+                                {MEAL_SECTIONS.map(({ id: mealType, label }) => (
+                                    <NutritionMealSection
+                                        key={mealType}
+                                        mealType={mealType}
+                                        label={label}
+                                        entries={(data?.daily_recipe_entries ?? []).filter(
+                                            (e) => e.meal_type === mealType
+                                        )}
+                                        onAddRecipe={(recipeId) => handleAddRecipe(mealType, recipeId)}
+                                        onRemoveRecipe={handleRemoveRecipe}
+                                    />
+                                ))}
+                            </div>
+                            <Separator />
                             <form
                                 onSubmit={handleNutritionSubmit}
                                 className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5"
@@ -251,7 +311,11 @@ export function DailyStatisticComponent({ date, initialData }) {
                                     />
                                 </div>
                                 <div className="sm:col-span-2 lg:col-span-5">
-                                    <Button type="submit" disabled={nutritionSaving}>
+                                    <Button
+                                        type="submit"
+                                        disabled={nutritionSaving}
+                                        className="hover:cursor-pointer"
+                                    >
                                         {nutritionSaving ? 'Saving…' : 'Save nutrition'}
                                     </Button>
                                 </div>
@@ -290,6 +354,7 @@ export function DailyStatisticComponent({ date, initialData }) {
                                     size="sm"
                                     onClick={handleAddActivity}
                                     disabled={!activitySelect}
+                                    className="hover:cursor-pointer"
                                 >
                                     Log activity
                                 </Button>
@@ -306,7 +371,7 @@ export function DailyStatisticComponent({ date, initialData }) {
                                                 type="button"
                                                 variant="ghost"
                                                 size="icon"
-                                                className="h-8 w-8 text-destructive"
+                                                className="h-8 w-8 text-destructive hover:cursor-pointer"
                                                 onClick={async () => {
                                                     await removeActivityFromDayAction(ae.id);
                                                     refresh();
@@ -359,7 +424,7 @@ export function DailyStatisticComponent({ date, initialData }) {
                                             size="sm"
                                             onClick={handleAddRoutine}
                                             disabled={!routineSelect}
-                                            className="shrink-0"
+                                            className="shrink-0 hover:cursor-pointer"
                                         >
                                             Add routine
                                         </Button>
@@ -391,7 +456,7 @@ export function DailyStatisticComponent({ date, initialData }) {
                                             size="sm"
                                             onClick={handleAddRoutine}
                                             disabled={!routineSelect}
-                                            className="shrink-0"
+                                            className="shrink-0 hover:cursor-pointer"
                                         >
                                             Add routine
                                         </Button>
@@ -411,6 +476,68 @@ export function DailyStatisticComponent({ date, initialData }) {
                     </Card>
                 </TabsContent>
             </Tabs>
+        </div>
+    );
+}
+
+function NutritionMealSection({ mealType, label, entries, onAddRecipe, onRemoveRecipe }) {
+    const [recipes, setRecipes] = useState([]);
+    const [recipeSelect, setRecipeSelect] = useState('');
+
+    async function handleAdd() {
+        if (!recipeSelect) return;
+        await onAddRecipe(recipeSelect);
+        setRecipeSelect('');
+    }
+
+    return (
+        <div className="rounded-xl border border-border/60 bg-card/50 p-4 space-y-3">
+            <h4 className="text-sm font-medium">{label}</h4>
+            <div className="flex items-center gap-2 flex-nowrap">
+                <Combobox
+                    items={recipes}
+                    value={recipeSelect}
+                    onValueChange={setRecipeSelect}
+                    getItemValue={(r) => r.id}
+                    getItemLabel={(r) => r.title}
+                    placeholder={`Select recipe for ${label.toLowerCase()}…`}
+                    emptyMessage="No recipes found."
+                    onFocus={() =>
+                        recipes.length === 0 && getRecipesForSelectAction().then(setRecipes)
+                    }
+                    className="min-w-0 flex-1 max-w-sm"
+                />
+                <Button
+                    type="button"
+                    size="sm"
+                    onClick={handleAdd}
+                    disabled={!recipeSelect}
+                    className="hover:cursor-pointer shrink-0"
+                >
+                    Add
+                </Button>
+            </div>
+            {entries.length > 0 && (
+                <ul className="space-y-1 text-sm">
+                    {entries.map((entry) => (
+                        <li
+                            key={entry.id}
+                            className="flex items-center justify-between rounded-lg border border-border/40 bg-background/50 px-3 py-2"
+                        >
+                            <span>{entry.recipes?.title ?? 'Recipe'}</span>
+                            <Button
+                                type="button"
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8 text-destructive hover:cursor-pointer"
+                                onClick={() => onRemoveRecipe(entry.id)}
+                            >
+                                <Trash2 className="size-4" />
+                            </Button>
+                        </li>
+                    ))}
+                </ul>
+            )}
         </div>
     );
 }
@@ -488,7 +615,14 @@ function GymExerciseRow({ entry, values, onFieldChange, onRemove }) {
     );
 }
 
-function GymExercisesList({ entries, dailyStatisticId, onUpdate, onSaveAllComplete, onRemove, onAdd }) {
+function GymExercisesList({
+    entries,
+    dailyStatisticId,
+    onUpdate,
+    onSaveAllComplete,
+    onRemove,
+    onAdd,
+}) {
     const [showForm, setShowForm] = useState(false);
     const [exercises, setExercises] = useState([]);
     const [gymExerciseId, setGymExerciseId] = useState('');

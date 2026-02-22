@@ -33,10 +33,16 @@ export async function getDailyStatisticByDateAction(dateStr) {
         .eq('daily_statistic_id', stat.id)
         .order('order_index');
 
+    const { data: recipeEntries } = await supabase
+        .from('daily_recipe_entries')
+        .select('*, recipes(id, title)')
+        .eq('daily_statistic_id', stat.id);
+
     return {
         ...stat,
         daily_activity_entries: activityEntries || [],
         daily_gym_exercise_entries: gymEntries || [],
+        daily_recipe_entries: recipeEntries || [],
     };
 }
 
@@ -217,6 +223,34 @@ export async function removeGymExerciseFromDayAction(dailyGymExerciseEntryId) {
     const supabase = await createClient();
     const { error } = await supabase.from('daily_gym_exercise_entries').delete().eq('id', dailyGymExerciseEntryId);
     if (error) throw new Error(error.message);
+    revalidatePath(routes.statistics);
+    revalidatePath(routes.fitness);
+    revalidatePath(routes.statisticsDay);
+    return { success: true };
+}
+
+const MEAL_TYPES = ['breakfast', 'lunch', 'dinner', 'other'];
+
+export async function addRecipeToDayAction(dailyStatisticId, recipeId, mealType, servings = 1) {
+    if (!MEAL_TYPES.includes(mealType)) return { error: 'Invalid meal type' };
+    const supabase = await createClient();
+    const { error } = await supabase.from('daily_recipe_entries').insert({
+        daily_statistic_id: dailyStatisticId,
+        recipe_id: recipeId,
+        meal_type: mealType,
+        servings: toNum(servings) ?? 1,
+    });
+    if (error) return { error: error.message };
+    revalidatePath(routes.statistics);
+    revalidatePath(routes.fitness);
+    revalidatePath(routes.statisticsDay);
+    return { success: true };
+}
+
+export async function removeRecipeFromDayAction(dailyRecipeEntryId) {
+    const supabase = await createClient();
+    const { error } = await supabase.from('daily_recipe_entries').delete().eq('id', dailyRecipeEntryId);
+    if (error) return { error: error.message };
     revalidatePath(routes.statistics);
     revalidatePath(routes.fitness);
     revalidatePath(routes.statisticsDay);
