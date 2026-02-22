@@ -20,8 +20,14 @@ export function GymExercisesList({ initialExercises, initialHasMore, query, body
     const loadMore = useCallback(async () => {
         setLoading(true);
         try {
-            const result = await getGymExercisesPageAction({ page, query, bodyPart });
-            setExercises((prev) => [...prev, ...(result.exercises || [])]);
+            const nextPage = page;
+            const result = await getGymExercisesPageAction({ page: nextPage, query, bodyPart });
+            const newExercises = result.exercises || [];
+            setExercises((prev) => {
+                const seen = new Set(prev.map((e) => e.id));
+                const deduped = newExercises.filter((e) => !seen.has(e.id));
+                return deduped.length > 0 ? [...prev, ...deduped] : prev;
+            });
             setHasMore(result.hasMore ?? false);
             setPage((p) => p + 1);
         } finally {

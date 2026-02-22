@@ -8,5 +8,10 @@ Todo:
   ☐ Datatable and/or calendar to track what I have eaten every day
   ☐ Fields to display the macros
   ☐ Auto-calculate the macros from what I have eaten
-  ☐ https://dribbble.com/shots/26444374-Gamified-Fitness-Nutrition-App
-  ✔ App header in light does not have the same color as the sidebar @done(26-02-20 23:50)
+  ✔ https://dribbble.com/shots/26444374-Gamified-Fitness-Nutrition-App @done(26-02-22 00:06)
+  ✔ App header in light does not have the same color as the sidebar @done(26-02-22 00:06)
+  ☐ Script to create excercises
+  ☐ Create ingredientes table and recipe ingredients table
+  ☐ Script to create ingredients
+  ☐ Script to create Recipes from chatgpt
+  ☐ Add tags to recipes
