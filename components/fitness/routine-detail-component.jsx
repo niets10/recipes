@@ -10,7 +10,12 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { EditRoutine } from '@/components/fitness/edit-routine';
-import { removeExerciseFromRoutineAction, updateRoutineExerciseAction, reorderRoutineExercisesAction, addExerciseToRoutineAction } from '@/actions/database/routine-actions';
+import {
+    removeExerciseFromRoutineAction,
+    updateRoutineExerciseAction,
+    reorderRoutineExercisesAction,
+    addExerciseToRoutineAction,
+} from '@/actions/database/routine-actions';
 import { getGymExercisesForSelectPageAction } from '@/actions/database/gym-exercise-actions';
 import { BackLink } from '@/components/application/back-link';
 import { routes } from '@/lib/routes';
@@ -62,7 +67,6 @@ function AvailableExerciseCard({ exercise, routineId, onAdd }) {
                             <Link
                                 href={exerciseHref}
                                 className="leading-tight truncate hover:underline"
-                                target="_blank"
                             >
                                 {title}
                             </Link>
@@ -71,7 +75,11 @@ function AvailableExerciseCard({ exercise, routineId, onAdd }) {
                         )}
                     </div>
                     <div className="flex shrink-0 items-center gap-1">
-                        {bodyPart && <Badge variant="secondary" className="text-xs">{bodyPart}</Badge>}
+                        {bodyPart && (
+                            <Badge variant="secondary" className="text-xs">
+                                {bodyPart}
+                            </Badge>
+                        )}
                         <Button
                             type="button"
                             variant="ghost"
@@ -90,7 +98,16 @@ function AvailableExerciseCard({ exercise, routineId, onAdd }) {
     );
 }
 
-function RoutineExerciseRow({ re, routineId, index, total, onMoveUp, onMoveDown, onUpdate, onRemove }) {
+function RoutineExerciseRow({
+    re,
+    routineId,
+    index,
+    total,
+    onMoveUp,
+    onMoveDown,
+    onUpdate,
+    onRemove,
+}) {
     const [sets, setSets] = useState(re.sets_override ?? re.gym_exercises?.sets ?? '');
     const [reps, setReps] = useState(re.reps_override ?? re.gym_exercises?.reps ?? '');
     const [weight, setWeight] = useState(re.weight_override ?? re.gym_exercises?.weight ?? '');
@@ -110,7 +127,17 @@ function RoutineExerciseRow({ re, routineId, index, total, onMoveUp, onMoveDown,
             if (res?.success) onUpdate?.();
             else if (res?.error?._form?.[0]) toastRichError({ message: res.error._form[0] });
         });
-    }, [re.id, re.gym_exercise_id, re.order_index, routineId, sets, reps, weight, comments, onUpdate]);
+    }, [
+        re.id,
+        re.gym_exercise_id,
+        re.order_index,
+        routineId,
+        sets,
+        reps,
+        weight,
+        comments,
+        onUpdate,
+    ]);
 
     async function handleRemove() {
         try {
@@ -123,23 +150,39 @@ function RoutineExerciseRow({ re, routineId, index, total, onMoveUp, onMoveDown,
     }
 
     const title = re.gym_exercises?.title ?? 'Exercise';
-    const exerciseHref = re.gym_exercise_id ? `${routes.fitnessGymExercises}/${re.gym_exercise_id}` : null;
+    const exerciseHref = re.gym_exercise_id
+        ? `${routes.fitnessGymExercises}/${re.gym_exercise_id}`
+        : null;
 
     return (
         <tr className="border-b border-border/50">
             <td className="py-1 pr-1 w-16">
                 <div className="flex flex-col gap-0">
-                    <Button type="button" variant="ghost" size="icon" className="h-7 w-7" onClick={() => onMoveUp(index)} disabled={index === 0}>
+                    <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="h-7 w-7"
+                        onClick={() => onMoveUp(index)}
+                        disabled={index === 0}
+                    >
                         <ChevronUp className="size-4" />
                     </Button>
-                    <Button type="button" variant="ghost" size="icon" className="h-7 w-7" onClick={() => onMoveDown(index)} disabled={index >= total - 1}>
+                    <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="h-7 w-7"
+                        onClick={() => onMoveDown(index)}
+                        disabled={index >= total - 1}
+                    >
                         <ChevronDown className="size-4" />
                     </Button>
                 </div>
             </td>
             <td className="py-1 pr-1 align-middle">
                 {exerciseHref ? (
-                    <Link href={exerciseHref} className="font-medium text-primary hover:underline" target="_blank">
+                    <Link href={exerciseHref} className="font-medium text-primary hover:underline">
                         {title}
                     </Link>
                 ) : (
@@ -187,7 +230,13 @@ function RoutineExerciseRow({ re, routineId, index, total, onMoveUp, onMoveDown,
                 />
             </td>
             <td className="py-1 pl-1 w-10">
-                <Button type="button" variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive" onClick={handleRemove}>
+                <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 text-destructive hover:text-destructive"
+                    onClick={handleRemove}
+                >
                     <Trash2 className="size-4" />
                 </Button>
             </td>
@@ -213,31 +262,29 @@ export function RoutineDetailComponent({ routine }) {
         router.refresh();
     }, [router]);
 
-    const fetchPage = useCallback(
-        async (pageIndex, query, exclude, append = false) => {
-            setLoading(true);
-            try {
-                const result = await getGymExercisesForSelectPageAction({
-                    page: pageIndex,
-                    query: query && String(query).trim() ? String(query).trim() : undefined,
-                    excludeIds: exclude,
-                });
-                const list = result.exercises ?? [];
-                setAvailableExercises((prev) => (append ? [...prev, ...list] : list));
-                setHasMore(result.hasMore ?? false);
-                setPage(pageIndex + 1);
-            } catch {
-                setAvailableExercises((prev) => (append ? prev : []));
-                setHasMore(false);
-            } finally {
-                setLoading(false);
-            }
-        },
-        []
-    );
+    const fetchPage = useCallback(async (pageIndex, query, exclude, append = false) => {
+        setLoading(true);
+        try {
+            const result = await getGymExercisesForSelectPageAction({
+                page: pageIndex,
+                query: query && String(query).trim() ? String(query).trim() : undefined,
+                excludeIds: exclude,
+            });
+            const list = result.exercises ?? [];
+            setAvailableExercises((prev) => (append ? [...prev, ...list] : list));
+            setHasMore(result.hasMore ?? false);
+            setPage(pageIndex + 1);
+        } catch {
+            setAvailableExercises((prev) => (append ? prev : []));
+            setHasMore(false);
+        } finally {
+            setLoading(false);
+        }
+    }, []);
 
     const loadMore = useCallback(() => {
-        const q = searchQuery && String(searchQuery).trim() ? String(searchQuery).trim() : undefined;
+        const q =
+            searchQuery && String(searchQuery).trim() ? String(searchQuery).trim() : undefined;
         fetchPage(page, q, addedIds, true);
     }, [page, searchQuery, addedIds, fetchPage]);
 
@@ -254,7 +301,8 @@ export function RoutineDetailComponent({ routine }) {
     }, [fetchPage]);
 
     useEffect(() => {
-        const q = searchQuery && String(searchQuery).trim() ? String(searchQuery).trim() : undefined;
+        const q =
+            searchQuery && String(searchQuery).trim() ? String(searchQuery).trim() : undefined;
         if (!initialFetchedRef.current) {
             initialFetchedRef.current = true;
             fetchPage(0, q, addedIds, false);
@@ -296,7 +344,7 @@ export function RoutineDetailComponent({ routine }) {
             <Card className="border-t-4 fitness-card-border">
                 <CardHeader className="flex flex-row items-start justify-between gap-4">
                     <div className="flex min-w-0 flex-1 items-center gap-2">
-                        <BackLink href={routes.fitnessRoutines} label="Back to routines" />
+                        <BackLink label="Back to routines" />
                         <CardTitle className="min-w-0 truncate text-2xl font-semibold tracking-tight">
                             {routine.name || 'Untitled'}
                         </CardTitle>
@@ -311,7 +359,9 @@ export function RoutineDetailComponent({ routine }) {
                         Exercises in this routine
                     </p>
                     {exercises.length === 0 ? (
-                        <p className="text-muted-foreground text-sm py-4">No exercises in this routine. Add one from the list below.</p>
+                        <p className="text-muted-foreground text-sm py-4">
+                            No exercises in this routine. Add one from the list below.
+                        </p>
                     ) : (
                         <div className="overflow-x-auto">
                             <table className="w-full text-sm">
@@ -319,9 +369,15 @@ export function RoutineDetailComponent({ routine }) {
                                     <tr className="border-b border-border text-left text-muted-foreground">
                                         <th className="py-1 pr-1 w-16 font-medium"></th>
                                         <th className="py-1 pr-1 font-medium">Exercise</th>
-                                        <th className="min-w-14 sm:min-w-24 w-16 sm:w-24 py-1 px-1 font-medium">Sets</th>
-                                        <th className="min-w-14 sm:min-w-24 w-16 sm:w-24 py-1 px-1 font-medium">Reps</th>
-                                        <th className="min-w-16 sm:min-w-28 w-20 sm:w-28 py-1 px-1 font-medium">Weight</th>
+                                        <th className="min-w-14 sm:min-w-24 w-16 sm:w-24 py-1 px-1 font-medium">
+                                            Sets
+                                        </th>
+                                        <th className="min-w-14 sm:min-w-24 w-16 sm:w-24 py-1 px-1 font-medium">
+                                            Reps
+                                        </th>
+                                        <th className="min-w-16 sm:min-w-28 w-20 sm:w-28 py-1 px-1 font-medium">
+                                            Weight
+                                        </th>
                                         <th className="py-1 px-1 font-medium">Comments</th>
                                         <th className="py-1 pl-1 w-10"></th>
                                     </tr>
@@ -353,7 +409,9 @@ export function RoutineDetailComponent({ routine }) {
                         <Dumbbell className="size-5 text-primary" />
                         Available exercises
                     </CardTitle>
-                    <p className="text-sm text-muted-foreground">Click + to add an exercise to this routine.</p>
+                    <p className="text-sm text-muted-foreground">
+                        Click + to add an exercise to this routine.
+                    </p>
                     <div className="relative mt-2 max-w-sm">
                         <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground pointer-events-none" />
                         <Input
@@ -371,7 +429,9 @@ export function RoutineDetailComponent({ routine }) {
                         <p className="text-muted-foreground text-sm py-4">Loading exercises…</p>
                     ) : availableExercises.length === 0 ? (
                         <p className="text-muted-foreground text-sm py-4">
-                            {searchQuery.trim() ? 'No exercises match your search.' : 'All your exercises are already in this routine.'}
+                            {searchQuery.trim()
+                                ? 'No exercises match your search.'
+                                : 'All your exercises are already in this routine.'}
                         </p>
                     ) : (
                         <>

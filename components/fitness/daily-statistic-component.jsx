@@ -158,7 +158,7 @@ export function DailyStatisticComponent({ date, initialData }) {
         <div className="space-y-4">
             <Tabs defaultValue="gym" className="w-full">
                 <div className="flex items-center gap-2">
-                    <BackLink href={routes.statistics} label="Back to statistics" />
+                    <BackLink label="Back to statistics" />
                     <TabsList className="min-w-0 flex-1 sm:w-fit sm:flex-initial">
                     {TABS.map(({ id, label, icon: Icon }) => (
                         <TabsTrigger key={id} value={id} className="flex-1 sm:flex-initial px-2 sm:px-3" aria-label={label}>

@@ -1,25 +1,29 @@
-import Link from 'next/link';
+'use client';
+
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 /**
- * Link back to a list/parent page. Hidden on mobile (rely on browser/sidebar).
+ * Button that goes back to the previous page in navigation history.
+ * Hidden on mobile (rely on browser/sidebar).
  * Use inside a flex row (e.g. with page title or tabs) for a compact header.
  */
-export function BackLink({ href, label = 'Back', className, ...props }) {
+export function BackLink({ label = 'Back', className, ...props }) {
+    const router = useRouter();
+
     return (
         <Button
             variant="ghost"
             size="icon"
-            asChild
+            type="button"
             className={cn('hidden shrink-0 md:flex', className)}
             aria-label={label}
+            onClick={() => router.back()}
             {...props}
         >
-            <Link href={href}>
-                <ChevronLeft className="size-4" />
-            </Link>
+            <ChevronLeft className="size-4" />
         </Button>
     );
 }

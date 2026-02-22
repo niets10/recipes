@@ -24,7 +24,7 @@ export function ActivityDetailComponent({ activity }) {
             <Card className="border-t-4 fitness-card-border">
                 <CardHeader className="flex flex-row items-start justify-between gap-4">
                     <div className="flex min-w-0 flex-1 items-start gap-2">
-                        <BackLink href={routes.fitnessActivities} label="Back to activities" />
+                        <BackLink label="Back to activities" />
                         <div className="space-y-1 min-w-0">
                         <CardTitle className="flex items-center gap-2 text-2xl font-semibold tracking-tight">
                             <Activity className="size-5 text-primary" />

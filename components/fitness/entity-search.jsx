@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import debounce from 'lodash/debounce';
 import { Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
@@ -19,6 +19,7 @@ const DEBOUNCE_MS = 400;
  */
 export function EntitySearch({ basePath, placeholder = 'Search…', ariaLabel = 'Search', preserveParamKeys = [], className, ...props }) {
     const router = useRouter();
+    const pathname = usePathname();
     const searchParams = useSearchParams();
     const urlQuery = searchParams.get('q') ?? '';
     const [queryValue, setQueryValue] = useState(urlQuery);
@@ -27,6 +28,21 @@ export function EntitySearch({ basePath, placeholder = 'Search…', ariaLabel = 
     const lastPushedRef = useRef({ q: urlQuery });
     const debouncedApplyRef = useRef(null);
     const applyRef = useRef(null);
+
+    // Empty search when navigating to another route (pathname change)
+    useEffect(() => {
+        debouncedApplyRef.current?.cancel();
+        lastPushedRef.current = { q: '', ...Object.fromEntries((preserveParamKeys || []).map((k) => [k, searchParams.get(k) ?? ''])) };
+        setQueryValue('');
+        const keys = preserveParamKeys || [];
+        const params = new URLSearchParams();
+        keys.forEach((key) => {
+            const value = searchParams.get(key) ?? '';
+            if (value) params.set(key, value);
+        });
+        router.replace(`${basePath}${params.size ? `?${params.toString()}` : ''}`);
+    }, [pathname]);
+
     useEffect(() => {
         const keys = preserveParamKeys || [];
         const nextPreserved = Object.fromEntries(keys.map((k) => [k, searchParams.get(k) ?? '']));
