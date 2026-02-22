@@ -124,8 +124,13 @@ function RoutineExerciseRow({
             comments_override: comments || undefined,
         };
         updateRoutineExerciseAction({ id: re.id, ...payload }).then((res) => {
-            if (res?.success) onUpdate?.();
-            else if (res?.error?._form?.[0]) toastRichError({ message: res.error._form[0] });
+            if (res?.success) {
+                toastRichSuccess({ message: 'Exercise updated' });
+                onUpdate?.();
+            }
+            else if (res?.error?._form?.[0]) {
+                toastRichError({ message: res.error._form[0] });
+            }
         });
     }, [
         re.id,
@@ -141,9 +146,14 @@ function RoutineExerciseRow({
 
     async function handleRemove() {
         try {
-            await removeExerciseFromRoutineAction(re.id, routineId);
-            toastRichSuccess({ message: 'Exercise removed' });
-            onUpdate?.();
+            const res = await removeExerciseFromRoutineAction(re.id, routineId);
+            if (res?.success) {
+                toastRichSuccess({ message: 'Exercise removed' });
+                onUpdate?.();
+            }
+            else if (res?.error?._form?.[0]) {
+                toastRichError({ message: res.error._form[0] });
+            }
         } catch (err) {
             toastRichError({ message: err?.message || 'Failed to remove' });
         }

@@ -508,7 +508,7 @@ function GymExercisesList({ entries, dailyStatisticId, onUpdate, onRemove, onAdd
                                 <th className="min-w-14 sm:min-w-24 w-16 sm:w-24 py-1 px-1">
                                     Sets
                                 </th>
-                                <th className="min-w-14 sm:min-w-24 w-16 sm:w-24 py-1 px-1">
+                                <th className="min-w-16 sm:min-w-28 w-20 sm:w-28 py-1 px-1">
                                     Reps
                                 </th>
                                 <th className="min-w-16 sm:min-w-28 w-20 sm:w-28 py-1 px-1">
