@@ -9,7 +9,7 @@ export function RoutineCard({ routine, exerciseCount = 0 }) {
     return (
         <FitnessEntityCard
             href={`${routes.fitnessRoutines}/${routine.id}`}
-            icon={<ListOrdered className="size-4 text-primary" />}
+            icon={<ListOrdered className="size-4" />}
             title={routine.name}
             meta={description}
             ariaLabel={`Open routine: ${routine.name || 'Untitled'}`}

@@ -11,7 +11,7 @@ export function GymExerciseCard({ exercise, className }) {
     return (
         <FitnessEntityCard
             href={`${routes.fitnessGymExercises}/${id}`}
-            icon={<Dumbbell className="size-4 text-primary" />}
+            icon={<Dumbbell className="size-4" />}
             title={title}
             meta={meta}
             description={description}

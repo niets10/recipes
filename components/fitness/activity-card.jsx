@@ -12,7 +12,7 @@ export function ActivityCard({ activity, className }) {
     return (
         <FitnessEntityCard
             href={`${routes.fitnessActivities}/${id}`}
-            icon={<Activity className="size-4 text-primary" />}
+            icon={<Activity className="size-4" />}
             title={title}
             meta={meta}
             description={description}
