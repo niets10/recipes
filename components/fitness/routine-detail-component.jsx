@@ -19,7 +19,7 @@ import {
 import { getGymExercisesForSelectPageAction } from '@/actions/database/gym-exercise-actions';
 import { BackLink } from '@/components/application/back-link';
 import { routes } from '@/lib/routes';
-import { ListOrdered, ChevronUp, ChevronDown, Trash2, Plus, Dumbbell, Search, Save } from 'lucide-react';
+import { ListOrdered, ChevronUp, ChevronDown, Trash2, Plus, Dumbbell, Search, Save, ExternalLink } from 'lucide-react';
 import { toastRichSuccess, toastRichError } from '@/lib/toast-library';
 
 function AvailableExerciseCard({ exercise, routineId, onAdd }) {
@@ -54,37 +54,35 @@ function AvailableExerciseCard({ exercise, routineId, onAdd }) {
     return (
         <Card
             className={cn(
-                'h-full min-w-0 w-full max-w-full border-t-4 fitness-card-border transition-all hover:shadow-md flex flex-col overflow-hidden'
+                'h-full min-w-0 w-full max-w-full rounded-2xl flex flex-col overflow-hidden p-5 transition-colors border-0 shadow-none',
+                'bg-sidebar-accent text-card-foreground'
             )}
         >
-            <CardHeader className="pb-2 flex-1 min-w-0 overflow-hidden">
+            <div className="flex flex-1 min-w-0 flex-col gap-3">
                 <div className="flex items-start justify-between gap-2 min-w-0">
-                    <div className="flex items-center gap-2 min-w-0 flex-1 overflow-hidden">
-                        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10">
-                            <Dumbbell className="size-4 text-primary" />
-                        </div>
-                        {exerciseHref ? (
+                    {bodyPart && (
+                        <Badge
+                            variant="secondary"
+                            className="text-[10px] shrink-0 truncate max-w-[80px] sm:max-w-none sm:text-xs bg-background/90 text-foreground border-border"
+                        >
+                            {bodyPart}
+                        </Badge>
+                    )}
+                    <div className="flex shrink-0 items-center gap-1">
+                        {exerciseHref && (
                             <Link
                                 href={exerciseHref}
-                                className="text-sm leading-tight truncate hover:underline min-w-0 sm:text-base"
+                                className="text-muted-foreground hover:text-sidebar-accent-foreground p-1 rounded-md transition-colors"
+                                aria-label={`View ${title} details`}
                             >
-                                {title}
+                                <ExternalLink className="size-5" />
                             </Link>
-                        ) : (
-                            <h3 className="text-sm leading-tight truncate min-w-0 sm:text-base">{title}</h3>
-                        )}
-                    </div>
-                    <div className="flex shrink-0 items-center gap-1">
-                        {bodyPart && (
-                            <Badge variant="secondary" className="text-[10px] shrink-0 truncate max-w-[80px] sm:max-w-none sm:text-xs">
-                                {bodyPart}
-                            </Badge>
                         )}
                         <Button
                             type="button"
                             variant="ghost"
                             size="icon"
-                            className="h-8 w-8 shrink-0 text-primary hover:text-primary hover:bg-primary/10"
+                            className="h-8 w-8 shrink-0 text-muted-foreground hover:text-sidebar-accent-foreground hover:bg-sidebar-accent/50"
                             onClick={handleAdd}
                             disabled={adding}
                             aria-label={`Add ${title} to routine`}
@@ -93,7 +91,20 @@ function AvailableExerciseCard({ exercise, routineId, onAdd }) {
                         </Button>
                     </div>
                 </div>
-            </CardHeader>
+                <div className="min-w-0 flex-1">
+                    {exerciseHref ? (
+                        <Link href={exerciseHref} className="block group">
+                            <h3 className="text-xl font-semibold text-card-foreground truncate group-hover:underline">
+                                {title}
+                            </h3>
+                        </Link>
+                    ) : (
+                        <h3 className="text-xl font-semibold text-card-foreground truncate">
+                            {title}
+                        </h3>
+                    )}
+                </div>
+            </div>
         </Card>
     );
 }
@@ -464,7 +475,6 @@ export function RoutineDetailComponent({ routine }) {
             <Card className="min-w-0 overflow-hidden">
                 <CardHeader className="min-w-0">
                     <CardTitle className="flex items-center gap-2 text-base min-w-0 truncate sm:text-lg">
-                        <Dumbbell className="size-4 sm:size-5 text-primary" />
                         Available exercises
                     </CardTitle>
                     <p className="text-xs text-muted-foreground sm:text-sm">

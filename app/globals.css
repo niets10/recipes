@@ -57,13 +57,13 @@
 :root {
   --radius: 0.875rem;
 
-  /* Surfaces — palette 9 */
-  --background: oklch(0.948 0.006 264);
-  --foreground: oklch(0.183 0 0);
-  --card: oklch(0.999 0 0);
-  --card-foreground: oklch(0.183 0 0);
-  --popover: oklch(0.999 0 0);
-  --popover-foreground: oklch(0.183 0 0);
+  /* Surfaces — tilde-style: white cards, subtle off-white bg */
+  --background: oklch(0.98 0.004 260);
+  --foreground: oklch(0.22 0.02 260);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.22 0.02 260);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.22 0.02 260);
 
   /* Brand — Button #ff8e3c (orange) */
   --primary: oklch(0.72 0.16 55);
@@ -95,12 +95,11 @@
   --chart-4: oklch(0.78 0.15 85);
   --chart-5: oklch(0.55 0.14 150);
 
-  /* Sidebar — Card background #fffffe, distinct from page #eff0f3 */
-  --sidebar: oklch(0.999 0 0);
-  --sidebar-foreground: oklch(0.183 0 0);
-  /* Softer primary: selected menu item + top-left icon (pastel orange) */
+  /* Sidebar — tilde-style: white sidebar, cool gray accent */
+  --sidebar: oklch(1 0 0);
+  --sidebar-foreground: oklch(0.25 0.02 260);
   --sidebar-primary: oklch(0.88 0.06 55);
-  --sidebar-primary-foreground: oklch(0.28 0.02 55);
+  --sidebar-primary-foreground: oklch(0.99 0 0);
   --sidebar-primary-gradient: linear-gradient(
     135deg,
     oklch(0.88 0.06 50),
@@ -111,9 +110,9 @@
     oklch(0.82 0.10 50),
     oklch(0.80 0.11 55)
   );
-  --sidebar-accent: oklch(0.94 0.04 55);
-  --sidebar-accent-foreground: oklch(0.28 0 0);
-  --sidebar-border: oklch(0.88 0.012 264);
+  --sidebar-accent: oklch(0.95 0.015 240);
+  --sidebar-accent-foreground: oklch(0.25 0.02 260);
+  --sidebar-border: oklch(0.92 0.008 260);
   --sidebar-ring: oklch(0.72 0.16 55);
 
   /* ── Reusable effect tokens ── */
@@ -136,13 +135,13 @@
    Near-black bg · charcoal sidebar/header · grey cards · united borders
    ────────────────────────────────────────────── */
 .dark {
-  /* Surfaces — deep black main; grey cards (slightly darker than sidebar) */
-  --background: oklch(0.10 0.01 280);
-  --foreground: oklch(0.98 0.005 90);
-  --card: oklch(0.18 0.012 280);
-  --card-foreground: oklch(0.98 0.005 90);
-  --popover: oklch(0.18 0.012 280);
-  --popover-foreground: oklch(0.98 0.005 90);
+  /* Surfaces — tilde-style: dark grey card/sidebar */
+  --background: oklch(0.141 0.005 285.823);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.21 0.006 285.885);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.21 0.006 285.885);
+  --popover-foreground: oklch(0.985 0 0);
 
   /* Brand — vibrant green (#4CAF50 / #8BC34A style) */
   --primary: oklch(0.62 0.18 145);
@@ -174,11 +173,11 @@
   --chart-4: oklch(0.68 0.12 70);
   --chart-5: oklch(0.60 0.15 200);
 
-  /* Sidebar & header — same charcoal grey, united borders (more noticeable) */
-  --sidebar: oklch(0.26 0.015 280);
-  --sidebar-foreground: oklch(0.98 0.005 90);
+  /* Sidebar & header — tilde-style: same grey as card, blue accent */
+  --sidebar: oklch(0.21 0.006 285.885);
+  --sidebar-foreground: oklch(0.985 0 0);
   --sidebar-primary: oklch(0.28 0.03 150);
-  --sidebar-primary-foreground: oklch(0.92 0.02 150);
+  --sidebar-primary-foreground: oklch(0.969 0.015 12.422);
   --sidebar-primary-gradient: linear-gradient(
     135deg,
     oklch(0.26 0.025 152),
@@ -189,9 +188,9 @@
     oklch(0.32 0.07 152),
     oklch(0.34 0.06 165)
   );
-  --sidebar-accent: oklch(0.28 0.02 280);
-  --sidebar-accent-foreground: oklch(0.98 0.005 90);
-  --sidebar-border: oklch(0.32 0.02 280);
+  --sidebar-accent: oklch(0.274 0.006 286.033);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.62 0.18 145);
 
   /* ── Reusable effect tokens (dark) ── */
