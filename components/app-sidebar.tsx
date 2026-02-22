@@ -2,7 +2,15 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, UtensilsCrossed, Dumbbell, Calendar, ListOrdered, Activity } from 'lucide-react';
+import {
+    Home,
+    UtensilsCrossed,
+    Dumbbell,
+    Calendar,
+    ListOrdered,
+    Activity,
+    Bike,
+} from 'lucide-react';
 import { routes } from '@/lib/routes';
 import {
     Sidebar,
@@ -28,7 +36,7 @@ const navItems = [
 const fitnessSubItems = [
     { title: 'Routines', href: routes.fitnessRoutines, icon: ListOrdered },
     { title: 'Gym Exercises', href: routes.fitnessGymExercises, icon: Dumbbell },
-    { title: 'Activities', href: routes.fitnessActivities, icon: Activity },
+    { title: 'Activities', href: routes.fitnessActivities, icon: Bike },
 ];
 
 export function AppSidebar() {
@@ -42,7 +50,11 @@ export function AppSidebar() {
             <SidebarHeader>
                 <SidebarMenu>
                     <SidebarMenuItem>
-                        <SidebarMenuButton size="lg" asChild className="hover:bg-transparent active:bg-transparent">
+                        <SidebarMenuButton
+                            size="lg"
+                            asChild
+                            className="hover:bg-transparent active:bg-transparent"
+                        >
                             <Link href={routes.home} onClick={closeMobileSidebar}>
                                 <div className="flex aspect-square size-10 items-center justify-center rounded-xl bg-sidebar-primary text-sidebar-primary-foreground">
                                     <Activity className="size-4" />
