@@ -3,8 +3,10 @@ SELECT u.id, v.title, v.description, v.body_part
 FROM (SELECT id FROM auth.users ORDER BY created_at ASC LIMIT 1) u
 CROSS JOIN (VALUES
 ('Flat Barbell Bench Press', 'Compound push targeting the middle portion of the chest (sternal pectorals) with secondary work for anterior deltoids and triceps.', 'Chest'),
+('Flat Barbell Bench Press (Paused)', 'A standard bench press where the barbell is brought down to the lower chest and held in a static, controlled position for 1-2 seconds before pressing back up to lockout. By pausing at the bottom (the most mechanically disadvantaged position), you dissipate elastic energy (the "stretch reflex"). This forces the pectoral muscles and anterior deltoids to recruit more motor units to move the weight from a dead stop, leading to massive gains in raw strength and pressing technique.', 'Chest'),
+('Flat Dumbbell Bench Press', 'Compound push targeting the middle portion of the chest (sternal pectorals) with secondary work for anterior deltoids and triceps.', 'Chest'),
 ('Incline Barbell Bench Press', 'Compound push targeting the upper chest (clavicular pectorals) and front deltoids with triceps involvement.', 'Chest'),
-('Decline Barbell Bench Press', 'Compound push targeting the lower chest (lower sternal pectorals) with anterior deltoid and triceps involvement.', 'Chest'),
+('Incline Dumbbell Bench Press', 'Compound push targeting the upper chest (clavicular pectorals) and front deltoids with triceps involvement.', 'Chest'),
 ('Flat Dumbbell Flye', 'Isolation movement targeting the middle and outer chest (pectorals) with a deep stretch at the bottom.', 'Chest'),
 ('Incline Dumbbell Flye', 'Isolation movement targeting the upper chest and front deltoids with emphasis on the clavicular head.', 'Chest'),
 ('Cable Crossover', 'Isolation movement targeting the inner and middle chest; low pulley emphasizes upper chest, high pulley emphasizes lower chest.', 'Chest'),
@@ -18,7 +20,8 @@ CROSS JOIN (VALUES
 ('Barbell Row', 'Compound pull targeting the middle back (latissimus dorsi, rhomboids) and rear deltoids with biceps involvement.', 'Back'),
 ('T-Bar Row', 'Compound pull targeting the middle back (lats and rhomboids) and rear deltoids; grip width changes emphasis.', 'Back'),
 ('Single-Arm Dumbbell Row', 'Compound pull targeting the latissimus dorsi and rhomboids on one side with biceps and rear deltoid involvement.', 'Back'),
-('Lat Pulldown', 'Compound pull targeting the latissimus dorsi (outer back width) and biceps; wide grip emphasizes lats.', 'Back'),
+('Close-grip Lat Pulldown', 'Adding back density and "thickness.', 'Back'),
+('Wide-grip Lat Pulldown', 'Upper lat width and the "V-taper.', 'Back'),
 ('Pull-Up', 'Compound pull targeting the latissimus dorsi and biceps; underhand grip increases biceps involvement.', 'Back'),
 ('Chin-Up', 'Compound pull targeting the latissimus dorsi with greater biceps emphasis due to supinated grip.', 'Back'),
 ('Straight-Arm Pulldown', 'Isolation movement targeting the latissimus dorsi with emphasis on the lower lats.', 'Back'),

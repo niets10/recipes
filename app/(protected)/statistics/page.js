@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { headers } from 'next/headers';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { StatisticsCalendar } from '@/components/fitness/statistics-calendar';
@@ -17,6 +18,7 @@ export const metadata = {
 };
 
 export default async function StatisticsPage() {
+    await headers(); // Opt into dynamic rendering so current time is valid
     const { year, month } = getCurrentYearMonth();
     const datesWithData = await getDatesWithStatisticsAction(year, month).catch(() => []);
 
