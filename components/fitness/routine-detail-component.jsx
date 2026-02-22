@@ -19,7 +19,7 @@ import {
 import { getGymExercisesForSelectPageAction } from '@/actions/database/gym-exercise-actions';
 import { BackLink } from '@/components/application/back-link';
 import { routes } from '@/lib/routes';
-import { ListOrdered, ChevronUp, ChevronDown, Trash2, Plus, Dumbbell, Search } from 'lucide-react';
+import { ListOrdered, ChevronUp, ChevronDown, Trash2, Plus, Dumbbell, Search, Save } from 'lucide-react';
 import { toastRichSuccess, toastRichError } from '@/lib/toast-library';
 
 function AvailableExerciseCard({ exercise, routineId, onAdd }) {
@@ -98,60 +98,43 @@ function AvailableExerciseCard({ exercise, routineId, onAdd }) {
     );
 }
 
+function getRoutineExerciseInitial(re) {
+    return {
+        sets: re.sets_override ?? re.gym_exercises?.sets ?? '',
+        reps: re.reps_override ?? re.gym_exercises?.reps ?? '',
+        weight: re.weight_override ?? re.gym_exercises?.weight ?? '',
+        comments: re.comments_override ?? '',
+    };
+}
+
+function isRoutineExerciseDirty(values, re) {
+    const initial = getRoutineExerciseInitial(re);
+    return (
+        String(values.sets) !== String(initial.sets) ||
+        String(values.reps) !== String(initial.reps) ||
+        String(values.weight) !== String(initial.weight) ||
+        String(values.comments) !== String(initial.comments)
+    );
+}
+
 function RoutineExerciseRow({
     re,
     routineId,
     index,
     total,
+    values,
+    onFieldChange,
     onMoveUp,
     onMoveDown,
-    onUpdate,
     onRemove,
 }) {
-    const [sets, setSets] = useState(re.sets_override ?? re.gym_exercises?.sets ?? '');
-    const [reps, setReps] = useState(re.reps_override ?? re.gym_exercises?.reps ?? '');
-    const [weight, setWeight] = useState(re.weight_override ?? re.gym_exercises?.weight ?? '');
-    const [comments, setComments] = useState(re.comments_override ?? '');
-
-    const handleBlur = useCallback(() => {
-        const payload = {
-            routine_id: routineId,
-            gym_exercise_id: re.gym_exercise_id,
-            order_index: re.order_index,
-            sets_override: sets === '' ? undefined : Number(sets),
-            reps_override: reps === '' ? undefined : Number(reps),
-            weight_override: weight === '' ? undefined : Number(weight),
-            comments_override: comments || undefined,
-        };
-        updateRoutineExerciseAction({ id: re.id, ...payload }).then((res) => {
-            if (res?.success) {
-                toastRichSuccess({ message: 'Exercise updated' });
-                onUpdate?.();
-            }
-            else if (res?.error?._form?.[0]) {
-                toastRichError({ message: res.error._form[0] });
-            }
-        });
-    }, [
-        re.id,
-        re.gym_exercise_id,
-        re.order_index,
-        routineId,
-        sets,
-        reps,
-        weight,
-        comments,
-        onUpdate,
-    ]);
-
     async function handleRemove() {
         try {
             const res = await removeExerciseFromRoutineAction(re.id, routineId);
             if (res?.success) {
                 toastRichSuccess({ message: 'Exercise removed' });
-                onUpdate?.();
-            }
-            else if (res?.error?._form?.[0]) {
+                onRemove?.();
+            } else if (res?.error?._form?.[0]) {
                 toastRichError({ message: res.error._form[0] });
             }
         } catch (err) {
@@ -204,9 +187,8 @@ function RoutineExerciseRow({
                     type="number"
                     min={0}
                     className="h-8 w-full min-w-0 text-sm"
-                    value={sets}
-                    onChange={(e) => setSets(e.target.value)}
-                    onBlur={handleBlur}
+                    value={values.sets}
+                    onChange={(e) => onFieldChange(re.id, 'sets', e.target.value)}
                 />
             </td>
             <td className="min-w-14 sm:min-w-24 w-16 sm:w-24 py-1 px-1">
@@ -214,9 +196,8 @@ function RoutineExerciseRow({
                     type="number"
                     min={0}
                     className="h-8 w-full min-w-0 text-sm"
-                    value={reps}
-                    onChange={(e) => setReps(e.target.value)}
-                    onBlur={handleBlur}
+                    value={values.reps}
+                    onChange={(e) => onFieldChange(re.id, 'reps', e.target.value)}
                 />
             </td>
             <td className="min-w-16 sm:min-w-28 w-20 sm:w-28 py-1 px-1">
@@ -225,18 +206,16 @@ function RoutineExerciseRow({
                     min={0}
                     step={0.5}
                     className="h-8 w-full min-w-0 text-sm"
-                    value={weight}
-                    onChange={(e) => setWeight(e.target.value)}
-                    onBlur={handleBlur}
+                    value={values.weight}
+                    onChange={(e) => onFieldChange(re.id, 'weight', e.target.value)}
                 />
             </td>
             <td className="py-1 px-1 min-w-[120px]">
                 <Input
                     className="h-8 text-sm"
                     placeholder="Comments"
-                    value={comments}
-                    onChange={(e) => setComments(e.target.value)}
-                    onBlur={handleBlur}
+                    value={values.comments}
+                    onChange={(e) => onFieldChange(re.id, 'comments', e.target.value)}
                 />
             </td>
             <td className="py-1 pl-1 w-10">
@@ -259,47 +238,17 @@ function RoutineExerciseCard({
     routineId,
     index,
     total,
+    values,
+    onFieldChange,
     onMoveUp,
     onMoveDown,
-    onUpdate,
     onRemove,
 }) {
-    const [sets, setSets] = useState(re.sets_override ?? re.gym_exercises?.sets ?? '');
-    const [reps, setReps] = useState(re.reps_override ?? re.gym_exercises?.reps ?? '');
-    const [weight, setWeight] = useState(re.weight_override ?? re.gym_exercises?.weight ?? '');
-    const [comments, setComments] = useState(re.comments_override ?? '');
-
-    const handleBlur = useCallback(() => {
-        const payload = {
-            routine_id: routineId,
-            gym_exercise_id: re.gym_exercise_id,
-            order_index: re.order_index,
-            sets_override: sets === '' ? undefined : Number(sets),
-            reps_override: reps === '' ? undefined : Number(reps),
-            weight_override: weight === '' ? undefined : Number(weight),
-            comments_override: comments || undefined,
-        };
-        updateRoutineExerciseAction({ id: re.id, ...payload }).then((res) => {
-            if (res?.success) onUpdate?.();
-            else if (res?.error?._form?.[0]) toastRichError({ message: res.error._form[0] });
-        });
-    }, [
-        re.id,
-        re.gym_exercise_id,
-        re.order_index,
-        routineId,
-        sets,
-        reps,
-        weight,
-        comments,
-        onUpdate,
-    ]);
-
     async function handleRemove() {
         try {
             await removeExerciseFromRoutineAction(re.id, routineId);
             toastRichSuccess({ message: 'Exercise removed' });
-            onUpdate?.();
+            onRemove?.();
         } catch (err) {
             toastRichError({ message: err?.message || 'Failed to remove' });
         }
@@ -370,9 +319,8 @@ function RoutineExerciseCard({
                             type="number"
                             min={0}
                             className="h-8 text-sm"
-                            value={sets}
-                            onChange={(e) => setSets(e.target.value)}
-                            onBlur={handleBlur}
+                            value={values.sets}
+                            onChange={(e) => onFieldChange(re.id, 'sets', e.target.value)}
                         />
                     </div>
                     <div className="space-y-1.5">
@@ -381,9 +329,8 @@ function RoutineExerciseCard({
                             type="number"
                             min={0}
                             className="h-8 text-sm"
-                            value={reps}
-                            onChange={(e) => setReps(e.target.value)}
-                            onBlur={handleBlur}
+                            value={values.reps}
+                            onChange={(e) => onFieldChange(re.id, 'reps', e.target.value)}
                         />
                     </div>
                     <div className="space-y-1.5">
@@ -393,9 +340,8 @@ function RoutineExerciseCard({
                             min={0}
                             step={0.5}
                             className="h-8 text-sm"
-                            value={weight}
-                            onChange={(e) => setWeight(e.target.value)}
-                            onBlur={handleBlur}
+                            value={values.weight}
+                            onChange={(e) => onFieldChange(re.id, 'weight', e.target.value)}
                         />
                     </div>
                     <div className="space-y-1.5 col-span-2">
@@ -403,9 +349,8 @@ function RoutineExerciseCard({
                         <Input
                             className="h-8 text-sm"
                             placeholder="Comments"
-                            value={comments}
-                            onChange={(e) => setComments(e.target.value)}
-                            onBlur={handleBlur}
+                            value={values.comments}
+                            onChange={(e) => onFieldChange(re.id, 'comments', e.target.value)}
                         />
                     </div>
                 </div>
@@ -423,10 +368,62 @@ export function RoutineDetailComponent({ routine }) {
     const [page, setPage] = useState(0);
     const [loading, setLoading] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
+    const [edits, setEdits] = useState({});
+    const [savingAll, setSavingAll] = useState(false);
 
     const exercises = routine?.routine_exercises ?? [];
     const orderedIds = exercises.map((e) => e.id);
     const addedIds = exercises.map((e) => e.gym_exercise_id);
+
+    useEffect(() => {
+        const initial = {};
+        exercises.forEach((re) => {
+            initial[re.id] = getRoutineExerciseInitial(re);
+        });
+        setEdits(initial);
+    }, [exercises]);
+
+    const dirtyCount = exercises.filter((re) =>
+        isRoutineExerciseDirty(edits[re.id] ?? getRoutineExerciseInitial(re), re)
+    ).length;
+
+    const onFieldChange = useCallback((id, field, value) => {
+        setEdits((prev) => ({
+            ...prev,
+            [id]: { ...(prev[id] ?? {}), [field]: value },
+        }));
+    }, []);
+
+    const saveAll = useCallback(async () => {
+        if (dirtyCount === 0) return;
+        setSavingAll(true);
+        try {
+            let saved = 0;
+            for (const re of exercises) {
+                const values = edits[re.id] ?? getRoutineExerciseInitial(re);
+                if (!isRoutineExerciseDirty(values, re)) continue;
+                const payload = {
+                    id: re.id,
+                    routine_id: routine.id,
+                    gym_exercise_id: re.gym_exercise_id,
+                    order_index: re.order_index,
+                    sets_override: values.sets === '' ? undefined : Number(values.sets),
+                    reps_override: values.reps === '' ? undefined : Number(values.reps),
+                    weight_override: values.weight === '' ? undefined : Number(values.weight),
+                    comments_override: values.comments || undefined,
+                };
+                const res = await updateRoutineExerciseAction(payload);
+                if (res?.success) saved++;
+                else if (res?.error?._form?.[0]) toastRichError({ message: res.error._form[0] });
+            }
+            if (saved > 0) {
+                toastRichSuccess({ message: saved === 1 ? 'Exercise updated' : `${saved} exercises updated` });
+                router.refresh();
+            }
+        } finally {
+            setSavingAll(false);
+        }
+    }, [routine?.id, exercises, edits, dirtyCount, router]);
 
     const refresh = useCallback(() => {
         router.refresh();
@@ -542,9 +539,10 @@ export function RoutineDetailComponent({ routine }) {
                                         routineId={routine.id}
                                         index={index}
                                         total={exercises.length}
+                                        values={edits[re.id] ?? getRoutineExerciseInitial(re)}
+                                        onFieldChange={onFieldChange}
                                         onMoveUp={moveUp}
                                         onMoveDown={moveDown}
-                                        onUpdate={refresh}
                                         onRemove={refresh}
                                     />
                                 ))}
@@ -576,15 +574,30 @@ export function RoutineDetailComponent({ routine }) {
                                                 routineId={routine.id}
                                                 index={index}
                                                 total={exercises.length}
+                                                values={edits[re.id] ?? getRoutineExerciseInitial(re)}
+                                                onFieldChange={onFieldChange}
                                                 onMoveUp={moveUp}
                                                 onMoveDown={moveDown}
-                                                onUpdate={refresh}
                                                 onRemove={refresh}
                                             />
                                         ))}
                                     </tbody>
                                 </table>
                             </div>
+                            {dirtyCount > 0 && (
+                                <div className="flex justify-end mt-3">
+                                    <Button
+                                        type="button"
+                                        size="sm"
+                                        onClick={saveAll}
+                                        disabled={savingAll}
+                                        className="gap-2"
+                                    >
+                                        <Save className="size-4" />
+                                        Save changes{dirtyCount > 1 ? ` (${dirtyCount})` : ''}
+                                    </Button>
+                                </div>
+                            )}
                         </>
                     )}
                 </CardContent>

@@ -21,7 +21,7 @@ import {
 import { getRoutinesForSelectAction } from '@/actions/database/routine-actions';
 import { getActivitiesForSelectAction } from '@/actions/database/activity-actions';
 import { getGymExercisesForSelectAction } from '@/actions/database/gym-exercise-actions';
-import { UtensilsCrossed, Activity, Dumbbell, Trash2 } from 'lucide-react';
+import { UtensilsCrossed, Activity, Dumbbell, Trash2, Save } from 'lucide-react';
 import { toastRichSuccess, toastRichError } from '@/lib/toast-library';
 import { routes } from '@/lib/routes';
 import { BackLink } from '@/components/application/back-link';
@@ -117,14 +117,18 @@ export function DailyStatisticComponent({ date, initialData }) {
         } else if (res?.error) toastRichError({ message: res.error });
     }
 
-    async function handleGymExerciseUpdate(payload) {
+    async function handleGymExerciseUpdate(payload, options = {}) {
+        const { skipRefresh = false } = options;
         const res = await updateDailyGymExerciseEntryAction(payload);
         if (res?.success) {
-            toastRichSuccess({ message: 'Gym exercise updated' });
-            refresh();
+            if (!skipRefresh) {
+                toastRichSuccess({ message: 'Gym exercise updated' });
+                refresh();
+            }
         } else if (res?.error) {
             toastRichError({ message: res.error });
         }
+        return res;
     }
 
     async function handleGymExerciseRemove(id) {
@@ -397,6 +401,7 @@ export function DailyStatisticComponent({ date, initialData }) {
                                         entries={data?.daily_gym_exercise_entries ?? []}
                                         dailyStatisticId={dailyStatisticId}
                                         onUpdate={handleGymExerciseUpdate}
+                                        onSaveAllComplete={refresh}
                                         onRemove={handleGymExerciseRemove}
                                         onAdd={handleGymExerciseAdd}
                                     />
@@ -410,16 +415,26 @@ export function DailyStatisticComponent({ date, initialData }) {
     );
 }
 
-function GymExerciseRow({ entry, onUpdate, onRemove }) {
-    const [sets, setSets] = useState(entry.sets ?? '');
-    const [reps, setReps] = useState(entry.reps ?? '');
-    const [weight, setWeight] = useState(entry.weight ?? '');
-    const [comments, setComments] = useState(entry.comments ?? '');
+function getDailyEntryInitial(entry) {
+    return {
+        sets: entry.sets ?? '',
+        reps: entry.reps ?? '',
+        weight: entry.weight ?? '',
+        comments: entry.comments ?? '',
+    };
+}
 
-    const handleBlur = useCallback(() => {
-        onUpdate({ id: entry.id, sets, reps, weight, comments });
-    }, [entry.id, sets, reps, weight, comments, onUpdate]);
+function isDailyEntryDirty(values, entry) {
+    const initial = getDailyEntryInitial(entry);
+    return (
+        String(values.sets) !== String(initial.sets) ||
+        String(values.reps) !== String(initial.reps) ||
+        String(values.weight) !== String(initial.weight) ||
+        String(values.comments) !== String(initial.comments)
+    );
+}
 
+function GymExerciseRow({ entry, values, onFieldChange, onRemove }) {
     return (
         <tr className="border-b">
             <td className="py-1 pr-1">{entry.gym_exercises?.title ?? '-'}</td>
@@ -428,9 +443,8 @@ function GymExerciseRow({ entry, onUpdate, onRemove }) {
                     type="number"
                     min={0}
                     className="h-8 w-full min-w-0 text-sm"
-                    value={sets}
-                    onChange={(e) => setSets(e.target.value)}
-                    onBlur={handleBlur}
+                    value={values.sets}
+                    onChange={(e) => onFieldChange(entry.id, 'sets', e.target.value)}
                 />
             </td>
             <td className="min-w-14 sm:min-w-24 w-16 sm:w-24 py-1 px-1">
@@ -438,9 +452,8 @@ function GymExerciseRow({ entry, onUpdate, onRemove }) {
                     type="number"
                     min={0}
                     className="h-8 w-full min-w-0 text-sm"
-                    value={reps}
-                    onChange={(e) => setReps(e.target.value)}
-                    onBlur={handleBlur}
+                    value={values.reps}
+                    onChange={(e) => onFieldChange(entry.id, 'reps', e.target.value)}
                 />
             </td>
             <td className="min-w-16 sm:min-w-28 w-20 sm:w-28 py-1 px-1">
@@ -449,17 +462,15 @@ function GymExerciseRow({ entry, onUpdate, onRemove }) {
                     min={0}
                     step={0.5}
                     className="h-8 w-full min-w-0 text-sm"
-                    value={weight}
-                    onChange={(e) => setWeight(e.target.value)}
-                    onBlur={handleBlur}
+                    value={values.weight}
+                    onChange={(e) => onFieldChange(entry.id, 'weight', e.target.value)}
                 />
             </td>
             <td className="py-1 px-1">
                 <Input
                     className="h-8 text-sm"
-                    value={comments}
-                    onChange={(e) => setComments(e.target.value)}
-                    onBlur={handleBlur}
+                    value={values.comments}
+                    onChange={(e) => onFieldChange(entry.id, 'comments', e.target.value)}
                 />
             </td>
             <td className="py-1">
@@ -477,7 +488,7 @@ function GymExerciseRow({ entry, onUpdate, onRemove }) {
     );
 }
 
-function GymExercisesList({ entries, dailyStatisticId, onUpdate, onRemove, onAdd }) {
+function GymExercisesList({ entries, dailyStatisticId, onUpdate, onSaveAllComplete, onRemove, onAdd }) {
     const [showForm, setShowForm] = useState(false);
     const [exercises, setExercises] = useState([]);
     const [gymExerciseId, setGymExerciseId] = useState('');
@@ -485,6 +496,58 @@ function GymExercisesList({ entries, dailyStatisticId, onUpdate, onRemove, onAdd
     const [reps, setReps] = useState('');
     const [weight, setWeight] = useState('');
     const [comments, setComments] = useState('');
+    const [edits, setEdits] = useState({});
+    const [savingAll, setSavingAll] = useState(false);
+
+    useEffect(() => {
+        const initial = {};
+        entries.forEach((entry) => {
+            initial[entry.id] = getDailyEntryInitial(entry);
+        });
+        setEdits(initial);
+    }, [entries]);
+
+    const dirtyCount = entries.filter((entry) =>
+        isDailyEntryDirty(edits[entry.id] ?? getDailyEntryInitial(entry), entry)
+    ).length;
+
+    const onFieldChange = useCallback((id, field, value) => {
+        setEdits((prev) => ({
+            ...prev,
+            [id]: { ...(prev[id] ?? {}), [field]: value },
+        }));
+    }, []);
+
+    const saveAll = useCallback(async () => {
+        if (dirtyCount === 0) return;
+        setSavingAll(true);
+        try {
+            let saved = 0;
+            for (const entry of entries) {
+                const values = edits[entry.id] ?? getDailyEntryInitial(entry);
+                if (!isDailyEntryDirty(values, entry)) continue;
+                const res = await onUpdate(
+                    {
+                        id: entry.id,
+                        sets: values.sets,
+                        reps: values.reps,
+                        weight: values.weight,
+                        comments: values.comments,
+                    },
+                    { skipRefresh: true }
+                );
+                if (res?.success) saved++;
+            }
+            if (saved > 0) {
+                toastRichSuccess({
+                    message: saved === 1 ? 'Gym exercise updated' : `${saved} exercises updated`,
+                });
+                onSaveAllComplete?.();
+            }
+        } finally {
+            setSavingAll(false);
+        }
+    }, [entries, edits, dirtyCount, onUpdate, onSaveAllComplete]);
 
     async function handleAdd() {
         if (!gymExerciseId) return;
@@ -500,36 +563,53 @@ function GymExercisesList({ entries, dailyStatisticId, onUpdate, onRemove, onAdd
     return (
         <div className="space-y-4">
             {entries.length > 0 && (
-                <div className="overflow-x-auto">
-                    <table className="w-full text-sm">
-                        <thead>
-                            <tr className="border-b text-left text-muted-foreground">
-                                <th className="py-1 pr-1">Exercise</th>
-                                <th className="min-w-14 sm:min-w-24 w-16 sm:w-24 py-1 px-1">
-                                    Sets
-                                </th>
-                                <th className="min-w-16 sm:min-w-28 w-20 sm:w-28 py-1 px-1">
-                                    Reps
-                                </th>
-                                <th className="min-w-16 sm:min-w-28 w-20 sm:w-28 py-1 px-1">
-                                    Weight
-                                </th>
-                                <th className="py-1 px-1">Comments</th>
-                                <th className="py-1 w-8"></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {entries.map((entry) => (
-                                <GymExerciseRow
-                                    key={entry.id}
-                                    entry={entry}
-                                    onUpdate={onUpdate}
-                                    onRemove={onRemove}
-                                />
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
+                <>
+                    <div className="overflow-x-auto">
+                        <table className="w-full text-sm">
+                            <thead>
+                                <tr className="border-b text-left text-muted-foreground">
+                                    <th className="py-1 pr-1">Exercise</th>
+                                    <th className="min-w-14 sm:min-w-24 w-16 sm:w-24 py-1 px-1">
+                                        Sets
+                                    </th>
+                                    <th className="min-w-16 sm:min-w-28 w-20 sm:w-28 py-1 px-1">
+                                        Reps
+                                    </th>
+                                    <th className="min-w-16 sm:min-w-28 w-20 sm:w-28 py-1 px-1">
+                                        Weight
+                                    </th>
+                                    <th className="py-1 px-1">Comments</th>
+                                    <th className="py-1 w-8"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {entries.map((entry) => (
+                                    <GymExerciseRow
+                                        key={entry.id}
+                                        entry={entry}
+                                        values={edits[entry.id] ?? getDailyEntryInitial(entry)}
+                                        onFieldChange={onFieldChange}
+                                        onRemove={onRemove}
+                                    />
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                    {dirtyCount > 0 && (
+                        <div className="flex justify-end mt-3">
+                            <Button
+                                type="button"
+                                size="sm"
+                                onClick={saveAll}
+                                disabled={savingAll}
+                                className="gap-2"
+                            >
+                                <Save className="size-4" />
+                                Save changes{dirtyCount > 1 ? ` (${dirtyCount})` : ''}
+                            </Button>
+                        </div>
+                    )}
+                </>
             )}
             {showForm ? (
                 <div className="grid gap-2 grid-cols-1 sm:grid-cols-2 lg:grid-cols-[1fr_4rem_4rem_5rem_1.5fr_auto]">
