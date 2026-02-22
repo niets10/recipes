@@ -54,29 +54,29 @@ function AvailableExerciseCard({ exercise, routineId, onAdd }) {
     return (
         <Card
             className={cn(
-                'h-full border-t-4 fitness-card-border transition-all hover:shadow-md flex flex-col'
+                'h-full min-w-0 w-full max-w-full border-t-4 fitness-card-border transition-all hover:shadow-md flex flex-col overflow-hidden'
             )}
         >
-            <CardHeader className="pb-2 flex-1">
-                <div className="flex items-start justify-between gap-2">
-                    <div className="flex items-center gap-2 min-w-0 flex-1">
+            <CardHeader className="pb-2 flex-1 min-w-0 overflow-hidden">
+                <div className="flex items-start justify-between gap-2 min-w-0">
+                    <div className="flex items-center gap-2 min-w-0 flex-1 overflow-hidden">
                         <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10">
                             <Dumbbell className="size-4 text-primary" />
                         </div>
                         {exerciseHref ? (
                             <Link
                                 href={exerciseHref}
-                                className="leading-tight truncate hover:underline"
+                                className="text-sm leading-tight truncate hover:underline min-w-0 sm:text-base"
                             >
                                 {title}
                             </Link>
                         ) : (
-                            <h3 className="leading-tight truncate">{title}</h3>
+                            <h3 className="text-sm leading-tight truncate min-w-0 sm:text-base">{title}</h3>
                         )}
                     </div>
                     <div className="flex shrink-0 items-center gap-1">
                         {bodyPart && (
-                            <Badge variant="secondary" className="text-xs">
+                            <Badge variant="secondary" className="text-[10px] shrink-0 truncate max-w-[80px] sm:max-w-none sm:text-xs">
                                 {bodyPart}
                             </Badge>
                         )}
@@ -84,7 +84,7 @@ function AvailableExerciseCard({ exercise, routineId, onAdd }) {
                             type="button"
                             variant="ghost"
                             size="icon"
-                            className="h-8 w-8 text-primary hover:text-primary hover:bg-primary/10"
+                            className="h-8 w-8 shrink-0 text-primary hover:text-primary hover:bg-primary/10"
                             onClick={handleAdd}
                             disabled={adding}
                             aria-label={`Add ${title} to routine`}
@@ -244,6 +244,166 @@ function RoutineExerciseRow({
     );
 }
 
+function RoutineExerciseCard({
+    re,
+    routineId,
+    index,
+    total,
+    onMoveUp,
+    onMoveDown,
+    onUpdate,
+    onRemove,
+}) {
+    const [sets, setSets] = useState(re.sets_override ?? re.gym_exercises?.sets ?? '');
+    const [reps, setReps] = useState(re.reps_override ?? re.gym_exercises?.reps ?? '');
+    const [weight, setWeight] = useState(re.weight_override ?? re.gym_exercises?.weight ?? '');
+    const [comments, setComments] = useState(re.comments_override ?? '');
+
+    const handleBlur = useCallback(() => {
+        const payload = {
+            routine_id: routineId,
+            gym_exercise_id: re.gym_exercise_id,
+            order_index: re.order_index,
+            sets_override: sets === '' ? undefined : Number(sets),
+            reps_override: reps === '' ? undefined : Number(reps),
+            weight_override: weight === '' ? undefined : Number(weight),
+            comments_override: comments || undefined,
+        };
+        updateRoutineExerciseAction({ id: re.id, ...payload }).then((res) => {
+            if (res?.success) onUpdate?.();
+            else if (res?.error?._form?.[0]) toastRichError({ message: res.error._form[0] });
+        });
+    }, [
+        re.id,
+        re.gym_exercise_id,
+        re.order_index,
+        routineId,
+        sets,
+        reps,
+        weight,
+        comments,
+        onUpdate,
+    ]);
+
+    async function handleRemove() {
+        try {
+            await removeExerciseFromRoutineAction(re.id, routineId);
+            toastRichSuccess({ message: 'Exercise removed' });
+            onUpdate?.();
+        } catch (err) {
+            toastRichError({ message: err?.message || 'Failed to remove' });
+        }
+    }
+
+    const title = re.gym_exercises?.title ?? 'Exercise';
+    const exerciseHref = re.gym_exercise_id
+        ? `${routes.fitnessGymExercises}/${re.gym_exercise_id}`
+        : null;
+
+    return (
+        <Card className="overflow-hidden">
+            <CardHeader className="pb-2 pt-3 px-3 sm:px-6">
+                <div className="flex items-center gap-2">
+                    <div className="flex flex-col gap-0 shrink-0">
+                        <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            className="h-7 w-7"
+                            onClick={() => onMoveUp(index)}
+                            disabled={index === 0}
+                            aria-label="Move up"
+                        >
+                            <ChevronUp className="size-4" />
+                        </Button>
+                        <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            className="h-7 w-7"
+                            onClick={() => onMoveDown(index)}
+                            disabled={index >= total - 1}
+                            aria-label="Move down"
+                        >
+                            <ChevronDown className="size-4" />
+                        </Button>
+                    </div>
+                    <div className="min-w-0 flex-1">
+                        {exerciseHref ? (
+                            <Link
+                                href={exerciseHref}
+                                className="font-medium text-primary hover:underline truncate block"
+                            >
+                                {title}
+                            </Link>
+                        ) : (
+                            <span className="font-medium truncate block">{title}</span>
+                        )}
+                    </div>
+                    <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 shrink-0 text-destructive hover:text-destructive"
+                        onClick={handleRemove}
+                        aria-label="Remove exercise"
+                    >
+                        <Trash2 className="size-4" />
+                    </Button>
+                </div>
+            </CardHeader>
+            <CardContent className="pt-0 px-3 pb-3 sm:px-6 sm:pb-6">
+                <div className="grid grid-cols-2 gap-3 sm:gap-4">
+                    <div className="space-y-1.5">
+                        <label className="text-xs font-medium text-muted-foreground">Sets</label>
+                        <Input
+                            type="number"
+                            min={0}
+                            className="h-8 text-sm"
+                            value={sets}
+                            onChange={(e) => setSets(e.target.value)}
+                            onBlur={handleBlur}
+                        />
+                    </div>
+                    <div className="space-y-1.5">
+                        <label className="text-xs font-medium text-muted-foreground">Reps</label>
+                        <Input
+                            type="number"
+                            min={0}
+                            className="h-8 text-sm"
+                            value={reps}
+                            onChange={(e) => setReps(e.target.value)}
+                            onBlur={handleBlur}
+                        />
+                    </div>
+                    <div className="space-y-1.5">
+                        <label className="text-xs font-medium text-muted-foreground">Weight</label>
+                        <Input
+                            type="number"
+                            min={0}
+                            step={0.5}
+                            className="h-8 text-sm"
+                            value={weight}
+                            onChange={(e) => setWeight(e.target.value)}
+                            onBlur={handleBlur}
+                        />
+                    </div>
+                    <div className="space-y-1.5 col-span-2">
+                        <label className="text-xs font-medium text-muted-foreground">Comments</label>
+                        <Input
+                            className="h-8 text-sm"
+                            placeholder="Comments"
+                            value={comments}
+                            onChange={(e) => setComments(e.target.value)}
+                            onBlur={handleBlur}
+                        />
+                    </div>
+                </div>
+            </CardContent>
+        </Card>
+    );
+}
+
 const SEARCH_DEBOUNCE_MS = 400;
 
 export function RoutineDetailComponent({ routine }) {
@@ -340,12 +500,12 @@ export function RoutineDetailComponent({ routine }) {
     }
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6 px-1 sm:px-0">
             <Card className="border-t-4 fitness-card-border">
-                <CardHeader className="flex flex-row items-start justify-between gap-4">
-                    <div className="flex min-w-0 flex-1 items-center gap-2">
+                <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+                    <div className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
                         <BackLink label="Back to routines" />
-                        <CardTitle className="min-w-0 truncate text-2xl font-semibold tracking-tight">
+                        <CardTitle className="min-w-0 truncate text-xl font-semibold tracking-tight sm:text-2xl">
                             {routine.name || 'Untitled'}
                         </CardTitle>
                     </div>
@@ -359,60 +519,77 @@ export function RoutineDetailComponent({ routine }) {
                         Exercises in this routine
                     </p>
                     {exercises.length === 0 ? (
-                        <p className="text-muted-foreground text-sm py-4">
+                        <p className="text-muted-foreground text-xs py-4 sm:text-sm">
                             No exercises in this routine. Add one from the list below.
                         </p>
                     ) : (
-                        <div className="overflow-x-auto">
-                            <table className="w-full text-sm">
-                                <thead>
-                                    <tr className="border-b border-border text-left text-muted-foreground">
-                                        <th className="py-1 pr-1 w-16 font-medium"></th>
-                                        <th className="py-1 pr-1 font-medium">Exercise</th>
-                                        <th className="min-w-14 sm:min-w-24 w-16 sm:w-24 py-1 px-1 font-medium">
-                                            Sets
-                                        </th>
-                                        <th className="min-w-14 sm:min-w-24 w-16 sm:w-24 py-1 px-1 font-medium">
-                                            Reps
-                                        </th>
-                                        <th className="min-w-16 sm:min-w-28 w-20 sm:w-28 py-1 px-1 font-medium">
-                                            Weight
-                                        </th>
-                                        <th className="py-1 px-1 font-medium">Comments</th>
-                                        <th className="py-1 pl-1 w-10"></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {exercises.map((re, index) => (
-                                        <RoutineExerciseRow
-                                            key={re.id}
-                                            re={re}
-                                            routineId={routine.id}
-                                            index={index}
-                                            total={exercises.length}
-                                            onMoveUp={moveUp}
-                                            onMoveDown={moveDown}
-                                            onUpdate={refresh}
-                                            onRemove={refresh}
-                                        />
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
+                        <>
+                            <div className="space-y-3 md:hidden">
+                                {exercises.map((re, index) => (
+                                    <RoutineExerciseCard
+                                        key={re.id}
+                                        re={re}
+                                        routineId={routine.id}
+                                        index={index}
+                                        total={exercises.length}
+                                        onMoveUp={moveUp}
+                                        onMoveDown={moveDown}
+                                        onUpdate={refresh}
+                                        onRemove={refresh}
+                                    />
+                                ))}
+                            </div>
+                            <div className="hidden md:block overflow-x-auto">
+                                <table className="w-full text-sm">
+                                    <thead>
+                                        <tr className="border-b border-border text-left text-muted-foreground">
+                                            <th className="py-1 pr-1 w-16 font-medium"></th>
+                                            <th className="py-1 pr-1 font-medium">Exercise</th>
+                                            <th className="min-w-14 sm:min-w-24 w-16 sm:w-24 py-1 px-1 font-medium">
+                                                Sets
+                                            </th>
+                                            <th className="min-w-14 sm:min-w-24 w-16 sm:w-24 py-1 px-1 font-medium">
+                                                Reps
+                                            </th>
+                                            <th className="min-w-16 sm:min-w-28 w-20 sm:w-28 py-1 px-1 font-medium">
+                                                Weight
+                                            </th>
+                                            <th className="py-1 px-1 font-medium">Comments</th>
+                                            <th className="py-1 pl-1 w-10"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {exercises.map((re, index) => (
+                                            <RoutineExerciseRow
+                                                key={re.id}
+                                                re={re}
+                                                routineId={routine.id}
+                                                index={index}
+                                                total={exercises.length}
+                                                onMoveUp={moveUp}
+                                                onMoveDown={moveDown}
+                                                onUpdate={refresh}
+                                                onRemove={refresh}
+                                            />
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </>
                     )}
                 </CardContent>
             </Card>
 
-            <Card>
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-2 text-lg">
-                        <Dumbbell className="size-5 text-primary" />
+            <Card className="min-w-0 overflow-hidden">
+                <CardHeader className="min-w-0">
+                    <CardTitle className="flex items-center gap-2 text-base min-w-0 truncate sm:text-lg">
+                        <Dumbbell className="size-4 sm:size-5 text-primary" />
                         Available exercises
                     </CardTitle>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-xs text-muted-foreground sm:text-sm">
                         Click + to add an exercise to this routine.
                     </p>
-                    <div className="relative mt-2 max-w-sm">
+                    <div className="relative mt-2 w-full sm:max-w-sm">
                         <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground pointer-events-none" />
                         <Input
                             type="search"
@@ -424,18 +601,18 @@ export function RoutineDetailComponent({ routine }) {
                         />
                     </div>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="min-w-0 overflow-hidden">
                     {loading && availableExercises.length === 0 ? (
-                        <p className="text-muted-foreground text-sm py-4">Loading exercises…</p>
+                        <p className="text-muted-foreground text-xs py-4 sm:text-sm">Loading exercises…</p>
                     ) : availableExercises.length === 0 ? (
-                        <p className="text-muted-foreground text-sm py-4">
+                        <p className="text-muted-foreground text-xs py-4 sm:text-sm">
                             {searchQuery.trim()
                                 ? 'No exercises match your search.'
                                 : 'All your exercises are already in this routine.'}
                         </p>
                     ) : (
                         <>
-                            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                            <div className="grid grid-cols-1 min-w-0 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                                 {availableExercises.map((ex) => (
                                     <AvailableExerciseCard
                                         key={ex.id}
