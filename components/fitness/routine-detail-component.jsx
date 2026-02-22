@@ -175,7 +175,7 @@ function RoutineExerciseRow({
             </td>
             <td className="py-1 pr-1 align-middle">
                 {exerciseHref ? (
-                    <Link href={exerciseHref} className="font-medium text-primary hover:underline">
+                    <Link href={exerciseHref} className="font-medium hover:underline">
                         {title}
                     </Link>
                 ) : (
@@ -230,132 +230,6 @@ function RoutineExerciseRow({
                 </Button>
             </td>
         </tr>
-    );
-}
-
-function RoutineExerciseCard({
-    re,
-    routineId,
-    index,
-    total,
-    values,
-    onFieldChange,
-    onMoveUp,
-    onMoveDown,
-    onRemove,
-}) {
-    async function handleRemove() {
-        try {
-            await removeExerciseFromRoutineAction(re.id, routineId);
-            toastRichSuccess({ message: 'Exercise removed' });
-            onRemove?.();
-        } catch (err) {
-            toastRichError({ message: err?.message || 'Failed to remove' });
-        }
-    }
-
-    const title = re.gym_exercises?.title ?? 'Exercise';
-    const exerciseHref = re.gym_exercise_id
-        ? `${routes.fitnessGymExercises}/${re.gym_exercise_id}`
-        : null;
-
-    return (
-        <Card className="overflow-hidden">
-            <CardHeader className="pb-2 pt-3 px-3 sm:px-6">
-                <div className="flex items-center gap-2">
-                    <div className="flex flex-col gap-0 shrink-0">
-                        <Button
-                            type="button"
-                            variant="ghost"
-                            size="icon"
-                            className="h-7 w-7"
-                            onClick={() => onMoveUp(index)}
-                            disabled={index === 0}
-                            aria-label="Move up"
-                        >
-                            <ChevronUp className="size-4" />
-                        </Button>
-                        <Button
-                            type="button"
-                            variant="ghost"
-                            size="icon"
-                            className="h-7 w-7"
-                            onClick={() => onMoveDown(index)}
-                            disabled={index >= total - 1}
-                            aria-label="Move down"
-                        >
-                            <ChevronDown className="size-4" />
-                        </Button>
-                    </div>
-                    <div className="min-w-0 flex-1">
-                        {exerciseHref ? (
-                            <Link
-                                href={exerciseHref}
-                                className="font-medium text-primary hover:underline truncate block"
-                            >
-                                {title}
-                            </Link>
-                        ) : (
-                            <span className="font-medium truncate block">{title}</span>
-                        )}
-                    </div>
-                    <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8 shrink-0 text-destructive hover:text-destructive"
-                        onClick={handleRemove}
-                        aria-label="Remove exercise"
-                    >
-                        <Trash2 className="size-4" />
-                    </Button>
-                </div>
-            </CardHeader>
-            <CardContent className="pt-0 px-3 pb-3 sm:px-6 sm:pb-6">
-                <div className="grid grid-cols-2 gap-3 sm:gap-4">
-                    <div className="space-y-1.5">
-                        <label className="text-xs font-medium text-muted-foreground">Sets</label>
-                        <Input
-                            type="number"
-                            min={0}
-                            className="h-8 text-sm"
-                            value={values.sets}
-                            onChange={(e) => onFieldChange(re.id, 'sets', e.target.value)}
-                        />
-                    </div>
-                    <div className="space-y-1.5">
-                        <label className="text-xs font-medium text-muted-foreground">Reps</label>
-                        <Input
-                            type="number"
-                            min={0}
-                            className="h-8 text-sm"
-                            value={values.reps}
-                            onChange={(e) => onFieldChange(re.id, 'reps', e.target.value)}
-                        />
-                    </div>
-                    <div className="space-y-1.5">
-                        <label className="text-xs font-medium text-muted-foreground">Weight</label>
-                        <Input
-                            type="number"
-                            min={0}
-                            step={0.5}
-                            className="h-8 text-sm"
-                            value={values.weight}
-                            onChange={(e) => onFieldChange(re.id, 'weight', e.target.value)}
-                        />
-                    </div>
-                    <div className="space-y-1.5 col-span-2">
-                        <label className="text-xs font-medium text-muted-foreground">Comments</label>
-                        <Input
-                            className="h-8 text-sm"
-                            placeholder="Comments"
-                            value={values.comments}
-                            onChange={(e) => onFieldChange(re.id, 'comments', e.target.value)}
-                        />
-                    </div>
-                </div>
-            </CardContent>
-        </Card>
     );
 }
 
@@ -531,23 +405,7 @@ export function RoutineDetailComponent({ routine }) {
                         </p>
                     ) : (
                         <>
-                            <div className="space-y-3 md:hidden">
-                                {exercises.map((re, index) => (
-                                    <RoutineExerciseCard
-                                        key={re.id}
-                                        re={re}
-                                        routineId={routine.id}
-                                        index={index}
-                                        total={exercises.length}
-                                        values={edits[re.id] ?? getRoutineExerciseInitial(re)}
-                                        onFieldChange={onFieldChange}
-                                        onMoveUp={moveUp}
-                                        onMoveDown={moveDown}
-                                        onRemove={refresh}
-                                    />
-                                ))}
-                            </div>
-                            <div className="hidden md:block overflow-x-auto">
+                            <div className="overflow-x-auto">
                                 <table className="w-full text-sm">
                                     <thead>
                                         <tr className="border-b border-border text-left text-muted-foreground">
