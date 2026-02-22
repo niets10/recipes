@@ -45,7 +45,7 @@ export function AppSidebar() {
                         <SidebarMenuButton size="lg" asChild className="hover:bg-transparent active:bg-transparent">
                             <Link href={routes.home} onClick={closeMobileSidebar}>
                                 <div className="flex aspect-square size-10 items-center justify-center rounded-xl bg-sidebar-primary text-sidebar-primary-foreground">
-                                    <Dumbbell className="size-4" />
+                                    <Activity className="size-4" />
                                 </div>
                                 <div className="flex flex-col gap-0.5 leading-none">
                                     <span className="font-semibold">Fitness</span>
@@ -85,7 +85,7 @@ export function AppSidebar() {
                                     tooltip="Fitness"
                                 >
                                     <Link href={routes.fitness} onClick={closeMobileSidebar}>
-                                        <Dumbbell />
+                                        <Activity />
                                         <span>Fitness</span>
                                     </Link>
                                 </SidebarMenuButton>
