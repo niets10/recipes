@@ -1,17 +1,18 @@
 'use client';
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import debounce from 'lodash/debounce';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { EditRoutine } from '@/components/fitness/edit-routine';
 import { removeExerciseFromRoutineAction, updateRoutineExerciseAction, reorderRoutineExercisesAction, addExerciseToRoutineAction } from '@/actions/database/routine-actions';
-import { getGymExercisesForSelectAction } from '@/actions/database/gym-exercise-actions';
+import { getGymExercisesForSelectPageAction } from '@/actions/database/gym-exercise-actions';
 import { BackLink } from '@/components/application/back-link';
 import { routes } from '@/lib/routes';
-import { ListOrdered, ChevronUp, ChevronDown, Trash2, Plus, Dumbbell } from 'lucide-react';
+import { ListOrdered, ChevronUp, ChevronDown, Trash2, Plus, Dumbbell, Search } from 'lucide-react';
 import { toastRichSuccess, toastRichError } from '@/lib/toast-library';
 
 function AvailableExerciseRow({ exercise, routineId, onAdd }) {
@@ -173,22 +174,79 @@ function RoutineExerciseRow({ re, routineId, index, total, onMoveUp, onMoveDown,
     );
 }
 
+const SEARCH_DEBOUNCE_MS = 400;
+
 export function RoutineDetailComponent({ routine }) {
     const router = useRouter();
-    const [allGymExercises, setAllGymExercises] = useState([]);
+    const [availableExercises, setAvailableExercises] = useState([]);
+    const [hasMore, setHasMore] = useState(false);
+    const [page, setPage] = useState(0);
+    const [loading, setLoading] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
 
-    useEffect(() => {
-        getGymExercisesForSelectAction().then(setAllGymExercises).catch(() => setAllGymExercises([]));
-    }, []);
+    const exercises = routine?.routine_exercises ?? [];
+    const orderedIds = exercises.map((e) => e.id);
+    const addedIds = exercises.map((e) => e.gym_exercise_id);
 
     const refresh = useCallback(() => {
         router.refresh();
     }, [router]);
 
-    const exercises = routine.routine_exercises ?? [];
-    const orderedIds = exercises.map((e) => e.id);
-    const addedIds = new Set(exercises.map((e) => e.gym_exercise_id));
-    const availableExercises = allGymExercises.filter((ex) => !addedIds.has(ex.id));
+    const fetchPage = useCallback(
+        async (pageIndex, query, exclude, append = false) => {
+            setLoading(true);
+            try {
+                const result = await getGymExercisesForSelectPageAction({
+                    page: pageIndex,
+                    query: query && String(query).trim() ? String(query).trim() : undefined,
+                    excludeIds: exclude,
+                });
+                const list = result.exercises ?? [];
+                setAvailableExercises((prev) => (append ? [...prev, ...list] : list));
+                setHasMore(result.hasMore ?? false);
+                setPage(pageIndex + 1);
+            } catch {
+                setAvailableExercises((prev) => (append ? prev : []));
+                setHasMore(false);
+            } finally {
+                setLoading(false);
+            }
+        },
+        []
+    );
+
+    const loadMore = useCallback(() => {
+        const q = searchQuery && String(searchQuery).trim() ? String(searchQuery).trim() : undefined;
+        fetchPage(page, q, addedIds, true);
+    }, [page, searchQuery, addedIds, fetchPage]);
+
+    const addedIdsStr = addedIds.join(',');
+    const debouncedFetchRef = useRef(null);
+    const initialFetchedRef = useRef(false);
+    const prevAddedIdsRef = useRef(addedIdsStr);
+
+    useEffect(() => {
+        debouncedFetchRef.current = debounce((q, exclude) => {
+            fetchPage(0, q, exclude, false);
+        }, SEARCH_DEBOUNCE_MS);
+        return () => debouncedFetchRef.current?.cancel();
+    }, [fetchPage]);
+
+    useEffect(() => {
+        const q = searchQuery && String(searchQuery).trim() ? String(searchQuery).trim() : undefined;
+        if (!initialFetchedRef.current) {
+            initialFetchedRef.current = true;
+            fetchPage(0, q, addedIds, false);
+            return;
+        }
+        if (prevAddedIdsRef.current !== addedIdsStr) {
+            prevAddedIdsRef.current = addedIdsStr;
+            debouncedFetchRef.current?.cancel();
+            fetchPage(0, q, addedIds, false);
+            return;
+        }
+        debouncedFetchRef.current?.(q, addedIds);
+    }, [searchQuery, addedIdsStr, fetchPage]);
 
     async function moveUp(index) {
         if (index <= 0) return;
@@ -275,21 +333,45 @@ export function RoutineDetailComponent({ routine }) {
                         Available exercises
                     </CardTitle>
                     <p className="text-sm text-muted-foreground">Click + to add an exercise to this routine.</p>
+                    <div className="relative mt-2 max-w-sm">
+                        <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+                        <Input
+                            type="search"
+                            placeholder="Search exercises…"
+                            className="pl-9"
+                            aria-label="Search exercises"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                        />
+                    </div>
                 </CardHeader>
                 <CardContent>
-                    {availableExercises.length === 0 ? (
-                        <p className="text-muted-foreground text-sm py-4">All your exercises are already in this routine.</p>
+                    {loading && availableExercises.length === 0 ? (
+                        <p className="text-muted-foreground text-sm py-4">Loading exercises…</p>
+                    ) : availableExercises.length === 0 ? (
+                        <p className="text-muted-foreground text-sm py-4">
+                            {searchQuery.trim() ? 'No exercises match your search.' : 'All your exercises are already in this routine.'}
+                        </p>
                     ) : (
-                        <ul className="space-y-1">
-                            {availableExercises.map((ex) => (
-                                <AvailableExerciseRow
-                                    key={ex.id}
-                                    exercise={ex}
-                                    routineId={routine.id}
-                                    onAdd={refresh}
-                                />
-                            ))}
-                        </ul>
+                        <>
+                            <ul className="space-y-1">
+                                {availableExercises.map((ex) => (
+                                    <AvailableExerciseRow
+                                        key={ex.id}
+                                        exercise={ex}
+                                        routineId={routine.id}
+                                        onAdd={refresh}
+                                    />
+                                ))}
+                            </ul>
+                            {hasMore && (
+                                <div className="flex justify-center pt-4">
+                                    <Button variant="outline" onClick={loadMore} disabled={loading}>
+                                        {loading ? 'Loading…' : 'Load more'}
+                                    </Button>
+                                </div>
+                            )}
+                        </>
                     )}
                 </CardContent>
             </Card>

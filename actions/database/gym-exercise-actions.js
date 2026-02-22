@@ -43,6 +43,25 @@ export async function getGymExercisesForSelectAction() {
     return data;
 }
 
+const SELECT_PAGE_SIZE = 10;
+
+export async function getGymExercisesForSelectPageAction({ page = 0, query, excludeIds = [] } = {}) {
+    const supabase = await createClient();
+    let request = supabase.from('gym_exercises').select('id, title, body_part');
+
+    if (query && String(query).trim()) {
+        const q = String(query).trim();
+        request = request.or(`title.ilike.%${q}%,body_part.ilike.%${q}%`);
+    }
+    if (Array.isArray(excludeIds) && excludeIds.length > 0) {
+        request = request.not('id', 'in', `(${excludeIds.map((id) => `"${id}"`).join(',')})`);
+    }
+
+    const { data, error } = await request.order('title').range(page * SELECT_PAGE_SIZE, (page + 1) * SELECT_PAGE_SIZE - 1);
+    if (error) throw new Error(error.message);
+    return { exercises: data ?? [], hasMore: (data ?? []).length === SELECT_PAGE_SIZE };
+}
+
 export async function createGymExerciseAction(formData) {
     const raw = Object.fromEntries(formData.entries());
     const validated = CreateGymExerciseSchema.safeParse(raw);
