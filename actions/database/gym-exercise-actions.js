@@ -29,6 +29,14 @@ export async function getGymExercisesPageAction({ page = 0, query, bodyPart } = 
     return { exercises: data, hasMore: data.length === 10 };
 }
 
+export async function getDistinctBodyPartsAction() {
+    const supabase = await createClient();
+    const { data, error } = await supabase.from('gym_exercises').select('body_part');
+    if (error) throw new Error(error.message);
+    const parts = [...new Set((data || []).map((r) => r?.body_part).filter(Boolean))].sort((a, b) => String(a).localeCompare(String(b)));
+    return parts;
+}
+
 export async function getGymExerciseByIdAction(id) {
     const supabase = await createClient();
     const { data, error } = await supabase.from('gym_exercises').select('*').eq('id', id).single();

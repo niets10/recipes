@@ -1,6 +1,7 @@
 import { Badge } from '@/components/ui/badge';
 import { FitnessEntityCard } from '@/components/fitness/fitness-entity-card';
 import { routes } from '@/lib/routes';
+import { cn } from '@/lib/utils';
 import { Dumbbell } from 'lucide-react';
 
 export function GymExerciseCard({ exercise, className }) {
@@ -16,7 +17,7 @@ export function GymExerciseCard({ exercise, className }) {
             description={description}
             badge={body_part ? <Badge variant="secondary" className="text-xs">{body_part}</Badge> : null}
             ariaLabel={`Open exercise: ${title || 'Untitled'}`}
-            className={className}
+            className={cn('min-w-0', className)}
         />
     );
 }

@@ -40,10 +40,12 @@ export function GymExercisesList({ initialExercises, initialHasMore, query, body
     }
 
     return (
-        <div className="space-y-4">
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="space-y-4 min-w-0">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 min-w-0">
                 {exercises.map((ex) => (
-                    <GymExerciseCard key={ex.id} exercise={ex} />
+                    <div key={ex.id} className="min-w-0">
+                        <GymExerciseCard exercise={ex} />
+                    </div>
                 ))}
             </div>
             {hasMore && (

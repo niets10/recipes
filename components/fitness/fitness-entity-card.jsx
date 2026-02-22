@@ -15,10 +15,10 @@ import { cn } from '@/lib/utils';
  */
 export function FitnessEntityCard({ href, icon, title, meta, description, badge, ariaLabel, className }) {
     return (
-        <Link href={href} aria-label={ariaLabel}>
+        <Link href={href} aria-label={ariaLabel} className="min-w-0 block">
             <Card
                 className={cn(
-                    'h-full border-t-4 fitness-card-border transition-all hover:shadow-md cursor-pointer',
+                    'h-full min-w-0 border-t-4 fitness-card-border transition-all hover:shadow-md cursor-pointer overflow-hidden',
                     className
                 )}
             >
