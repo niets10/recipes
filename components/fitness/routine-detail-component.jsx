@@ -19,7 +19,17 @@ import {
 import { getGymExercisesForSelectPageAction } from '@/actions/database/gym-exercise-actions';
 import { BackLink } from '@/components/application/back-link';
 import { routes } from '@/lib/routes';
-import { ListOrdered, ChevronUp, ChevronDown, Trash2, Plus, Dumbbell, Search, Save, ExternalLink } from 'lucide-react';
+import {
+    ListOrdered,
+    ChevronUp,
+    ChevronDown,
+    Trash2,
+    Plus,
+    Dumbbell,
+    Search,
+    Save,
+    ExternalLink,
+} from 'lucide-react';
 import { toastRichSuccess, toastRichError } from '@/lib/toast-library';
 
 function AvailableExerciseCard({ exercise, routineId, onAdd }) {
@@ -55,7 +65,7 @@ function AvailableExerciseCard({ exercise, routineId, onAdd }) {
         <Card
             className={cn(
                 'h-full min-w-0 w-full max-w-full rounded-2xl flex flex-col overflow-hidden p-5 transition-colors border-0 shadow-none',
-                'bg-sidebar-accent text-card-foreground'
+                'bg-sidebar-accent hover:bg-sidebar-accent/80 text-card-foreground'
             )}
         >
             <div className="flex flex-1 min-w-0 flex-col gap-3">
@@ -72,10 +82,10 @@ function AvailableExerciseCard({ exercise, routineId, onAdd }) {
                         {exerciseHref && (
                             <Link
                                 href={exerciseHref}
-                                className="text-muted-foreground hover:text-sidebar-accent-foreground p-1 rounded-md transition-colors"
+                                className="text-muted-foreground p-1 rounded-md transition-colors"
                                 aria-label={`View ${title} details`}
                             >
-                                <ExternalLink className="size-5" />
+                                <ExternalLink className="size-5 hover:text-custom-accent-lime" />
                             </Link>
                         )}
                         <Button
@@ -93,11 +103,9 @@ function AvailableExerciseCard({ exercise, routineId, onAdd }) {
                 </div>
                 <div className="min-w-0 flex-1">
                     {exerciseHref ? (
-                        <Link href={exerciseHref} className="block group">
-                            <h3 className="text-xl font-semibold text-card-foreground truncate group-hover:underline">
-                                {title}
-                            </h3>
-                        </Link>
+                        <h3 className="text-xl font-semibold text-card-foreground truncate group-hover:underline">
+                            {title}
+                        </h3>
                     ) : (
                         <h3 className="text-xl font-semibold text-card-foreground truncate">
                             {title}
@@ -302,7 +310,9 @@ export function RoutineDetailComponent({ routine }) {
                 else if (res?.error?._form?.[0]) toastRichError({ message: res.error._form[0] });
             }
             if (saved > 0) {
-                toastRichSuccess({ message: saved === 1 ? 'Exercise updated' : `${saved} exercises updated` });
+                toastRichSuccess({
+                    message: saved === 1 ? 'Exercise updated' : `${saved} exercises updated`,
+                });
                 router.refresh();
             }
         } finally {
@@ -443,7 +453,9 @@ export function RoutineDetailComponent({ routine }) {
                                                 routineId={routine.id}
                                                 index={index}
                                                 total={exercises.length}
-                                                values={edits[re.id] ?? getRoutineExerciseInitial(re)}
+                                                values={
+                                                    edits[re.id] ?? getRoutineExerciseInitial(re)
+                                                }
                                                 onFieldChange={onFieldChange}
                                                 onMoveUp={moveUp}
                                                 onMoveDown={moveDown}
@@ -494,7 +506,9 @@ export function RoutineDetailComponent({ routine }) {
                 </CardHeader>
                 <CardContent className="min-w-0 overflow-hidden">
                     {loading && availableExercises.length === 0 ? (
-                        <p className="text-muted-foreground text-xs py-4 sm:text-sm">Loading exercises…</p>
+                        <p className="text-muted-foreground text-xs py-4 sm:text-sm">
+                            Loading exercises…
+                        </p>
                     ) : availableExercises.length === 0 ? (
                         <p className="text-muted-foreground text-xs py-4 sm:text-sm">
                             {searchQuery.trim()
