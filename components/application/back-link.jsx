@@ -18,7 +18,7 @@ export function BackLink({ label = 'Back', className, ...props }) {
             variant="ghost"
             size="icon"
             type="button"
-            className={cn('hidden shrink-0 md:flex', className)}
+            className={cn('hidden shrink-0 md:flex hover:cursor-pointer', className)}
             aria-label={label}
             onClick={() => router.back()}
             {...props}

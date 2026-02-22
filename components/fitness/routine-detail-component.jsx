@@ -65,7 +65,7 @@ function AvailableExerciseCard({ exercise, routineId, onAdd }) {
         <Card
             className={cn(
                 'h-full min-w-0 w-full max-w-full rounded-2xl flex flex-col overflow-hidden p-5 transition-colors border-0 shadow-none',
-                'bg-sidebar-accent hover:bg-sidebar-accent/80 text-card-foreground'
+                'bg-sidebar-accent text-card-foreground'
             )}
         >
             <div className="flex flex-1 min-w-0 flex-col gap-3">
@@ -92,7 +92,7 @@ function AvailableExerciseCard({ exercise, routineId, onAdd }) {
                             type="button"
                             variant="ghost"
                             size="icon"
-                            className="h-8 w-8 shrink-0 text-muted-foreground hover:text-sidebar-accent-foreground hover:bg-sidebar-accent/50"
+                            className="h-8 w-8 shrink-0 text-muted-foreground hover:text-sidebar-accent-foreground hover:bg-sidebar-accent/50 hover:cursor-pointer"
                             onClick={handleAdd}
                             disabled={adding}
                             aria-label={`Add ${title} to routine`}
@@ -103,7 +103,7 @@ function AvailableExerciseCard({ exercise, routineId, onAdd }) {
                 </div>
                 <div className="min-w-0 flex-1">
                     {exerciseHref ? (
-                        <h3 className="text-xl font-semibold text-card-foreground truncate group-hover:underline">
+                        <h3 className="text-xl font-semibold text-card-foreground truncate">
                             {title}
                         </h3>
                     ) : (
@@ -194,7 +194,7 @@ function RoutineExerciseRow({
             </td>
             <td className="py-1 pr-1 align-middle">
                 {exerciseHref ? (
-                    <Link href={exerciseHref} className="font-medium hover:underline">
+                    <Link href={exerciseHref} className="font-medium hover:text-custom-accent-lime">
                         {title}
                     </Link>
                 ) : (
@@ -242,7 +242,7 @@ function RoutineExerciseRow({
                     type="button"
                     variant="ghost"
                     size="icon"
-                    className="h-8 w-8 text-destructive hover:text-destructive"
+                    className="h-8 w-8 text-destructive hover:text-destructive hover:cursor-pointer"
                     onClick={handleRemove}
                 >
                     <Trash2 className="size-4" />
@@ -472,7 +472,7 @@ export function RoutineDetailComponent({ routine }) {
                                         size="sm"
                                         onClick={saveAll}
                                         disabled={savingAll}
-                                        className="gap-2"
+                                        className="gap-2 hover:cursor-pointer"
                                     >
                                         <Save className="size-4" />
                                         Save changes{dirtyCount > 1 ? ` (${dirtyCount})` : ''}
