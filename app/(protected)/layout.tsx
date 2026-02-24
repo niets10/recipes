@@ -8,7 +8,13 @@ import { LoadingLogo } from '@/components/ui/loading-logo';
 export default function ProtectedLayout({ children }: { children: React.ReactNode }) {
     return (
         <SidebarProvider>
-            <Suspense fallback={<LoadingLogo className="text-muted-foreground" size={48} />}>
+            <Suspense
+                fallback={
+                    <div className="flex h-full min-h-svh w-52 shrink-0 items-center justify-center bg-sidebar">
+                        <LoadingLogo className="text-muted-foreground" size={48} />
+                    </div>
+                }
+            >
                 <AppSidebar />
             </Suspense>
             <SidebarInset className="bg-sidebar">
