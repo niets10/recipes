@@ -40,6 +40,7 @@ CREATE TABLE routines (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL REFERENCES auth.users(id) DEFAULT auth.uid(),
   name TEXT NOT NULL,
+  description TEXT,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 CREATE INDEX idx_routines_user_id ON routines USING btree (user_id);

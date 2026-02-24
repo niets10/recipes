@@ -27,6 +27,7 @@ export const UpdateActivitySchema = CreateActivitySchema.extend({
 
 export const CreateRoutineSchema = z.object({
     name: z.string().min(1, { message: 'Name is required' }).max(200),
+    description: optionalString,
 });
 
 export const UpdateRoutineSchema = CreateRoutineSchema.extend({

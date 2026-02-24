@@ -31,7 +31,7 @@ export function EditRoutine({ routine, onSuccess }) {
             <DialogContent>
                 <DialogHeader>
                     <DialogTitle>Edit Routine</DialogTitle>
-                    <DialogDescription>Update your routine name.</DialogDescription>
+                    <DialogDescription>Update your routine name and description.</DialogDescription>
                 </DialogHeader>
                 <EditRoutineForm routine={routine} onSuccess={handleSuccess} />
             </DialogContent>

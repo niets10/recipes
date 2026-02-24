@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { updateRoutineAction } from '@/actions/database/routine-actions';
 import { UpdateRoutineSchema } from '@/schemas';
 import { cn } from '@/lib/utils';
@@ -21,6 +22,7 @@ export function EditRoutineForm({ routine, onSuccess, className }) {
         defaultValues: {
             id: routine.id,
             name: routine.name ?? '',
+            description: routine.description ?? '',
         },
         resolver: zodResolver(UpdateRoutineSchema),
     });
@@ -34,6 +36,7 @@ export function EditRoutineForm({ routine, onSuccess, className }) {
             const formData = new FormData();
             formData.set('id', data.id);
             formData.set('name', data.name);
+            formData.set('description', data.description ?? '');
             const result = await updateRoutineAction(formData);
             if (result?.success) {
                 onSuccess?.();
@@ -45,6 +48,7 @@ export function EditRoutineForm({ routine, onSuccess, className }) {
                     toastRichError({ message: result.error._form[0] });
                 }
                 if (result.error.name?.[0]) setError('name', { message: result.error.name[0] });
+                if (result.error.description?.[0]) setError('description', { message: result.error.description[0] });
             }
         } catch (err) {
             toastRichError({ message: 'Failed to update routine.' });
@@ -79,6 +83,29 @@ export function EditRoutineForm({ routine, onSuccess, className }) {
                 {errors.name && (
                     <p id="edit-routine-name-error" className="text-sm text-destructive">
                         {errors.name.message}
+                    </p>
+                )}
+            </div>
+            <div className="space-y-2">
+                <label
+                    htmlFor="edit-routine-description"
+                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                >
+                    Description
+                </label>
+                <Textarea
+                    id="edit-routine-description"
+                    placeholder="Optional notes about this routine"
+                    rows={3}
+                    autoComplete="off"
+                    aria-invalid={!!errors.description}
+                    aria-describedby={errors.description ? 'edit-routine-description-error' : undefined}
+                    className={errors.description ? 'border-destructive' : ''}
+                    {...register('description')}
+                />
+                {errors.description && (
+                    <p id="edit-routine-description-error" className="text-sm text-destructive">
+                        {errors.description.message}
                     </p>
                 )}
             </div>

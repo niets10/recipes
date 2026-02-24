@@ -407,6 +407,9 @@ export function RoutineDetailComponent({ routine }) {
                     </div>
                 </CardHeader>
                 <CardContent className="pt-0">
+                    {routine.description && (
+                        <p className="text-muted-foreground text-sm mb-4 whitespace-pre-wrap">{routine.description}</p>
+                    )}
                     <p className="flex items-center gap-2 text-lg font-medium text-muted-foreground mb-4">
                         <ListOrdered className="size-5 text-primary" />
                         Exercises in this routine

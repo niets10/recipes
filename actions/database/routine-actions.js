@@ -79,7 +79,10 @@ export async function createRoutineAction(formData) {
         return { error: z.flattenError(validated.error).fieldErrors };
     }
     const supabase = await createClient();
-    const { error } = await supabase.from('routines').insert({ name: validated.data.name });
+    const { error } = await supabase.from('routines').insert({
+        name: validated.data.name,
+        description: validated.data.description || null,
+    });
     if (error) return { error: { _form: [error.message] } };
     revalidatePath(routes.fitnessRoutines);
     revalidatePath(routes.fitness);
@@ -93,7 +96,10 @@ export async function updateRoutineAction(formData) {
         return { error: z.flattenError(validated.error).fieldErrors };
     }
     const supabase = await createClient();
-    const { error } = await supabase.from('routines').update({ name: validated.data.name }).eq('id', validated.data.id);
+    const { error } = await supabase.from('routines').update({
+        name: validated.data.name,
+        description: validated.data.description || null,
+    }).eq('id', validated.data.id);
     if (error) return { error: { _form: [error.message] } };
     revalidatePath(routes.fitnessRoutines);
     revalidatePath(`${routes.fitnessRoutines}/${validated.data.id}`);
