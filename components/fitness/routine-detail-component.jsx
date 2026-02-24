@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { EditRoutine } from '@/components/fitness/edit-routine';
+import { DeleteRoutine } from '@/components/fitness/delete-routine';
 import {
     removeExerciseFromRoutineAction,
     updateRoutineExerciseAction,
@@ -404,6 +405,7 @@ export function RoutineDetailComponent({ routine }) {
                     </div>
                     <div className="flex shrink-0 items-center gap-2">
                         <EditRoutine routine={routine} onSuccess={refresh} />
+                        <DeleteRoutine routineId={routine.id} routineName={routine.name} />
                     </div>
                 </CardHeader>
                 <CardContent className="pt-0">
