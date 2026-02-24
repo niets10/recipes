@@ -41,5 +41,5 @@ CROSS JOIN (VALUES
 ('Plank', 'Isometric hold targeting the core (rectus abdominis, transverse abdominis, and obliques).', 'Core'),
 ('Cable Crunch', 'Isolation movement targeting the rectus abdominis (upper and middle abs).', 'Core'),
 ('Hanging Leg Raise', 'Compound movement targeting the lower abdominals and hip flexors with core stability.', 'Core'),
-('Russian Twist', 'Rotation movement targeting the obliques (sides of the core) and rectus abdominis.', 'Core'),
+('Russian Twist', 'Rotation movement targeting the obliques (sides of the core) and rectus abdominis.', 'Core')
 ) AS v(title, description, body_part);
