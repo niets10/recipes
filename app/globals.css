@@ -40,6 +40,7 @@
   --color-success: var(--success);
   --color-warning: var(--warning);
   --color-info: var(--info);
+  --color-custom-accent-lime: var(--custom-accent-lime);
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -50,133 +51,168 @@
 }
 
 /* ──────────────────────────────────────────────
-   Light mode — warm, food-inspired palette
+   Light mode — Happy Hues palette 9
+   https://www.happyhues.co/palettes/9
+   Background #eff0f3 · Card #fffffe · Button #ff8e3c · Tertiary #d9376e
    ────────────────────────────────────────────── */
 :root {
-  --radius: 0.625rem;
+  --radius: 0.875rem;
 
-  /* Surfaces */
-  --background: oklch(0.98 0.005 75);
-  --foreground: oklch(0.18 0.035 55);
-  --card: oklch(0.993 0.003 75);
-  --card-foreground: oklch(0.18 0.035 55);
-  --popover: oklch(0.993 0.003 75);
-  --popover-foreground: oklch(0.18 0.035 55);
+  /* Surfaces — tilde-style: white cards, subtle off-white bg */
+  --background: oklch(0.98 0.004 260);
+  --foreground: oklch(0.22 0.02 260);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.22 0.02 260);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.22 0.02 260);
 
-  /* Brand */
-  --primary: oklch(0.65 0.2 45);
-  --primary-foreground: oklch(0.99 0.005 90);
-  --secondary: oklch(0.6 0.12 180);
-  --secondary-foreground: oklch(0.99 0.005 90);
+  /* Brand — Button #ff8e3c (orange) */
+  --primary: oklch(0.72 0.16 55);
+  --primary-foreground: oklch(0.183 0 0);
+  --secondary: oklch(0.94 0.02 55);
+  --secondary-foreground: oklch(0.28 0 0);
 
-  /* Neutral tints */
-  --muted: oklch(0.95 0.01 75);
-  --muted-foreground: oklch(0.5 0.02 55);
-  --accent: oklch(0.93 0.04 60);
-  --accent-foreground: oklch(0.25 0.04 55);
+  /* Neutral tints — Paragraph #2a2a2a */
+  --muted: oklch(0.92 0.008 264);
+  --muted-foreground: oklch(0.279 0 0);
+  --accent: oklch(0.93 0.04 55);
+  --accent-foreground: oklch(0.28 0 0);
 
-  /* Feedback */
-  --destructive: oklch(0.55 0.24 28);
-  --success: oklch(0.6 0.17 145);
+  /* Feedback — same red as dark mode for destructive */
+  --destructive: oklch(0.58 0.22 25);
+  --success: oklch(0.58 0.18 145);
   --warning: oklch(0.78 0.15 85);
-  --info: oklch(0.6 0.12 180);
+  --info: oklch(0.6 0.12 250);
 
   /* Chrome */
-  --border: oklch(0.9 0.015 75);
-  --input: oklch(0.9 0.015 75);
-  --ring: oklch(0.65 0.2 45);
+  --border: oklch(0.88 0.01 264);
+  --input: oklch(0.88 0.01 264);
+  --ring: oklch(0.72 0.16 55);
 
-  /* Charts */
-  --chart-1: oklch(0.65 0.2 45);
-  --chart-2: oklch(0.6 0.12 180);
-  --chart-3: oklch(0.62 0.19 330);
+  /* Charts — orange primary + palette accents */
+  --chart-1: oklch(0.72 0.16 55);
+  --chart-2: oklch(0.58 0.22 355);
+  --chart-3: oklch(0.6 0.12 180);
   --chart-4: oklch(0.78 0.15 85);
-  --chart-5: oklch(0.58 0.12 150);
+  --chart-5: oklch(0.55 0.14 150);
 
-  /* Sidebar */
-  --sidebar: oklch(0.96 0.012 65);
-  --sidebar-foreground: oklch(0.18 0.035 55);
-  --sidebar-primary: oklch(0.65 0.2 45);
-  --sidebar-primary-foreground: oklch(0.99 0.005 90);
-  --sidebar-accent: oklch(0.92 0.05 50);
-  --sidebar-accent-foreground: oklch(0.35 0.06 50);
-  --sidebar-border: oklch(0.9 0.02 65);
-  --sidebar-ring: oklch(0.65 0.2 45);
+  /* Custom colors */
+  --custom-accent-lime: oklch(0.78 0.19 135);
+
+  /* Sidebar — tilde-style: white sidebar, cool gray accent */
+  --sidebar: oklch(1 0 0);
+  --sidebar-foreground: oklch(0.25 0.02 260);
+  --sidebar-primary: oklch(0.88 0.06 55);
+  --sidebar-primary-foreground: oklch(0.99 0 0);
+  --sidebar-primary-gradient: linear-gradient(
+    135deg,
+    oklch(0.88 0.06 50),
+    oklch(0.86 0.07 55)
+  );
+  --sidebar-primary-gradient-intense: linear-gradient(
+    135deg,
+    oklch(0.82 0.10 50),
+    oklch(0.80 0.11 55)
+  );
+  --sidebar-accent: oklch(0.95 0.015 240);
+  --sidebar-accent-foreground: oklch(0.25 0.02 260);
+  --sidebar-border: oklch(0.92 0.008 260);
+  --sidebar-ring: oklch(0.72 0.16 55);
 
   /* ── Reusable effect tokens ── */
-  --gradient-brand: linear-gradient(135deg, oklch(0.65 0.2 45), oklch(0.6 0.12 180));
-  --gradient-warm: linear-gradient(135deg, oklch(0.65 0.2 45), oklch(0.7 0.22 35));
+  --gradient-brand: linear-gradient(135deg, oklch(0.72 0.16 55), oklch(0.68 0.18 45));
+  --gradient-warm: linear-gradient(135deg, oklch(0.72 0.16 55), oklch(0.58 0.22 355));
   --gradient-surface: linear-gradient(180deg, var(--accent), var(--background));
 
   --shadow-xs: 0 1px 2px oklch(0 0 0 / 5%);
   --shadow-soft: 0 2px 8px oklch(0 0 0 / 6%);
-  --shadow-warm: 0 4px 14px oklch(0.65 0.2 45 / 10%);
+  --shadow-warm: 0 4px 14px oklch(0.72 0.16 55 / 12%);
   --shadow-elevated: 0 8px 25px oklch(0 0 0 / 8%);
+
+  /* Fitness cards — top border (orange accent from palette) */
+  --fitness-card-border: oklch(0.65 0.18 55);
+  --fitness-card-border-hover: oklch(0.58 0.22 55);
 }
 
 /* ──────────────────────────────────────────────
-   Dark mode — Happy Hues palette #13
-   #0f0e17 bg · #fffffe text · #ff8906 primary
-   #f25f4c secondary · #e53170 tertiary · #a7a9be muted
+   Dark mode — fitness app: grey sidebar/header + grey cards
+   Near-black bg · charcoal sidebar/header · grey cards · united borders
    ────────────────────────────────────────────── */
 .dark {
-  /* Surfaces */
-  --background: oklch(0.14 0.02 285);          /* #0f0e17 */
-  --foreground: oklch(0.999 0 0);              /* #fffffe */
-  --card: oklch(0.19 0.02 285);               /* elevated from bg */
-  --card-foreground: oklch(0.999 0 0);
-  --popover: oklch(0.19 0.02 285);
-  --popover-foreground: oklch(0.999 0 0);
+  /* Surfaces — tilde-style: dark grey card/sidebar */
+  --background: oklch(0.141 0.005 285.823);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.21 0.006 285.885);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.21 0.006 285.885);
+  --popover-foreground: oklch(0.985 0 0);
 
-  /* Brand */
-  --primary: oklch(0.74 0.19 60);             /* #ff8906 — signature orange */
-  --primary-foreground: oklch(0.14 0.02 285); /* dark bg for contrast */
-  --secondary: oklch(0.64 0.21 25);           /* #f25f4c — coral */
-  --secondary-foreground: oklch(0.999 0 0);
+  /* Brand — vibrant green (#4CAF50 / #8BC34A style) */
+  --primary: oklch(0.62 0.18 145);
+  --primary-foreground: oklch(0.14 0.02 280);
+  --secondary: oklch(0.28 0.02 280);
+  --secondary-foreground: oklch(0.92 0.02 145);
 
   /* Neutral tints */
-  --muted: oklch(0.27 0.025 275);             /* #2e2f3e */
-  --muted-foreground: oklch(0.73 0.025 270);  /* #a7a9be */
-  --accent: oklch(0.22 0.025 280);            /* between bg and muted */
-  --accent-foreground: oklch(0.999 0 0);
+  --muted: oklch(0.24 0.015 280);
+  --muted-foreground: oklch(0.65 0.02 280);
+  --accent: oklch(0.26 0.02 280);
+  --accent-foreground: oklch(0.98 0.005 90);
 
   /* Feedback */
-  --destructive: oklch(0.64 0.21 25);         /* coral — #f25f4c */
-  --success: oklch(0.65 0.17 145);
-  --warning: oklch(0.74 0.19 60);             /* orange */
+  --destructive: oklch(0.58 0.22 25);
+  --success: oklch(0.62 0.18 145);
+  --warning: oklch(0.75 0.16 75);
   --info: oklch(0.62 0.12 250);
 
   /* Chrome */
-  --border: oklch(0.73 0.025 270 / 16%);      /* muted-blue border */
-  --input: oklch(0.73 0.025 270 / 20%);
-  --ring: oklch(0.74 0.19 60);                /* orange focus ring */
+  --border: oklch(0.35 0.02 280 / 40%);
+  --input: oklch(0.28 0.02 280);
+  --ring: oklch(0.62 0.18 145);
 
   /* Charts */
-  --chart-1: oklch(0.74 0.19 60);             /* orange */
-  --chart-2: oklch(0.64 0.21 25);             /* coral */
-  --chart-3: oklch(0.56 0.24 355);            /* #e53170 — hot pink */
-  --chart-4: oklch(0.73 0.025 270);           /* muted blue-gray */
-  --chart-5: oklch(0.62 0.12 250);            /* blue */
+  --chart-1: oklch(0.62 0.18 145);
+  --chart-2: oklch(0.58 0.16 130);
+  --chart-3: oklch(0.65 0.14 180);
+  --chart-4: oklch(0.68 0.12 70);
+  --chart-5: oklch(0.60 0.15 200);
 
-  /* Sidebar */
-  --sidebar: oklch(0.16 0.02 285);            /* slightly lighter than bg */
-  --sidebar-foreground: oklch(0.999 0 0);
-  --sidebar-primary: oklch(0.74 0.19 60);
-  --sidebar-primary-foreground: oklch(0.999 0 0);
-  --sidebar-accent: oklch(0.24 0.025 280);
-  --sidebar-accent-foreground: oklch(0.90 0.015 270);
-  --sidebar-border: oklch(0.73 0.025 270 / 14%);
-  --sidebar-ring: oklch(0.74 0.19 60);
+  /* Custom colors */
+  --custom-accent-lime: oklch(0.78 0.19 135);
+
+  /* Sidebar & header — tilde-style: same grey as card, blue accent */
+  --sidebar: oklch(0.21 0.006 285.885);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.28 0.03 150);
+  --sidebar-primary-foreground: oklch(0.969 0.015 12.422);
+  --sidebar-primary-gradient: linear-gradient(
+    135deg,
+    oklch(0.26 0.025 152),
+    oklch(0.28 0.02 165)
+  );
+  --sidebar-primary-gradient-intense: linear-gradient(
+    135deg,
+    oklch(0.32 0.07 152),
+    oklch(0.34 0.06 165)
+  );
+  --sidebar-accent: oklch(0.274 0.006 286.033);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.62 0.18 145);
 
   /* ── Reusable effect tokens (dark) ── */
-  --gradient-brand: linear-gradient(135deg, oklch(0.74 0.19 60), oklch(0.56 0.24 355));
-  --gradient-warm: linear-gradient(135deg, oklch(0.74 0.19 60), oklch(0.64 0.21 25));
+  --gradient-brand: linear-gradient(135deg, oklch(0.58 0.18 145), oklch(0.68 0.16 130));
+  --gradient-warm: linear-gradient(135deg, oklch(0.62 0.18 145), oklch(0.65 0.14 120));
   --gradient-surface: linear-gradient(180deg, var(--accent), var(--background));
 
-  --shadow-xs: 0 1px 2px oklch(0 0 0 / 20%);
-  --shadow-soft: 0 2px 8px oklch(0 0 0 / 25%);
-  --shadow-warm: 0 4px 14px oklch(0.74 0.19 60 / 15%);
-  --shadow-elevated: 0 8px 25px oklch(0 0 0 / 30%);
+  --shadow-xs: 0 1px 2px oklch(0 0 0 / 25%);
+  --shadow-soft: 0 2px 8px oklch(0 0 0 / 30%);
+  --shadow-warm: 0 4px 14px oklch(0.62 0.18 145 / 18%);
+  --shadow-elevated: 0 8px 25px oklch(0 0 0 / 35%);
+
+  /* Fitness cards — top border in same tone as sidebar (muted green/teal) */
+  --fitness-card-border: oklch(0.34 0.05 152);
+  --fitness-card-border-hover: oklch(0.40 0.06 155);
 }
 
 @layer base {
@@ -192,6 +228,16 @@
     background-color: var(--color-background);
     color: var(--color-foreground);
   }
+}
+
+/* Fitness-style primary button gradient in dark mode */
+.dark button[class*="bg-primary"]:not([class*="bg-primary/"]),
+.dark a[class*="bg-primary"]:not([class*="bg-primary/"]) {
+  background: var(--gradient-brand) !important;
+}
+.dark button[class*="bg-primary"]:not([class*="bg-primary/"]):hover,
+.dark a[class*="bg-primary"]:not([class*="bg-primary/"]):hover {
+  filter: brightness(1.08);
 }
 
 /* ── Reusable shadow utilities (theme-aware via CSS properties) ── */
@@ -213,5 +259,24 @@
   }
   .bg-gradient-surface {
     background: var(--gradient-surface);
+  }
+
+  /* Dashboard-style cards: rounded, soft bg, subtle border & shadow */
+  .modern-card {
+    @apply rounded-2xl bg-card/80 backdrop-blur-sm border border-border/60 shadow-sm;
+  }
+  .dark .modern-card {
+    @apply bg-card/50 border-border/50;
+  }
+  .modern-card-hover {
+    @apply hover:shadow-lg hover:border-border transition-all duration-300;
+  }
+
+  /* Fitness cards: soft green top border only (overrides base * { border-color }) */
+  .fitness-card-border {
+    border-top-color: var(--fitness-card-border) !important;
+  }
+  .fitness-card-border:hover {
+    border-top-color: var(--fitness-card-border-hover) !important;
   }
 }

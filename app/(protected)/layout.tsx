@@ -11,12 +11,14 @@ export default function ProtectedLayout({ children }: { children: React.ReactNod
             <Suspense fallback={<LoadingLogo className="text-muted-foreground" size={48} />}>
                 <AppSidebar />
             </Suspense>
-            <SidebarInset>
+            <SidebarInset className="bg-sidebar">
                 <BreadcrumbProvider>
                     <Suspense fallback={<LoadingLogo className="text-muted-foreground" size={48} />}>
                         <AppHeader />
                     </Suspense>
-                    <div className="flex-1 overflow-auto p-4 md:p-6">{children}</div>
+                    <main className="flex-1 bg-background md:rounded-tl-3xl p-4 md:p-6">
+                        {children}
+                    </main>
                 </BreadcrumbProvider>
             </SidebarInset>
         </SidebarProvider>

@@ -5,10 +5,9 @@ export function StatCard({ title, value, description, icon: Icon, className, ...
     return (
         <Card
             className={cn(
-                'border-l-4 border-l-primary/60 transition-all hover:border-l-primary',
+                'border-t-4 fitness-card-border transition-all',
                 className
             )}
-            style={{ boxShadow: 'var(--shadow-soft)' }}
             {...props}
         >
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">

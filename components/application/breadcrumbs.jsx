@@ -11,6 +11,12 @@ import { useBreadcrumbLabel } from '@/components/application/breadcrumb-context'
 const pathLabels = {
     [routes.home]: 'Home',
     [routes.recipes]: 'Recipes',
+    [routes.fitness]: 'Fitness',
+    [routes.fitnessRoutines]: 'Routines',
+    [routes.fitnessGymExercises]: 'Gym Exercises',
+    [routes.fitnessActivities]: 'Activities',
+    [routes.statistics]: 'Statistics',
+    [routes.statisticsDay]: 'Daily',
 };
 
 function getBreadcrumbItems(pathname, pageLabelOverride, useOverride) {

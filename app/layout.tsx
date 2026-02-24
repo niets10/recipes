@@ -9,7 +9,7 @@ const defaultUrl = process.env.VERCEL_URL
     : 'http://localhost:3000';
 
 export const viewport: Viewport = {
-    themeColor: '#0a0a0a',
+    themeColor: '#1a1a1c',
     width: 'device-width',
     initialScale: 1,
     maximumScale: 1,
@@ -17,16 +17,16 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
     metadataBase: new URL(defaultUrl),
-    title: 'Recipes',
-    description: 'A recipe app built with Next.js and Supabase',
+    title: 'Fitness',
+    description: 'Track workouts, routines, and nutrition',
     icons: {
-        icon: '/icons/utensils-crossed.svg',
-        apple: '/icons/utensils-crossed-192.png',
+        icon: '/icons/fitness.svg',
+        apple: '/icons/fitness-192.png',
     },
     appleWebApp: {
         capable: true,
         statusBarStyle: 'default',
-        title: 'Recipes',
+        title: 'Fitness',
     },
     formatDetection: {
         telephone: false,
@@ -49,7 +49,7 @@ export default function RootLayout({
             <body className={`${geistSans.className} antialiased overflow-x-hidden`}>
                 <ThemeProvider
                     attribute="class"
-                    defaultTheme="system"
+                    defaultTheme="dark"
                     enableSystem
                     disableTransitionOnChange
                 >

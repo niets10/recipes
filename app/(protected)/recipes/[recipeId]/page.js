@@ -1,5 +1,5 @@
-import { RecipeComponent } from '@/components/recipes/recipe-component';
+import { RecipeDetailComponent } from '@/components/recipes/recipe-detail-component';
 
 export default async function RecipePage({ params }) {
-    return <RecipeComponent params={params} />;
+    return <RecipeDetailComponent params={params} />;
 }

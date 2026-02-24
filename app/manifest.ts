@@ -5,36 +5,35 @@ const baseUrl =
 
 export default function manifest(): MetadataRoute.Manifest {
     return {
-        name: 'Recipes',
-        short_name: 'Recipes',
-        description: 'A recipe app built with Next.js and Supabase',
+        name: 'Fitness',
+        short_name: 'Fitness',
+        description: 'Track workouts, routines, and nutrition',
         start_url: '/',
         display: 'standalone',
-        background_color: '#ffffff',
-        theme_color: '#0a0a0a',
+        background_color: '#1a1a1c',
+        theme_color: '#1a1a1c',
         orientation: 'portrait-primary',
-        // Use 192×192 and 512×512 PNGs for sharp display. Export your logo at these exact sizes.
         icons: [
             {
-                src: new URL('/icons/utensils-crossed-192.png', baseUrl).toString(),
+                src: new URL('/icons/fitness-192.png', baseUrl).toString(),
                 sizes: '192x192',
                 type: 'image/png',
                 purpose: 'maskable',
             },
             {
-                src: new URL('/icons/utensils-crossed-512.png', baseUrl).toString(),
+                src: new URL('/icons/fitness-512.png', baseUrl).toString(),
                 sizes: '512x512',
                 type: 'image/png',
                 purpose: 'maskable',
             },
             {
-                src: new URL('/icons/utensils-crossed-192.png', baseUrl).toString(),
+                src: new URL('/icons/fitness-192.png', baseUrl).toString(),
                 sizes: '192x192',
                 type: 'image/png',
                 purpose: 'any',
             },
             {
-                src: new URL('/icons/utensils-crossed-512.png', baseUrl).toString(),
+                src: new URL('/icons/fitness-512.png', baseUrl).toString(),
                 sizes: '512x512',
                 type: 'image/png',
                 purpose: 'any',

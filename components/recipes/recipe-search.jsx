@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import debounce from 'lodash/debounce';
 import { Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
@@ -12,6 +12,7 @@ const DEBOUNCE_MS = 400;
 
 export function RecipeSearch({ className, placeholder = 'Search recipes…', ...props }) {
     const router = useRouter();
+    const pathname = usePathname();
     const searchParams = useSearchParams();
     const urlQuery = searchParams.get('q') ?? '';
 
@@ -19,6 +20,14 @@ export function RecipeSearch({ className, placeholder = 'Search recipes…', ...
     const lastPushedQueryRef = useRef(urlQuery);
     const debouncedApplyRef = useRef(null);
     const applyQueryRef = useRef(null);
+
+    // Empty search when navigating to another route (pathname change)
+    useEffect(() => {
+        debouncedApplyRef.current?.cancel();
+        lastPushedQueryRef.current = '';
+        setQueryValue('');
+        router.replace(routes.recipes);
+    }, [pathname]);
 
     useEffect(() => {
         const userHasDiverged = queryValue !== lastPushedQueryRef.current;

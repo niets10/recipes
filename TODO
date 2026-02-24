@@ -5,5 +5,13 @@ Todo:
   ✔ Change psd @done(26-02-15 15:23)
   ✔ Enable progressive web app @done(26-02-15 15:23)
   ✔ Remove home page @done(26-02-15 15:23)
-  ☐ Datatable to track what I have eaten every day
+  ☐ Datatable and/or calendar to track what I have eaten every day
   ☐ Fields to display the macros
+  ☐ Auto-calculate the macros from what I have eaten
+  ✔ https://dribbble.com/shots/26444374-Gamified-Fitness-Nutrition-App @done(26-02-22 00:06)
+  ✔ App header in light does not have the same color as the sidebar @done(26-02-22 00:06)
+  ✔ Script to create excercises @done(26-02-22 19:44)
+  ☐ Create ingredientes table and recipe ingredients table
+  ☐ Script to create ingredients
+  ☐ Script to create Recipes from chatgpt
+  ☐ Add tags to recipes

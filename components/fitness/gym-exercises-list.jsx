@@ -1,0 +1,60 @@
+'use client';
+
+import { useState, useCallback, useEffect } from 'react';
+import { getGymExercisesPageAction } from '@/actions/database/gym-exercise-actions';
+import { GymExerciseCard } from '@/components/fitness/gym-exercise-card';
+import { Button } from '@/components/ui/button';
+
+export function GymExercisesList({ initialExercises, initialHasMore, query, bodyPart }) {
+    const [exercises, setExercises] = useState(initialExercises);
+    const [hasMore, setHasMore] = useState(initialHasMore);
+    const [page, setPage] = useState(initialExercises.length > 0 ? 1 : 0);
+    const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        setExercises(initialExercises);
+        setHasMore(initialHasMore);
+        setPage(initialExercises.length > 0 ? 1 : 0);
+    }, [initialExercises, initialHasMore]);
+
+    const loadMore = useCallback(async () => {
+        setLoading(true);
+        try {
+            const nextPage = page;
+            const result = await getGymExercisesPageAction({ page: nextPage, query, bodyPart });
+            const newExercises = result.exercises || [];
+            setExercises((prev) => {
+                const seen = new Set(prev.map((e) => e.id));
+                const deduped = newExercises.filter((e) => !seen.has(e.id));
+                return deduped.length > 0 ? [...prev, ...deduped] : prev;
+            });
+            setHasMore(result.hasMore ?? false);
+            setPage((p) => p + 1);
+        } finally {
+            setLoading(false);
+        }
+    }, [page, query, bodyPart]);
+
+    if (exercises.length === 0) {
+        return null;
+    }
+
+    return (
+        <div className="space-y-4 min-w-0">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 min-w-0">
+                {exercises.map((ex) => (
+                    <div key={ex.id} className="min-w-0">
+                        <GymExerciseCard exercise={ex} />
+                    </div>
+                ))}
+            </div>
+            {hasMore && (
+                <div className="flex justify-center pt-4">
+                    <Button variant="outline" onClick={loadMore} disabled={loading}>
+                        {loading ? 'Loading…' : 'Load more'}
+                    </Button>
+                </div>
+            )}
+        </div>
+    );
+}

@@ -15,3 +15,5 @@ export const UpdateRecipeSchema = z.object({
     description: z.string().max(2000, { message: 'Description must be 2000 characters or less' }).optional(),
     social_media_url: z.string().url({ message: 'Please enter a valid URL' }).optional().or(z.literal('')),
 });
+
+export * from './fitness';
