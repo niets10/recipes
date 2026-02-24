@@ -10,7 +10,13 @@ import {
     DialogDescription,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Combobox } from '@/components/ui/combobox';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { getGymExercisesForSelectAction } from '@/actions/database/gym-exercise-actions';
 import { addExerciseToRoutineAction } from '@/actions/database/routine-actions';
@@ -86,16 +92,27 @@ export function AddExerciseToRoutine({ routineId, onSuccess }) {
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div className="space-y-2">
                         <label htmlFor="add-ge-select" className="text-sm font-medium">Exercise</label>
-                        <Combobox
-                            id="add-ge-select"
-                            items={exercises}
-                            value={gymExerciseId}
+                        <Select
+                            value={gymExerciseId || undefined}
                             onValueChange={setGymExerciseId}
-                            getItemValue={(ex) => ex.id}
-                            getItemLabel={(ex) => ex.title + (ex.body_part ? ` (${ex.body_part})` : '')}
-                            placeholder="Select…"
-                            emptyMessage="No exercises found."
-                        />
+                        >
+                            <SelectTrigger id="add-ge-select" className="w-full">
+                                <SelectValue placeholder="Select…" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {exercises.length === 0 ? (
+                                    <div className="px-2 py-1.5 text-sm text-muted-foreground">
+                                        No exercises found.
+                                    </div>
+                                ) : (
+                                    exercises.map((ex) => (
+                                        <SelectItem key={ex.id} value={ex.id}>
+                                            {ex.title + (ex.body_part ? ` (${ex.body_part})` : '')}
+                                        </SelectItem>
+                                    ))
+                                )}
+                            </SelectContent>
+                        </Select>
                     </div>
                     <div className="grid grid-cols-3 gap-2">
                         <div className="space-y-2">

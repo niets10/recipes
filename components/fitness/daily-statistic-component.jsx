@@ -5,7 +5,13 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Combobox } from '@/components/ui/combobox';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
@@ -335,20 +341,32 @@ export function DailyStatisticComponent({ date, initialData }) {
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div className="flex items-center gap-2 flex-nowrap">
-                                <Combobox
-                                    items={activities}
-                                    value={activitySelect}
-                                    onValueChange={setActivitySelect}
-                                    getItemValue={(a) => a.id}
-                                    getItemLabel={(a) => a.title}
-                                    placeholder="Select activity…"
-                                    emptyMessage="No activities found."
-                                    onFocus={() =>
-                                        activities.length === 0 &&
-                                        getActivitiesForSelectAction().then(setActivities)
-                                    }
-                                    className="min-w-0 flex-1 max-w-sm"
-                                />
+                                <Select
+                                    value={activitySelect || undefined}
+                                    onValueChange={(v) => setActivitySelect(v ?? '')}
+                                    onOpenChange={(open) => {
+                                        if (open && activities.length === 0) {
+                                            getActivitiesForSelectAction().then(setActivities);
+                                        }
+                                    }}
+                                >
+                                    <SelectTrigger className="min-w-0 flex-1 max-w-sm">
+                                        <SelectValue placeholder="Select activity…" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {activities.length === 0 ? (
+                                            <div className="px-2 py-1.5 text-sm text-muted-foreground">
+                                                No activities found.
+                                            </div>
+                                        ) : (
+                                            activities.map((a) => (
+                                                <SelectItem key={a.id} value={a.id}>
+                                                    {a.title}
+                                                </SelectItem>
+                                            ))
+                                        )}
+                                    </SelectContent>
+                                </Select>
                                 <Button
                                     type="button"
                                     size="sm"
@@ -405,20 +423,32 @@ export function DailyStatisticComponent({ date, initialData }) {
                                         exercises as needed.
                                     </p>
                                     <div className="flex items-center gap-2 flex-nowrap">
-                                        <Combobox
-                                            items={routines}
-                                            value={routineSelect}
-                                            onValueChange={setRoutineSelect}
-                                            getItemValue={(r) => r.id}
-                                            getItemLabel={(r) => r.name}
-                                            placeholder="Select routine…"
-                                            emptyMessage="No routines found."
-                                            onFocus={() =>
-                                                routines.length === 0 &&
-                                                getRoutinesForSelectAction().then(setRoutines)
-                                            }
-                                            className="min-w-0 flex-1 max-w-sm"
-                                        />
+                                        <Select
+                                            value={routineSelect || undefined}
+                                            onValueChange={(v) => setRoutineSelect(v ?? '')}
+                                            onOpenChange={(open) => {
+                                                if (open && routines.length === 0) {
+                                                    getRoutinesForSelectAction().then(setRoutines);
+                                                }
+                                            }}
+                                        >
+                                            <SelectTrigger className="min-w-0 flex-1 max-w-sm">
+                                                <SelectValue placeholder="Select routine…" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                {routines.length === 0 ? (
+                                                    <div className="px-2 py-1.5 text-sm text-muted-foreground">
+                                                        No routines found.
+                                                    </div>
+                                                ) : (
+                                                    routines.map((r) => (
+                                                        <SelectItem key={r.id} value={r.id}>
+                                                            {r.name}
+                                                        </SelectItem>
+                                                    ))
+                                                )}
+                                            </SelectContent>
+                                        </Select>
                                         <Button
                                             type="button"
                                             size="sm"
@@ -437,20 +467,32 @@ export function DailyStatisticComponent({ date, initialData }) {
                                         one by one. Edit or remove any entry.
                                     </p>
                                     <div className="flex items-center gap-2 flex-nowrap">
-                                        <Combobox
-                                            items={routines}
-                                            value={routineSelect}
-                                            onValueChange={setRoutineSelect}
-                                            getItemValue={(r) => r.id}
-                                            getItemLabel={(r) => r.name}
-                                            placeholder="Select routine…"
-                                            emptyMessage="No routines found."
-                                            onFocus={() =>
-                                                routines.length === 0 &&
-                                                getRoutinesForSelectAction().then(setRoutines)
-                                            }
-                                            className="min-w-0 flex-1 max-w-sm"
-                                        />
+                                        <Select
+                                            value={routineSelect || undefined}
+                                            onValueChange={(v) => setRoutineSelect(v ?? '')}
+                                            onOpenChange={(open) => {
+                                                if (open && routines.length === 0) {
+                                                    getRoutinesForSelectAction().then(setRoutines);
+                                                }
+                                            }}
+                                        >
+                                            <SelectTrigger className="min-w-0 flex-1 max-w-sm">
+                                                <SelectValue placeholder="Select routine…" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                {routines.length === 0 ? (
+                                                    <div className="px-2 py-1.5 text-sm text-muted-foreground">
+                                                        No routines found.
+                                                    </div>
+                                                ) : (
+                                                    routines.map((r) => (
+                                                        <SelectItem key={r.id} value={r.id}>
+                                                            {r.name}
+                                                        </SelectItem>
+                                                    ))
+                                                )}
+                                            </SelectContent>
+                                        </Select>
                                         <Button
                                             type="button"
                                             size="sm"
@@ -494,19 +536,32 @@ function NutritionMealSection({ mealType, label, entries, onAddRecipe, onRemoveR
         <div className="rounded-xl border border-border/60 bg-card/50 p-4 space-y-3">
             <h4 className="text-sm font-medium">{label}</h4>
             <div className="flex items-center gap-2 flex-nowrap">
-                <Combobox
-                    items={recipes}
-                    value={recipeSelect}
-                    onValueChange={setRecipeSelect}
-                    getItemValue={(r) => r.id}
-                    getItemLabel={(r) => r.title}
-                    placeholder={`Select recipe for ${label.toLowerCase()}…`}
-                    emptyMessage="No recipes found."
-                    onFocus={() =>
-                        recipes.length === 0 && getRecipesForSelectAction().then(setRecipes)
-                    }
-                    className="min-w-0 flex-1 max-w-sm"
-                />
+                <Select
+                    value={recipeSelect || undefined}
+                    onValueChange={(v) => setRecipeSelect(v ?? '')}
+                    onOpenChange={(open) => {
+                        if (open && recipes.length === 0) {
+                            getRecipesForSelectAction().then(setRecipes);
+                        }
+                    }}
+                >
+                    <SelectTrigger className="min-w-0 flex-1 max-w-sm">
+                        <SelectValue placeholder={`Select recipe for ${label.toLowerCase()}…`} />
+                    </SelectTrigger>
+                    <SelectContent>
+                        {recipes.length === 0 ? (
+                            <div className="px-2 py-1.5 text-sm text-muted-foreground">
+                                No recipes found.
+                            </div>
+                        ) : (
+                            recipes.map((r) => (
+                                <SelectItem key={r.id} value={r.id}>
+                                    {r.title}
+                                </SelectItem>
+                            ))
+                        )}
+                    </SelectContent>
+                </Select>
                 <Button
                     type="button"
                     size="sm"
@@ -747,20 +802,32 @@ function GymExercisesList({
             )}
             {showForm ? (
                 <div className="grid gap-2 grid-cols-1 sm:grid-cols-2 lg:grid-cols-[1fr_4rem_4rem_5rem_1.5fr_auto]">
-                    <Combobox
-                        items={exercises}
-                        value={gymExerciseId}
-                        onValueChange={setGymExerciseId}
-                        getItemValue={(ex) => ex.id}
-                        getItemLabel={(ex) => ex.title}
-                        placeholder="Exercise…"
-                        emptyMessage="No exercises found."
-                        onFocus={() =>
-                            exercises.length === 0 &&
-                            getGymExercisesForSelectAction().then(setExercises)
-                        }
-                        className="w-full min-w-0 lg:col-span-1"
-                    />
+                    <Select
+                        value={gymExerciseId || undefined}
+                        onValueChange={(v) => setGymExerciseId(v ?? '')}
+                        onOpenChange={(open) => {
+                            if (open && exercises.length === 0) {
+                                getGymExercisesForSelectAction().then(setExercises);
+                            }
+                        }}
+                    >
+                        <SelectTrigger className="w-full min-w-0 lg:col-span-1">
+                            <SelectValue placeholder="Exercise…" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {exercises.length === 0 ? (
+                                <div className="px-2 py-1.5 text-sm text-muted-foreground">
+                                    No exercises found.
+                                </div>
+                            ) : (
+                                exercises.map((ex) => (
+                                    <SelectItem key={ex.id} value={ex.id}>
+                                        {ex.title}
+                                    </SelectItem>
+                                ))
+                            )}
+                        </SelectContent>
+                    </Select>
                     <Input
                         type="number"
                         min={0}
