@@ -266,7 +266,6 @@ export function RoutineDetailComponent({ routine }) {
 
     const exercises = routine?.routine_exercises ?? [];
     const orderedIds = exercises.map((e) => e.id);
-    const addedIds = exercises.map((e) => e.gym_exercise_id);
 
     useEffect(() => {
         const initial = {};
@@ -347,17 +346,15 @@ export function RoutineDetailComponent({ routine }) {
     const loadMore = useCallback(() => {
         const q =
             searchQuery && String(searchQuery).trim() ? String(searchQuery).trim() : undefined;
-        fetchPage(page, q, addedIds, true);
-    }, [page, searchQuery, addedIds, fetchPage]);
+        fetchPage(page, q, [], true);
+    }, [page, searchQuery, fetchPage]);
 
-    const addedIdsStr = addedIds.join(',');
     const debouncedFetchRef = useRef(null);
     const initialFetchedRef = useRef(false);
-    const prevAddedIdsRef = useRef(addedIdsStr);
 
     useEffect(() => {
-        debouncedFetchRef.current = debounce((q, exclude) => {
-            fetchPage(0, q, exclude, false);
+        debouncedFetchRef.current = debounce((q) => {
+            fetchPage(0, q, [], false);
         }, SEARCH_DEBOUNCE_MS);
         return () => debouncedFetchRef.current?.cancel();
     }, [fetchPage]);
@@ -367,17 +364,11 @@ export function RoutineDetailComponent({ routine }) {
             searchQuery && String(searchQuery).trim() ? String(searchQuery).trim() : undefined;
         if (!initialFetchedRef.current) {
             initialFetchedRef.current = true;
-            fetchPage(0, q, addedIds, false);
+            fetchPage(0, q, [], false);
             return;
         }
-        if (prevAddedIdsRef.current !== addedIdsStr) {
-            prevAddedIdsRef.current = addedIdsStr;
-            debouncedFetchRef.current?.cancel();
-            fetchPage(0, q, addedIds, false);
-            return;
-        }
-        debouncedFetchRef.current?.(q, addedIds);
-    }, [searchQuery, addedIdsStr, fetchPage]);
+        debouncedFetchRef.current?.(q);
+    }, [searchQuery, fetchPage]);
 
     async function moveUp(index) {
         if (index <= 0) return;
@@ -513,7 +504,7 @@ export function RoutineDetailComponent({ routine }) {
                         <p className="text-muted-foreground text-xs py-4 sm:text-sm">
                             {searchQuery.trim()
                                 ? 'No exercises match your search.'
-                                : 'All your exercises are already in this routine.'}
+                                : 'No exercises found.'}
                         </p>
                     ) : (
                         <>
