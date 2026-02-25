@@ -17,7 +17,17 @@ import {
     reorderRoutineExercisesAction,
     addExerciseToRoutineAction,
 } from '@/actions/database/routine-actions';
-import { getGymExercisesForSelectPageAction } from '@/actions/database/gym-exercise-actions';
+import {
+    getGymExercisesForSelectPageAction,
+    getDistinctBodyPartsAction,
+} from '@/actions/database/gym-exercise-actions';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 import { BackLink } from '@/components/application/back-link';
 import { routes } from '@/lib/routes';
 import {
@@ -254,6 +264,8 @@ function RoutineExerciseRow({
 }
 
 const SEARCH_DEBOUNCE_MS = 400;
+const BODY_PART_ALL = '__all__';
+const BODY_PART_ALL_LABEL = 'All body parts';
 
 export function RoutineDetailComponent({ routine }) {
     const router = useRouter();
@@ -262,6 +274,8 @@ export function RoutineDetailComponent({ routine }) {
     const [page, setPage] = useState(0);
     const [loading, setLoading] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
+    const [bodyPartFilter, setBodyPartFilter] = useState('');
+    const [bodyParts, setBodyParts] = useState([]);
     const [edits, setEdits] = useState({});
     const [savingAll, setSavingAll] = useState(false);
 
@@ -324,12 +338,13 @@ export function RoutineDetailComponent({ routine }) {
         router.refresh();
     }, [router]);
 
-    const fetchPage = useCallback(async (pageIndex, query, exclude, append = false) => {
+    const fetchPage = useCallback(async (pageIndex, query, bodyPart, exclude, append = false) => {
         setLoading(true);
         try {
             const result = await getGymExercisesForSelectPageAction({
                 page: pageIndex,
                 query: query && String(query).trim() ? String(query).trim() : undefined,
+                bodyPart: bodyPart && String(bodyPart).trim() ? String(bodyPart).trim() : undefined,
                 excludeIds: exclude,
             });
             const list = result.exercises ?? [];
@@ -347,15 +362,21 @@ export function RoutineDetailComponent({ routine }) {
     const loadMore = useCallback(() => {
         const q =
             searchQuery && String(searchQuery).trim() ? String(searchQuery).trim() : undefined;
-        fetchPage(page, q, [], true);
-    }, [page, searchQuery, fetchPage]);
+        const body =
+            bodyPartFilter && bodyPartFilter !== BODY_PART_ALL ? bodyPartFilter : undefined;
+        fetchPage(page, q, body, [], true);
+    }, [page, searchQuery, bodyPartFilter, fetchPage]);
+
+    useEffect(() => {
+        getDistinctBodyPartsAction().then(setBodyParts).catch(() => setBodyParts([]));
+    }, []);
 
     const debouncedFetchRef = useRef(null);
     const initialFetchedRef = useRef(false);
 
     useEffect(() => {
-        debouncedFetchRef.current = debounce((q) => {
-            fetchPage(0, q, [], false);
+        debouncedFetchRef.current = debounce((q, body) => {
+            fetchPage(0, q, body, [], false);
         }, SEARCH_DEBOUNCE_MS);
         return () => debouncedFetchRef.current?.cancel();
     }, [fetchPage]);
@@ -363,13 +384,15 @@ export function RoutineDetailComponent({ routine }) {
     useEffect(() => {
         const q =
             searchQuery && String(searchQuery).trim() ? String(searchQuery).trim() : undefined;
+        const body =
+            bodyPartFilter && bodyPartFilter !== BODY_PART_ALL ? bodyPartFilter : undefined;
         if (!initialFetchedRef.current) {
             initialFetchedRef.current = true;
-            fetchPage(0, q, [], false);
+            fetchPage(0, q, body, [], false);
             return;
         }
-        debouncedFetchRef.current?.(q);
-    }, [searchQuery, fetchPage]);
+        debouncedFetchRef.current?.(q, body);
+    }, [searchQuery, bodyPartFilter, fetchPage]);
 
     async function moveUp(index) {
         if (index <= 0) return;
@@ -488,16 +511,43 @@ export function RoutineDetailComponent({ routine }) {
                     <p className="text-xs text-muted-foreground sm:text-sm">
                         Click + to add an exercise to this routine.
                     </p>
-                    <div className="relative mt-2 w-full sm:max-w-sm">
-                        <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground pointer-events-none" />
-                        <Input
-                            type="search"
-                            placeholder="Search exercises…"
-                            className="pl-9"
-                            aria-label="Search exercises"
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                        />
+                    <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                        <div className="relative min-w-0 flex-1 sm:max-w-sm">
+                            <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+                            <Input
+                                type="search"
+                                placeholder="Search exercises…"
+                                className="h-10 w-full min-w-[200px] rounded-lg border border-border/40 bg-muted/80 pl-9 text-foreground placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:border-border/60 transition-colors duration-200"
+                                aria-label="Search exercises"
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                            />
+                        </div>
+                        <div className="flex shrink-0 items-center gap-2">
+                            <Select
+                                value={bodyPartFilter || BODY_PART_ALL}
+                                onValueChange={(v) =>
+                                    setBodyPartFilter(v === BODY_PART_ALL ? '' : v ?? '')
+                                }
+                            >
+                                <SelectTrigger
+                                    id="available-exercises-body-filter"
+                                    className="h-10 min-w-[120px] rounded-lg border border-border/40 bg-muted/80 focus:ring-0 focus-visible:ring-0 focus-visible:border-border/60"
+                                >
+                                    <SelectValue placeholder={BODY_PART_ALL_LABEL} />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value={BODY_PART_ALL}>
+                                        {BODY_PART_ALL_LABEL}
+                                    </SelectItem>
+                                    {bodyParts.map((part) => (
+                                        <SelectItem key={part} value={part}>
+                                            {part}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
                     </div>
                 </CardHeader>
                 <CardContent className="min-w-0 overflow-hidden">

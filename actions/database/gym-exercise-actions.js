@@ -53,13 +53,16 @@ export async function getGymExercisesForSelectAction() {
 
 const SELECT_PAGE_SIZE = 10;
 
-export async function getGymExercisesForSelectPageAction({ page = 0, query, excludeIds = [] } = {}) {
+export async function getGymExercisesForSelectPageAction({ page = 0, query, bodyPart, excludeIds = [] } = {}) {
     const supabase = await createClient();
     let request = supabase.from('gym_exercises').select('id, title, body_part');
 
     if (query && String(query).trim()) {
         const q = String(query).trim();
         request = request.or(`title.ilike.%${q}%,body_part.ilike.%${q}%`);
+    }
+    if (bodyPart && String(bodyPart).trim()) {
+        request = request.eq('body_part', String(bodyPart).trim());
     }
     if (Array.isArray(excludeIds) && excludeIds.length > 0) {
         request = request.not('id', 'in', `(${excludeIds.map((id) => `"${id}"`).join(',')})`);
