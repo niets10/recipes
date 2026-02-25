@@ -24,29 +24,25 @@ export async function GymExercisesComponent({ searchParams }) {
 
     return (
         <div className="space-y-6">
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                    <h1 className="text-2xl font-semibold tracking-tight">Gym exercises</h1>
-                    <p className="text-muted-foreground mt-1">
-                        {query
-                            ? `Results for "${query}"`
-                            : bodyPart
-                              ? `${bodyPart} exercises`
-                              : 'Your exercise library'}
-                    </p>
+            <div>
+                <h1 className="text-2xl font-semibold tracking-tight">Gym exercises</h1>
+                <p className="text-muted-foreground mt-1">
+                    {query
+                        ? `Results for "${query}"`
+                        : bodyPart
+                          ? `${bodyPart} exercises`
+                          : 'Your exercise library'}
+                </p>
+            </div>
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div className="min-w-0 flex-1 sm:max-w-sm">
+                    <Suspense fallback={<Skeleton className="h-10 w-full max-w-sm" />}>
+                        <GymExerciseSearch />
+                    </Suspense>
                 </div>
-                <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center sm:flex-initial">
-                    <div>
-                        <GymExerciseBodyPartFilter bodyParts={bodyParts} />
-                    </div>
-                    <div className="flex min-w-0 items-center gap-2">
-                        <div className="min-w-0 flex-1 sm:w-72">
-                            <Suspense fallback={<Skeleton className="h-9 w-full" />}>
-                                <GymExerciseSearch />
-                            </Suspense>
-                        </div>
-                        <CreateGymExercise />
-                    </div>
+                <div className="flex shrink-0 items-center gap-2">
+                    <GymExerciseBodyPartFilter bodyParts={bodyParts} />
+                    <CreateGymExercise />
                 </div>
             </div>
 

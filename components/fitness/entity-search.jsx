@@ -88,7 +88,7 @@ export function EntitySearch({ basePath, placeholder = 'Search…', ariaLabel = 
             <Input
                 type="search"
                 placeholder={placeholder}
-                className="pl-9"
+                className="h-10 w-full min-w-[200px] max-w-sm rounded-lg border border-border/40 bg-muted/80 pl-9 text-foreground placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:border-border/60 transition-colors duration-200"
                 aria-label={ariaLabel}
                 value={queryValue}
                 onChange={(e) => setQueryValue(e.target.value)}
